@@ -1,8 +1,9 @@
 import React from 'react';
 import {
   StyleSheet, View, Text, ScrollView,
-  useColorScheme, StatusBar,
+  useColorScheme, StatusBar, RefreshControl,
 } from 'react-native';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBoneStore, getAgeCoef, getSTZIText, stepsToKm } from '../../store/useBoneStore';
 import Colors from '../../constants/Colors';
@@ -46,6 +47,14 @@ export default function DashboardScreen() {
   const insets = useSafeAreaInsets();
   const { history, profile } = useBoneStore();
   const router = useRouter();
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500);
+  }, []);
 
   const now = new Date();
   const year = now.getFullYear();
@@ -85,7 +94,7 @@ export default function DashboardScreen() {
       <SafeAreaView style={[styles.fill, styles.center, { backgroundColor: c.background }]}>
         <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
         <Card variant="elevated" style={styles.emptyCard} padding={32}>
-          <Text style={{ fontSize: 48, marginBottom: 20 }}>🦴</Text>
+          <MaterialCommunityIcons name="bone" size={64} color={c.primary} style={{ marginBottom: 20 }} />
           <Text style={[styles.emptyTitle, { color: c.text }]}>Хуш келибсиз!</Text>
           <Text style={[styles.emptyBody, { color: c.textMuted }]}>
             Дастурдан фойдаланиш учун аввал профилни тўлдиринг.
@@ -105,7 +114,7 @@ export default function DashboardScreen() {
       <SafeAreaView style={[styles.fill, styles.center, { backgroundColor: c.background }]}>
         <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
         <Card variant="elevated" style={styles.emptyCard} padding={32}>
-          <Text style={{ fontSize: 48, marginBottom: 20 }}>📋</Text>
+          <MaterialCommunityIcons name="clipboard-text-outline" size={64} color={c.primary} style={{ marginBottom: 20 }} />
           <Text style={[styles.emptyTitle, { color: c.text }]}>Бугунги маълумот</Text>
           <Text style={[styles.emptyBody, { color: c.textMuted }]}>
             Бугунги фаолиятингизни киритинг ва СТЗИ индексингизни билинг.
@@ -130,7 +139,10 @@ export default function DashboardScreen() {
     <ScrollView
       style={{ backgroundColor: c.background }}
       contentContainerStyle={styles.scroll}
-      showsVerticalScrollIndicator={false}>
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[c.primary]} tintColor={c.primary} />
+      }>
       <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
 
       <View style={[styles.header, { paddingTop: Math.max(insets.top, 20) }]}>
@@ -174,7 +186,8 @@ export default function DashboardScreen() {
 
       <Button
         variant="outline"
-        title="🔄 Маълумотни янгилаш"
+        title="Маълумотни янгилаш"
+        icon="refresh"
         onPress={() => router.push('/input')}
         style={styles.updateBtn}
       />

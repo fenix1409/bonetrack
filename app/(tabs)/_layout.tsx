@@ -1,15 +1,15 @@
 import React from 'react';
 import { StyleSheet, useColorScheme, View } from 'react-native';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Tabs } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Colors from '../../constants/Colors';
 import { TABS, TAB_BAR_CONFIG } from '../../constants/data';
 
-function TabIcon({ icon, color, focused }: { icon: React.ComponentProps<typeof FontAwesome>['name']; color: string; focused: boolean }) {
+function TabIcon({ icon, color, focused }: { icon: React.ComponentProps<typeof MaterialCommunityIcons>['name']; color: string; focused: boolean }) {
   return (
     <View style={[styles.iconContainer, focused && styles.focusedIcon]}>
-      <FontAwesome name={icon} size={22} color={focused ? '#fff' : color} />
+      <MaterialCommunityIcons name={icon} size={22} color={focused ? '#fff' : color} />
     </View>
   );
 }

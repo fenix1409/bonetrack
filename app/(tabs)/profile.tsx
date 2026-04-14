@@ -1,29 +1,31 @@
 import React from 'react';
 import {
     StyleSheet, View, Text, TextInput,
-    ScrollView, Alert, useColorScheme, StatusBar,
+    ScrollView, useColorScheme, StatusBar,
 } from 'react-native';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useForm, Controller } from 'react-hook-form';
 import { useBoneStore, calculateBMI, UserProfile } from '../../store/useBoneStore';
 import Colors from '../../constants/Colors';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
+import { SuccessModal } from '../../components/ui/SuccessModal';
 
 interface Field {
     key: keyof Omit<UserProfile, 'gender'>;
     label: string;
     placeholder: string;
     unit: string;
-    emoji: string;
+    icon: string;
     min: number;
     max: number;
 }
 
 const FIELDS: Field[] = [
-    { key: 'age', label: 'Ёш', unit: 'йил', placeholder: '25', emoji: '🎂', min: 1, max: 120 },
-    { key: 'height', label: 'Бўй', unit: 'см', placeholder: '175', emoji: '📏', min: 50, max: 250 },
-    { key: 'weight', label: 'Вазн', unit: 'кг', placeholder: '70', emoji: '⚖️', min: 10, max: 300 },
+    { key: 'age', label: 'Ёш', unit: 'йил', placeholder: '25', icon: 'calendar-range', min: 1, max: 120 },
+    { key: 'height', label: 'Бўй', unit: 'см', placeholder: '175', icon: 'ruler', min: 50, max: 250 },
+    { key: 'weight', label: 'Вазн', unit: 'кг', placeholder: '70', icon: 'scale-bathroom', min: 10, max: 300 },
 ];
 
 export default function ProfileScreen() {
@@ -31,6 +33,7 @@ export default function ProfileScreen() {
     const c = Colors[colorScheme];
     const insets = useSafeAreaInsets();
     const { profile, setProfile } = useBoneStore();
+    const [showSuccess, setShowSuccess] = React.useState(false);
 
     const { control, handleSubmit, watch, formState: { errors, isDirty } } = useForm<UserProfile>({
         defaultValues: {
@@ -53,9 +56,9 @@ export default function ProfileScreen() {
 
     const getBMILabel = (bmi: number) => {
         if (bmi < 18.5) return { text: 'Вазн меёридан паст ёки кам вазн', color: c.medium, bg: c.mediumBg };
-        if (bmi <= 25) return { text: 'Нормал (меъёрий вазн) Меъёрий вазн ёки нормал вазн', color: c.excellent, bg: c.excellentBg };
+        if (bmi <= 25) return { text: 'Нормал (меъёрий вазн)', color: c.excellent, bg: c.excellentBg };
         if (bmi <= 30) return { text: 'Ортиқча вазн', color: c.medium, bg: c.mediumBg };
-        return { text: 'Семиз (юқори вазн) Ортиқча вазн', color: c.low, bg: c.lowBg };
+        return { text: 'Ортиқча вазн', color: c.low, bg: c.lowBg };
     };
 
     const onSubmit = (data: UserProfile) => {
@@ -65,7 +68,7 @@ export default function ProfileScreen() {
             height: Number(data.height),
             weight: Number(data.weight)
         });
-        Alert.alert('✅ Сақланди', 'Профиль муваффақиятли сақланди!');
+        setShowSuccess(true);
     };
 
     const bmi = getBMIDisplay();
@@ -85,7 +88,7 @@ export default function ProfileScreen() {
                 {/* Profile Hero */}
                 <Card variant="elevated" style={styles.heroCard}>
                     <View style={[styles.avatar, { backgroundColor: c.primaryBg }]}>
-                        <Text style={{ fontSize: 40 }}>👤</Text>
+                        <MaterialCommunityIcons name="account" size={48} color={c.primary} />
                     </View>
                     <Text style={[styles.heroTitle, { color: c.text }]}>
                         {profile ? 'Фойдаланувчи' : 'Янги фойдаланувчи'}
@@ -98,7 +101,10 @@ export default function ProfileScreen() {
                 {/* Inputs */}
                 <Card style={styles.card}>
                     <View style={styles.fieldWrap}>
-                        <Text style={[styles.label, { color: c.text, marginBottom: 12 }]}>👫 Жинсингиз</Text>
+                        <View style={styles.titleRow}>
+                            <MaterialCommunityIcons name="gender-male-female" size={22} color={c.primary} />
+                            <Text style={[styles.label, { color: c.text }]}>Жинсингиз</Text>
+                        </View>
                         <Controller
                             control={control}
                             name="gender"
@@ -121,10 +127,13 @@ export default function ProfileScreen() {
                         />
                     </View>
 
-                    {FIELDS.map(({ key, label, placeholder, unit, emoji, min, max }, index) => (
+                    {FIELDS.map(({ key, label, placeholder, unit, icon, min, max }, index) => (
                         <View key={key} style={[styles.fieldWrap, index === FIELDS.length - 1 && { marginBottom: 0 }]}>
                             <View style={styles.fieldLabelRow}>
-                                <Text style={[styles.label, { color: c.text }]}>{emoji} {label}</Text>
+                                <View style={styles.titleRow}>
+                                    <MaterialCommunityIcons name={icon as any} size={22} color={c.primary} />
+                                    <Text style={[styles.label, { color: c.text }]}>{label}</Text>
+                                </View>
                                 <View style={[styles.unitBadge, { backgroundColor: c.primaryBg }]}>
                                     <Text style={[styles.unitText, { color: c.primary }]}>{unit}</Text>
                                 </View>
@@ -185,7 +194,10 @@ export default function ProfileScreen() {
 
                 {/* Disclaimer */}
                 <Card style={[styles.disclaimer, { backgroundColor: c.lowBg + '44', borderColor: c.low + '44' }]}>
-                    <Text style={[styles.disclaimerTitle, { color: c.low }]}>⚠️ Тиббий эслатма</Text>
+                    <View style={styles.titleRow}>
+                        <MaterialCommunityIcons name="alert" size={20} color={c.low} />
+                        <Text style={[styles.disclaimerTitle, { color: c.low }]}>Тиббий эслатма</Text>
+                    </View>
                     <Text style={[styles.disclaimerText, { color: c.text }]}>
                         Бу тиббий қурилма эмас, факат шифокор маслаҳати учун қўшимча малумот берувчи ёрдамчи восита бўлиб, фақатгина шифокор назорати остида ўтказилиши мумкин
                     </Text>
@@ -193,6 +205,13 @@ export default function ProfileScreen() {
 
                 <View style={{ height: 100 }} />
             </ScrollView>
+
+            <SuccessModal 
+                visible={showSuccess} 
+                onClose={() => setShowSuccess(false)}
+                title="Сақланди"
+                message="Профиль муваффақиятли янгиланди!"
+            />
         </View>
     );
 }
@@ -211,6 +230,7 @@ const styles = StyleSheet.create({
     heroSub: { fontSize: 14, textAlign: 'center', paddingHorizontal: 20, lineHeight: 20 },
 
     card: { marginBottom: 20 },
+    titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
     fieldWrap: { marginBottom: 20 },
     fieldLabelRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
     genderRow: { flexDirection: 'row', gap: 12 },

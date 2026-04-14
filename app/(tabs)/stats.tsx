@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     StyleSheet, View, Text, ScrollView,
-    Dimensions, useColorScheme, StatusBar,
+    Dimensions, useColorScheme, StatusBar, RefreshControl,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LineChart } from 'react-native-chart-kit';
@@ -55,6 +55,14 @@ export default function StatsScreen() {
     const c = Colors[colorScheme];
     const insets = useSafeAreaInsets();
     const { history } = useBoneStore();
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 1500);
+    }, []);
 
     const recent = [...history].sort((a, b) => b.date.localeCompare(a.date));
     const avg = history.length
@@ -72,7 +80,12 @@ export default function StatsScreen() {
     return (
         <View style={[styles.fill, { backgroundColor: c.background }]}>
             <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
-            <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+            <ScrollView 
+                contentContainerStyle={styles.scroll} 
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[c.primary]} tintColor={c.primary} />
+                }>
 
                 <View style={[styles.header, { paddingTop: Math.max(insets.top, 20) }]}>
                     <Text style={[styles.mainTitle, { color: c.text }]}>Статистика</Text>

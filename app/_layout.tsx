@@ -44,7 +44,7 @@ export default function RootLayout() {
   }, [isFirstLaunch, profile, segments, isReady]);
 
   if (!isReady || !_hasHydrated) {
-    return <Loading message="Siz uchun tayyorlanmoqda..." />;
+    return <Loading message="Юкланмокда..." />;
   }
 
   const initialRouteName = isFirstLaunch ? "onboarding" : (!profile ? "(tabs)/profile" : "(tabs)");

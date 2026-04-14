@@ -3,6 +3,7 @@ import {
     StyleSheet, View, Text, ScrollView,
     TextInput, useColorScheme, StatusBar,
 } from 'react-native';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useForm, Controller } from 'react-hook-form';
 import { useBoneStore, FOOD_ITEMS, stepsToKm, DailyLog } from '../../store/useBoneStore';
@@ -11,6 +12,7 @@ import Colors from '../../constants/Colors';
 import { useRouter } from 'expo-router';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
+import { SuccessModal } from '../../components/ui/SuccessModal';
 
 type InputFormData = {
     steps: string;
@@ -24,6 +26,7 @@ export default function InputScreen() {
     const insets = useSafeAreaInsets();
     const { addDailyLog, profile, history } = useBoneStore();
     const router = useRouter();
+    const [showSuccess, setShowSuccess] = useState(false);
 
     const now = new Date();
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -52,13 +55,18 @@ export default function InputScreen() {
         if (isNaN(steps) || steps < 0) return;
         
         // Simulating delay for better UX (feedback)
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 600));
         
         addDailyLog({ 
             steps, 
             foods: data.foods, 
             condition: data.condition 
         });
+        setShowSuccess(true);
+    };
+
+    const handleModalClose = () => {
+        setShowSuccess(false);
         router.replace('/');
     };
 
@@ -66,7 +74,7 @@ export default function InputScreen() {
         return (
             <View style={[styles.fill, styles.center, { backgroundColor: c.background }]}>
                 <Card variant="elevated" style={{ alignItems: 'center' }} padding={32}>
-                    <Text style={{ fontSize: 48, marginBottom: 20 }}>🦴</Text>
+                    <MaterialCommunityIcons name="bone" size={64} color={c.primary} style={{ marginBottom: 20 }} />
                     <Text style={[styles.emptyTitle, { color: c.text }]}>Профил топилмади</Text>
                     <Text style={[styles.emptyBody, { color: c.textMuted }]}>Аввал профилни тўлдиринг.</Text>
                     <Button title="Профилга ўтиш" onPress={() => router.push('/profile')} />
@@ -122,7 +130,10 @@ export default function InputScreen() {
 
                 {/* Steps */}
                 <Card style={styles.card}>
-                    <Text style={[styles.cardTitle, { color: c.text }]}>🚶 Юрилган қадамлар</Text>
+                    <View style={styles.titleRow}>
+                        <MaterialCommunityIcons name="walk" size={22} color={c.primary} />
+                        <Text style={[styles.cardTitle, { color: c.text }]}>Юрилган қадамлар</Text>
+                    </View>
                     <Controller
                         control={control}
                         rules={{ required: true, pattern: /^\d+$/ }}
@@ -151,9 +162,9 @@ export default function InputScreen() {
                     />
                     {errors.steps && <Text style={[styles.errorText, { color: c.low }]}>Тўғри рақам киритинг</Text>}
                     <View style={styles.stepsHintRow}>
-                        {[['< 500', '😞'], ['1k+', '🙂'], ['2.5k+', '😄'], ['5k+', '💪'], ['7.5k+', '🔥']].map(([lbl, em]) => (
+                        {[['< 500', 'emoticon-sad-outline'], ['1k+', 'emoticon-happy-outline'], ['2.5k+', 'emoticon-excited-outline'], ['5k+', 'arm-flex-outline'], ['7.5k+', 'fire']].map(([lbl, icon]) => (
                             <View key={lbl} style={styles.stepsHintItem}>
-                                <Text style={{ fontSize: 16 }}>{em}</Text>
+                                <MaterialCommunityIcons name={icon as any} size={20} color={c.textMuted} />
                                 <Text style={[styles.stepsHintLabel, { color: c.textMuted }]}>{lbl}</Text>
                             </View>
                         ))}
@@ -162,14 +173,18 @@ export default function InputScreen() {
 
                 {/* Condition */}
                 <Card style={styles.card}>
-                    <Text style={[styles.cardTitle, { color: c.text }]}>☀️ Юриш шароити</Text>
+                    <View style={styles.titleRow}>
+                        <MaterialCommunityIcons name="weather-sunny" size={22} color={c.primary} />
+                        <Text style={[styles.cardTitle, { color: c.text }]}>Юриш шароити</Text>
+                    </View>
                     <View style={styles.conditionsGrid}>
-                        {Object.entries(CONDITION_LABELS).map(([key, { label, emoji }]) => {
+                        {Object.entries(CONDITION_LABELS).map(([key, { label, icon }]) => {
                             const active = condition === key;
                             return (
                                 <Button
                                     key={key}
-                                    title={`${emoji} ${label}`}
+                                    title={label}
+                                    icon={icon as any}
                                     onPress={() => setValue('condition', key, { shouldDirty: true })}
                                     variant={active ? 'primary' : 'secondary'}
                                     style={styles.conditionBtn}
@@ -182,7 +197,10 @@ export default function InputScreen() {
 
                 {/* Foods */}
                 <Card style={styles.card}>
-                    <Text style={[styles.cardTitle, { color: c.text }]}>🍽 Бугунги овқатланиш</Text>
+                    <View style={styles.titleRow}>
+                        <MaterialCommunityIcons name="food-apple" size={22} color={c.primary} />
+                        <Text style={[styles.cardTitle, { color: c.text }]}>Бугунги овқатланиш</Text>
+                    </View>
                     <FoodGroup title="Фойдали" items={goodFoods}
                         chipBg={c.goodChip} chipText={c.goodChipText}
                         selectedBg={c.excellent} selectedText="#fff" />
@@ -204,6 +222,13 @@ export default function InputScreen() {
 
                 <View style={{ height: 100 }} />
             </ScrollView>
+
+            <SuccessModal 
+                visible={showSuccess} 
+                onClose={handleModalClose}
+                title="Сақланди"
+                message="Бугунги маълумотлар муваффақиятли қабул қилинди!"
+            />
         </View>
     );
 }
@@ -221,7 +246,8 @@ const styles = StyleSheet.create({
     emptyBody: { fontSize: 16, textAlign: 'center', marginBottom: 24 },
 
     card: { marginBottom: 20 },
-    cardTitle: { fontSize: 18, fontWeight: '700', marginBottom: 16 },
+    titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 },
+    cardTitle: { fontSize: 18, fontWeight: '700' },
 
     input: { borderWidth: 1.5, borderRadius: 14, padding: 16, fontSize: 18, fontWeight: '600', marginBottom: 8 },
     kmPreview: { fontSize: 14, fontWeight: '700', marginLeft: 4, marginBottom: 8 },
