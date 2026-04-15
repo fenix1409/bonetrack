@@ -1,10 +1,6 @@
-import React from 'react';
-import {
-    StyleSheet, View, Text, ScrollView,
-    Dimensions, useColorScheme, StatusBar, RefreshControl,
-} from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet, View, Text, ScrollView, useColorScheme, StatusBar, RefreshControl, } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LineChart } from 'react-native-chart-kit';
 import { useBoneStore } from '@/store/useBoneStore';
 import Colors from '@/constants/Colors';
 import { Card } from '@/components/ui/Card';
@@ -28,7 +24,7 @@ export default function StatsScreen() {
     }, []);
 
     const recent = useMemo(() => [...history].sort((a, b) => b.date.localeCompare(a.date)), [history]);
-    
+
     const avg = useMemo(() => {
         if (!history.length) return null;
         return (history.reduce((s, l) => s + l.stzi, 0) / history.length).toFixed(2);

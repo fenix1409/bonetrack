@@ -4,15 +4,7 @@ import { TIPS, Tip } from '@/constants/data';
 import { useBoneStore } from "@/store/useBoneStore";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React, { useMemo } from 'react';
-import {
-  RefreshControl,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-  useColorScheme,
-} from 'react-native';
+import { RefreshControl, ScrollView, StatusBar, StyleSheet, Text, View, useColorScheme, } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TipsScreen() {
@@ -35,7 +27,7 @@ export default function TipsScreen() {
     const lastLog = history[history.length - 1];
     const recommended: Tip[] = [];
 
-    // BMI bo'yicha
+    // BMI boyicha
     const heightM = profile.height / 100;
     const bmi = profile.weight / (heightM * heightM);
     if (bmi < 18.5) {
@@ -48,13 +40,13 @@ export default function TipsScreen() {
       });
     }
 
-    // Faollik bo'yicha (oxirgi qaydga ko'ra)
+    // Faollik boyicha (oxirgi resultga ko'ra)
     if (lastLog && lastLog.steps < 3000) {
       const activityTip = TIPS.find(t => t.category === 'activity');
       if (activityTip) recommended.push(activityTip);
     }
 
-    // Ovqatlanish bo'yicha
+    // Ovqatlanish boyicha
     if (lastLog && lastLog.selectedFoodIds) {
       const hasCalcium = lastLog.selectedFoodIds.some(id => ['dairy', 'green_veggies', 'calcium_supp'].includes(id));
       if (!hasCalcium) {
@@ -75,7 +67,7 @@ export default function TipsScreen() {
       }
     }
 
-    // Yosh va jins bo'yicha
+    // Yosh va jins boyicha
     if (profile.gender === 'female' && profile.age >= 45) {
       recommended.push({
         icon: 'fountain-pen-tip',
@@ -86,7 +78,7 @@ export default function TipsScreen() {
       });
     }
 
-    // Takrorlanmas maslahatlarni qaytarish (unique by title)
+    // Takrorlanmaydigan maslahatlar qaytarish
     return Array.from(new Map(recommended.map(item => [item.title, item])).values());
   }, [profile, history]);
 

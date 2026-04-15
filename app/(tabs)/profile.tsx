@@ -1,8 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import {
-    StyleSheet, View, Text, TextInput,
-    ScrollView, useColorScheme, StatusBar,
-} from 'react-native';
+import { StyleSheet, View, Text, ScrollView, useColorScheme, StatusBar, } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';

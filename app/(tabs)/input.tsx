@@ -8,16 +8,9 @@ import { ConditionPicker } from '@/components/input/ConditionPicker';
 import { FoodSelector } from '@/components/input/FoodSelector';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
-import React, {useCallback, useMemo, useState} from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    useColorScheme,
-    View,
-} from 'react-native';
+import { ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View, } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type InputFormData = {
@@ -142,14 +135,14 @@ const styles = StyleSheet.create({
     subTitle: { fontSize: 16, fontWeight: '500', marginTop: 4 },
     emptyTitle: { fontSize: 22, fontWeight: '700', marginBottom: 8 },
     emptyBody: { fontSize: 16, textAlign: 'center', marginBottom: 24 },
-    saveBtn: { 
-        marginTop: 12, 
+    saveBtn: {
+        marginTop: 12,
         borderRadius: 20,
         height: 64,
-        shadowColor: '#10B981', 
-        shadowOffset: { width: 0, height: 8 }, 
-        shadowOpacity: 0.25, 
-        shadowRadius: 15, 
-        elevation: 8 
+        shadowColor: '#10B981',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.25,
+        shadowRadius: 15,
+        elevation: 8
     },
 });

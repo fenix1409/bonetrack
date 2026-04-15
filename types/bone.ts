@@ -11,7 +11,7 @@ export interface NutritionChoice {
 }
 
 export interface DailyLog {
-  date: string; // YYYY-MM-DD
+  date: string; // Year-Month-Dayy
   stzi: number;
   bmiScore: number;
   foodScore: number;
