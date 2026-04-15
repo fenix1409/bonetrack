@@ -1,11 +1,11 @@
+import { Loading } from '@/components/ui/Loading';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useBoneStore } from "@/store/useBoneStore";
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
 import { useEffect, useState } from 'react';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { useBoneStore } from '../store/useBoneStore';
-import { Loading } from '../components/ui/Loading';
+import 'react-native-reanimated';
 
 export const unstable_settings = {
   anchor: '(tabs)',

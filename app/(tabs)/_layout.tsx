@@ -1,10 +1,10 @@
-import React from 'react';
-import { StyleSheet, useColorScheme, View } from 'react-native';
+import Colors from '@/constants/Colors';
+import { TAB_BAR_CONFIG, TABS } from '@/constants/data';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Tabs } from 'expo-router';
+import React from 'react';
+import { StyleSheet, useColorScheme, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Colors from '../../constants/Colors';
-import { TABS, TAB_BAR_CONFIG } from '../../constants/data';
 
 function TabIcon({ icon, color, focused }: { icon: React.ComponentProps<typeof MaterialCommunityIcons>['name']; color: string; focused: boolean }) {
   return (
@@ -26,17 +26,17 @@ export default function TabLayout() {
         tabBarShowLabel: false,
         tabBarStyle: {
           position: 'absolute',
-          bottom: Math.max(insets.bottom, TAB_BAR_CONFIG.horizontalInset),
-          height: TAB_BAR_CONFIG.height,
-          marginHorizontal: TAB_BAR_CONFIG.horizontalInset,
-          borderRadius: TAB_BAR_CONFIG.radius,
+          bottom: Math.max(insets.bottom, 16),
+          height: 64,
+          marginHorizontal: 16,
+          borderRadius: 24,
           backgroundColor: c.primary,
           borderTopWidth: 0,
-          elevation: 10,
+          elevation: 8,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: 5 },
+          shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.1,
-          shadowRadius: 10,
+          shadowRadius: 8,
         },
         tabBarItemStyle: {
           paddingVertical: (TAB_BAR_CONFIG.height - TAB_BAR_CONFIG.iconFrame) / 2,

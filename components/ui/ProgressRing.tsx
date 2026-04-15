@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, useColorScheme } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import Colors from '../../constants/Colors';
+import Colors from '@/constants/Colors';
 
 interface ProgressRingProps {
   progress: number; // 0 to 1

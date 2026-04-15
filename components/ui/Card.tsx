@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, ViewProps, useColorScheme } from 'react-native';
-import Colors from '../../constants/Colors';
+import Colors from '@/constants/Colors';
 
 interface CardProps extends ViewProps {
   variant?: 'default' | 'elevated' | 'outlined';

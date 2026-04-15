@@ -9,8 +9,11 @@ import {
 } from 'react-native';
 import Colors from '../../constants/Colors';
 
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
+  icon?: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
   variant?: 'primary' | 'secondary' | 'ghost' | 'outline' | 'danger';
   size?: 'small' | 'medium' | 'large';
   loading?: boolean;
@@ -19,6 +22,7 @@ interface ButtonProps extends TouchableOpacityProps {
 
 export function Button({ 
   title, 
+  icon,
   variant = 'primary', 
   size = 'medium', 
   loading = false, 
@@ -104,7 +108,17 @@ export function Button({
       {loading ? (
         <ActivityIndicator color={variant === 'primary' ? '#fff' : c.primary} />
       ) : (
-        <Text style={[styles.text, variantStyles.text, sizeStyles.text, textStyle]}>{title}</Text>
+        <>
+          {icon && (
+            <MaterialCommunityIcons 
+              name={icon} 
+              size={size === 'small' ? 18 : 22} 
+              color={variantStyles.text.color} 
+              style={{ marginRight: title ? 8 : 0 }} 
+            />
+          )}
+          {title ? <Text style={[styles.text, variantStyles.text, sizeStyles.text, textStyle]}>{title}</Text> : null}
+        </>
       )}
     </TouchableOpacity>
   );

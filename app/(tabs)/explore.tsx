@@ -1,14 +1,19 @@
+import { Card } from '@/components/ui/Card';
+import Colors from '@/constants/Colors';
+import { TIPS, Tip } from '@/constants/data';
+import { useBoneStore } from "@/store/useBoneStore";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React, { useMemo } from 'react';
 import {
-  StyleSheet, View, Text, ScrollView,
-  useColorScheme, StatusBar, RefreshControl,
+  RefreshControl,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+  useColorScheme,
 } from 'react-native';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Colors from '../../constants/Colors';
-import { TIPS, Tip } from '../../constants/data';
-import { Card } from '../../components/ui/Card';
-import { useBoneStore } from '../../store/useBoneStore';
 
 export default function TipsScreen() {
   const colorScheme = useColorScheme() ?? 'light';
@@ -62,7 +67,7 @@ export default function TipsScreen() {
         const dTip = TIPS.find(t => t.category === 'vitamin_d');
         if (dTip) recommended.push(dTip);
       }
-      
+
       const hasHarmful = lastLog.selectedFoodIds.some(id => ['soda', 'smoking', 'alcohol', 'high_salt'].includes(id));
       if (hasHarmful) {
         const lifestyleTip = TIPS.find(t => t.category === 'lifestyle' && t.tag === 'Хавф');
@@ -126,8 +131,8 @@ export default function TipsScreen() {
   return (
     <View style={[styles.fill, { backgroundColor: c.background }]}>
       <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
-      <ScrollView 
-        contentContainerStyle={styles.scroll} 
+      <ScrollView
+        contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[c.primary]} tintColor={c.primary} />
@@ -144,7 +149,7 @@ export default function TipsScreen() {
               <MaterialCommunityIcons name="star-face" size={24} color={c.primary} />
               <Text style={[styles.sectionTitle, { color: c.text }]}>Сиз учун шахсий</Text>
             </View>
-            {personalizedTips.map((tip, i) => renderTip(tip, `p-${i}`))}
+            {personalizedTips.map((tip, i) => renderTip(tip, i))}
           </View>
         )}
 

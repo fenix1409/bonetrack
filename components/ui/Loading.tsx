@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { useColorScheme } from 'react-native';
-import Colors from '../../constants/Colors';
+import Colors from '@/constants/Colors';
 
 interface LoadingProps {
   message?: string;

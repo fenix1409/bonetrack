@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, Modal, Animated, Pressable, useColorScheme } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import Colors from '../../constants/Colors';
+import Colors from '@/constants/Colors';
 import { Button } from './Button';
 
 interface SuccessModalProps {

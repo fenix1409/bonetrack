@@ -1,18 +1,13 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, Dimensions, useColorScheme } from 'react-native';
+import { Button } from '@/components/ui/Button';
+import Colors from '@/constants/Colors';
+import { useBoneStore } from '@/store/useBoneStore';
 import { useRouter } from 'expo-router';
-import Animated, { 
-  FadeInRight, 
-  FadeInUp, 
-  FadeInDown,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  interpolateColor
+import React, { useState } from 'react';
+import { Dimensions, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import Animated, {
+  FadeInRight,
+  FadeInUp
 } from 'react-native-reanimated';
-import { useBoneStore } from '../store/useBoneStore';
-import Colors from '../constants/Colors';
-import { Button } from '../components/ui/Button';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
@@ -72,16 +67,16 @@ export default function OnboardingScreen() {
   return (
     <View style={[styles.container, { backgroundColor: c.background }]}>
       <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
-        <Button 
-          title="Oʻtkazib yuborish" 
-          variant="ghost" 
-          onPress={handleSkip} 
+        <Button
+          title="Oʻtkazib yuborish"
+          variant="ghost"
+          onPress={handleSkip}
           textStyle={{ color: c.textMuted }}
         />
       </View>
 
       <View style={styles.content}>
-        <Animated.View 
+        <Animated.View
           key={`emoji-${currentSlide}`}
           entering={FadeInUp.duration(600).springify()}
           style={styles.emojiContainer}
@@ -89,7 +84,7 @@ export default function OnboardingScreen() {
           <Text style={styles.emoji}>{slide.emoji}</Text>
         </Animated.View>
 
-        <Animated.View 
+        <Animated.View
           key={`title-${currentSlide}`}
           entering={FadeInRight.delay(200).duration(600)}
           style={styles.textContainer}
@@ -104,19 +99,19 @@ export default function OnboardingScreen() {
       <View style={[styles.footer, { paddingBottom: insets.bottom + 40 }]}>
         <View style={styles.pagination}>
           {SLIDES.map((_, index) => (
-            <View 
-              key={index} 
+            <View
+              key={index}
               style={[
-                styles.dot, 
+                styles.dot,
                 { backgroundColor: index === currentSlide ? c.primary : c.border },
                 index === currentSlide && { width: 24 }
-              ]} 
+              ]}
             />
           ))}
         </View>
 
-        <Button 
-          title={currentSlide === SLIDES.length - 1 ? "Boshlash" : "Keyingisi"} 
+        <Button
+          title={currentSlide === SLIDES.length - 1 ? "Boshlash" : "Keyingisi"}
           onPress={handleNext}
           size="large"
           style={styles.nextBtn}
