@@ -47,14 +47,13 @@ export default function RootLayout() {
     return <Loading message="Юкланмокда..." />;
   }
 
-  const initialRouteName = isFirstLaunch ? "onboarding" : (!profile ? "(tabs)/profile" : "(tabs)");
+  const initialRouteName = isFirstLaunch ? "onboarding" : "(tabs)";
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack initialRouteName={initialRouteName}>
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)/profile" options={{ title: 'Profil' }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />

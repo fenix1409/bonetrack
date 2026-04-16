@@ -18,11 +18,11 @@ export const LogCard = React.memo(({ log, theme }: LogCardProps) => {
       <View style={{ flex: 1 }}>
         <Text style={[styles.date, { color: theme.textMuted }]}>{log.date}</Text>
         <Text style={[styles.steps, { color: theme.text }]}>
-          {log.steps.toLocaleString()} қадам ({stepsToKm(log.steps).toFixed(1)} км)
+          {(log.steps ?? 0).toLocaleString()} қадам ({stepsToKm(log.steps ?? 0).toFixed(1)} км)
         </Text>
       </View>
       <View style={[styles.pill, { backgroundColor: status.bg }]}>
-        <Text style={[styles.pillScore, { color: status.color }]}>{log.stzi.toFixed(2)}</Text>
+        <Text style={[styles.pillScore, { color: status.color }]}>{(log.stzi ?? 0).toFixed(2)}</Text>
         <Text style={[styles.pillLabel, { color: status.color }]}>{status.label}</Text>
       </View>
     </Card>

@@ -20,7 +20,7 @@ export const StatsChart = React.memo(({ logs, theme, colorScheme }: StatsChartPr
   const chartData = {
     labels: chartLogs.length > 0 ? chartLogs.map(l => l.date.substring(8)) : ['-'],
     datasets: [{ 
-      data: chartLogs.length > 0 ? chartLogs.map(l => l.stzi) : [0], 
+      data: chartLogs.length > 0 ? chartLogs.map(l => l.stzi ?? 0) : [0], 
       strokeWidth: 3 
     }],
   };

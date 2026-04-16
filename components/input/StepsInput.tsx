@@ -58,7 +58,7 @@ export const StepsInput = React.memo(({ control, errors, theme }: StepsInputProp
               <View style={styles.kmBadge}>
                 <MaterialCommunityIcons name="map-marker-distance" size={14} color={theme.primary} />
                 <Text style={[styles.kmPreview, { color: theme.primary }]}>
-                  {stepsToKm(parseInt(value)).toFixed(2)} км
+                  {(stepsToKm(parseInt(value)) ?? 0).toFixed(2)} км
                 </Text>
               </View>
             )}

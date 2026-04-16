@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 // Refactored Imports
 import { useBoneStore } from '@/store/useBoneStore';
 import { UserProfile } from '@/types/bone';
-import { calculateBMI, validateProfile } from '@/utils/calculations';
+import { getBMIScore, calculateBMI, validateProfile } from '@/utils/calculations';
 import Colors from '@/constants/Colors';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -59,7 +59,9 @@ export default function ProfileScreen() {
         if (!h || !w || h <= 0) return null;
 
         const bmi = calculateBMI(w, h);
-        const bmiStr = bmi.toFixed(1);
+        if (bmi == null || isNaN(bmi)) return null;
+        const bmiStr = (bmi ?? 0).toFixed(1);
+        const score = getBMIScore(bmi);
 
         let label = { text: 'Нормал (меъёрий вазн)', color: c.excellent, bg: c.excellentBg };
         if (bmi < 18.5) label = { text: 'Вазн меёридан паст', color: c.medium, bg: c.mediumBg };
@@ -67,7 +69,7 @@ export default function ProfileScreen() {
         else if (bmi <= 30) label = { text: 'Ортиқча вазн', color: c.medium, bg: c.mediumBg };
         else label = { text: 'Семизлик', color: c.low, bg: c.lowBg };
 
-        return { val: bmiStr, label };
+        return { val: bmiStr, label, score };
     }, [watchedWeight, watchedHeight, c]);
 
     const onSubmit = useCallback((data: UserProfile) => {

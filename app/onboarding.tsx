@@ -53,13 +53,13 @@ export default function OnboardingScreen() {
       setCurrentSlide(currentSlide + 1);
     } else {
       completeOnboarding();
-      router.replace('/profile');
+      router.replace('/(tabs)/profile');
     }
   };
 
   const handleSkip = () => {
     completeOnboarding();
-    router.replace('/profile');
+    router.replace('/(tabs)/profile');
   };
 
   const slide = SLIDES[currentSlide];

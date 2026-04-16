@@ -57,9 +57,8 @@ export const useBoneStore = create<BoneState>()(
             bmiScore,
             foodScore,
             stepsScore,
-            conditionScore,
+            conditionKey: condition as any,
             age: profile.age,
-            gender: profile.gender,
           });
 
           const today = getTodayDate();

@@ -7,13 +7,13 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import Colors from '@/constants/Colors';
-import { getStatusColors, stepsToKm } from '@/utils/calculations';
+import { Recommendation, RecommendationInput, getRecommendations, getStatusColors, stepsToKm } from '@/utils/calculations';
 import { useBoneStore } from '@/store/useBoneStore';
 
 // Dashboard Components
 import { DetailRow } from '@/components/dashboard/DetailRow';
 import { ProgressSection } from '@/components/dashboard/ProgressSection';
-import { RecommendationCard } from '@/components/dashboard/RecommendationCard';
+import { RecommendationContainer } from '@/components/dashboard/RecommendationContainer';
 import { MedicalDisclaimer } from '@/components/ui/MedicalDisclaimer';
 
 const MAX_STZI = 2.0;
@@ -41,24 +41,16 @@ export default function DashboardScreen() {
   const stziValue = todayLog?.stzi ?? 0;
   const status = useMemo(() => getStatusColors(stziValue, c), [stziValue, c]);
 
-  const recommendation = useMemo(() => {
-    if (!profile) return '';
-    if (stziValue >= 1.6) return 'Ажойиб! Суякларингиз саломатлиги учун шу тарзда давом эттиринг. Витамин D ва кальцийга бой маҳсулотларни унутманг.';
-
-    let base = '';
-    if (stziValue >= 1.0) {
-      base = 'Ҳолатингиз яхши, лекин рационни янада бойитиш ва кунлик қадамлар сонини оширинг (5 000+).';
-      if (profile.gender === 'female' && profile.age >= 45) {
-        base += ' Айниқса, сут маҳсулотлари ва яшил сабзавотларни кўпроқ истеъмол қилинг.';
-      }
-    } else {
-      base = 'СТЗИ кўрсаткичи паст. Сизга шифокорга мурожаат қилиш ва витамин D даражасини текшириш тавсия этилади.';
-      if (profile.age >= 60) {
-        base += ' Остеопороз хавфини олдини олиш учун мутахассис кўригидан ўтинг.';
-      }
-    }
-    return base;
-  }, [stziValue, profile]);
+  const recommendations = useMemo<Recommendation[]>(() => {
+    if (!profile || !todayLog) return [];
+    
+    return getRecommendations({
+      steps: todayLog.steps ?? 0,
+      foodScore: todayLog.foodScore ?? 0,
+      bmiScore: todayLog.bmiScore ?? 0,
+      stzi: todayLog.stzi ?? 0
+    });
+  }, [todayLog, profile]);
 
   if (!profile) {
     return (
@@ -72,7 +64,7 @@ export default function DashboardScreen() {
           </Text>
           <Button
             title="Профилга ўтиш"
-            onPress={() => router.push('/profile')}
+            onPress={() => router.push('/(tabs)/profile')}
             style={{ width: '100%' }}
           />
         </Card>
@@ -109,17 +101,15 @@ export default function DashboardScreen() {
         <Text style={[styles.sectionTitle, { color: c.text }]}>Бугунги кўрсаткичлар</Text>
         <Card style={styles.detailCard}>
           <DetailRow label="Қадамлар" score={`${todayLog?.steps ?? 0} та`} accent={c.primary} textColor={c.text} border={c.border} />
-          <DetailRow label="Масофа" score={`${stepsToKm(todayLog?.steps ?? 0).toFixed(2)} км`} accent="#10B981" textColor={c.text} border={c.border} />
+          <DetailRow label="Масофа" score={`${(stepsToKm(todayLog?.steps ?? 0) ?? 0).toFixed(2)} км`} accent="#10B981" textColor={c.text} border={c.border} />
           <DetailRow label="Овқатланиш бали" score={todayLog?.foodScore ?? 0} accent="#F59E0B" textColor={c.text} border={c.border} />
           <DetailRow label="BMI бали" score={todayLog?.bmiScore ?? 0} accent="#8B5CF6" textColor={c.text} border="transparent" />
         </Card>
 
-        <Text style={[styles.sectionTitle, { color: c.text }]}>Тавсия</Text>
-        <RecommendationCard
-          recommendation={recommendation}
-          statusColor={status.color}
-          statusBg={status.bg}
-          textColor={c.text}
+        <Text style={[styles.sectionTitle, { color: c.text }]}>Тавсиялар</Text>
+        <RecommendationContainer 
+          recommendations={recommendations} 
+          theme={c} 
         />
         <MedicalDisclaimer theme={c} />
       </ScrollView>

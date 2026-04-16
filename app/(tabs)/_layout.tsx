@@ -26,7 +26,7 @@ export default function TabLayout() {
         tabBarShowLabel: false,
         tabBarStyle: {
           position: 'absolute',
-          bottom: Math.max(insets.bottom, 16),
+          bottom: Math.max(insets.bottom, 20),
           height: 64,
           marginHorizontal: 16,
           borderRadius: 24,

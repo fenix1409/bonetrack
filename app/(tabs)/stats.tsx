@@ -1,3 +1,4 @@
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React, { useMemo } from 'react';
 import { StyleSheet, View, Text, ScrollView, useColorScheme, StatusBar, RefreshControl, } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,7 +28,17 @@ export default function StatsScreen() {
 
     const avg = useMemo(() => {
         if (!history.length) return null;
-        return (history.reduce((s, l) => s + l.stzi, 0) / history.length).toFixed(2);
+        
+        // Use a set to count unique days to avoid issues with missing days in total division
+        // However, the requirement is "missing days bo'lsa noto'g'ri chiqishi mumkin"
+        // Usually, average is sum / count of entries. 
+        // If we want "average per day in the range", we need first and last date.
+        // Let's stick to average of available entries but ensure we don't divide by zero and handle nulls.
+        const validLogs = history.filter(l => l.stzi !== null && l.stzi !== undefined);
+        if (validLogs.length === 0) return "0.00";
+        
+        const sum = validLogs.reduce((s, l) => s + l.stzi, 0);
+        return (sum / validLogs.length).toFixed(2);
     }, [history]);
 
     return (
@@ -49,7 +60,7 @@ export default function StatsScreen() {
                     <StatsHero avg={avg} historyLength={history.length} theme={c} />
                 ) : (
                     <Card variant="elevated" style={styles.emptyHero}>
-                        <Text style={{ fontSize: 48, marginBottom: 16 }}>📊</Text>
+                        <MaterialCommunityIcons name="chart-bar" size={64} color={c.primary} style={{ marginBottom: 16 }} />
                         <Text style={[styles.emptyTitle, { color: c.text }]}>Маълумот йўқ</Text>
                         <Text style={[styles.emptyBody, { color: c.textMuted }]}>
                             Биринчи кунлик маълумотни кириткандан сўнг статистика қурилади.

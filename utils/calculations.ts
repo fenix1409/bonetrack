@@ -4,6 +4,16 @@ import { NutritionChoice, UserProfile } from '../types/bone';
    CONFIG (SOURCE OF TRUTH)
 ================================ */
 
+export const FOOD_SCORE_LIMITS = {
+  MIN: -3,
+  MAX: 10,
+} as const;
+
+export const STZI_LIMITS = {
+  MIN: 0.0,
+  MAX: 2.0,
+} as const;
+
 export const FOOD_ITEMS: Record<string, NutritionChoice> = {
   dairy: { id: 'dairy', category: 'good' },
   green_veggies: { id: 'green_veggies', category: 'good' },
@@ -55,11 +65,14 @@ export const CONDITIONS = {
   sedentary: -2,
 } as const;
 
+const NORMALIZATION_FACTOR = 10;
+const MIN_TOTAL_SCORE = 0;
+
 /* ================================
    TYPES
 ================================ */
 
-type Gender = 'male' | 'female';
+type ConditionKey = keyof typeof CONDITIONS;
 
 type StatusColors = {
   excellent: string;
@@ -99,9 +112,11 @@ export const validateProfile = (data: Partial<UserProfile>): string | null => {
 ================================ */
 
 export const calculateBMI = (weight: number, heightCm: number): number => {
-  if (heightCm <= 0) return 0;
+  if (heightCm <= 0) {
+    throw new Error('Invalid height');
+  }
   const heightM = heightCm / 100;
-  return Number((weight / (heightM * heightM)).toFixed(2));
+  return Math.round((weight / (heightM * heightM)) * 100) / 100;
 };
 
 export const getBMIScore = (bmi: number): number => {
@@ -115,11 +130,17 @@ export const getBMIScore = (bmi: number): number => {
 ================================ */
 
 export const getFoodScore = (foodIds: string[]): number => {
-  return foodIds.reduce((total, id) => {
+  const rawScore = foodIds.reduce((total, id) => {
     const item = FOOD_ITEMS[id];
     if (!item) return total;
     return total + FOOD_SCORES[item.category];
   }, 0);
+
+  // Fix: Clamp food score to safe range [FOOD_SCORE_LIMITS.MIN, FOOD_SCORE_LIMITS.MAX] ([-3, 10])
+  return Math.min(
+    FOOD_SCORE_LIMITS.MAX,
+    Math.max(FOOD_SCORE_LIMITS.MIN, rawScore)
+  );
 };
 
 /* ================================
@@ -127,21 +148,25 @@ export const getFoodScore = (foodIds: string[]): number => {
 ================================ */
 
 export const getStepsScore = (steps: number): number => {
+  if (steps < 0) return 0;
+
   for (const range of STEPS_RANGES) {
     if (steps < range.max) return range.score;
   }
-  return 0;
+
+  return 5;
 };
 
 export const stepsToKm = (steps: number): number => {
-  return Number(((steps * 0.75) / 1000).toFixed(2));
+  return Math.round(((steps * 0.75) / 1000) * 100) / 100;
 };
 
 /* ================================
-   AGE COEFFICIENT (SPEC BASED)
+   AGE COEF
 ================================ */
 
 export const getAgeCoef = (age: number): number => {
+  if (age >= 1 && age <= 19) return 1.2;
   if (age >= 20 && age <= 39) return 1.0;
   if (age >= 40 && age <= 59) return 0.8;
   if (age >= 60) return 0.6;
@@ -156,17 +181,24 @@ export const calculateSTZI = (params: {
   bmiScore: number;
   foodScore: number;
   stepsScore: number;
-  conditionKey: keyof typeof CONDITIONS;
+  conditionKey: ConditionKey;
   age: number;
 }): number => {
   const { bmiScore, foodScore, stepsScore, conditionKey, age } = params;
+  const conditionScore = CONDITIONS[conditionKey as ConditionKey] ?? 0;
 
-  const conditionScore = CONDITIONS[conditionKey];
+  // Fix: Ensure total score is never below MIN_TOTAL_SCORE (0)
+  const totalRaw = bmiScore + foodScore + stepsScore + conditionScore;
+  const total = Math.max(MIN_TOTAL_SCORE, totalRaw);
 
-  const total = bmiScore + foodScore + stepsScore + conditionScore;
   const coef = getAgeCoef(age);
 
-  return Number(((total * coef) / 10).toFixed(2));
+  let stzi = (total * coef) / NORMALIZATION_FACTOR;
+
+  // Fix: Clamp final STZI to range [STZI_LIMITS.MIN, STZI_LIMITS.MAX] ([0, 2])
+  stzi = Math.min(STZI_LIMITS.MAX, Math.max(STZI_LIMITS.MIN, stzi));
+
+  return Math.round(stzi * 100) / 100;
 };
 
 /* ================================
@@ -179,12 +211,118 @@ export const getSTZIText = (stzi: number): 'Аъло' | 'Ўрта' | 'Паст' 
   return 'Паст';
 };
 
-export const getStatusColors = (stzi: number, colors: StatusColors) => {
-  if (stzi >= 1.6) {
+export const getSTZIExplanation = (stzi: number | null | undefined): string => {
+  const val = stzi ?? 0;
+  if (val >= 1.6) {
+    return 'Сизда суяк зичлиги юқори. Соғлом турмуш тарзини давом эттиринг.';
+  }
+  if (val >= 1.0) {
+    return 'Суяк зичлиги меъёрида. Фаоллик ва овқатланишни сақланг.';
+  }
+  if (val > 0) {
+    return 'Суяк зичлиги паст. Калций ва қуёш нури тавсия этилади.';
+  }
+  return 'Жуда паст кўрсаткич. Шифокорга мурожаат қилиш тавсия этилади.';
+};
+
+export const getStatusColors = (stzi: number | null | undefined, colors: StatusColors) => {
+  const val = stzi ?? 0;
+  if (val >= 1.6) {
     return { label: 'Аъло', color: colors.excellent, bg: colors.excellentBg };
   }
-  if (stzi >= 1.0) {
+  if (val >= 1.0) {
     return { label: 'Ўрта', color: colors.medium, bg: colors.mediumBg };
   }
   return { label: 'Паст', color: colors.low, bg: colors.lowBg };
+};
+
+/* ================================
+   RECOMMENDATIONS
+================================ */
+
+export type RecommendationType = 'critical' | 'warning' | 'improve';
+
+export interface Recommendation {
+  text: string;
+  type: RecommendationType;
+}
+
+export interface RecommendationInput {
+  steps: number;
+  foodScore: number;
+  bmiScore: number;
+  stzi: number;
+}
+
+export const getRecommendations = (data: RecommendationInput): Recommendation[] => {
+  const { steps, foodScore, bmiScore, stzi } = data;
+  const recommendations: Recommendation[] = [];
+
+  // Priority 1: Critical STZI (Medical) - CRITICAL
+  if (stzi === 0) {
+    recommendations.push({
+      text: 'Шифокор билан маслаҳатлашинг.',
+      type: 'critical',
+    });
+  }
+
+  // Priority 2: BMI Warning - WARNING
+  if (bmiScore === 0) {
+    recommendations.push({
+      text: 'Вазнингизни назорат қилинг.',
+      type: 'warning',
+    });
+  }
+
+  // Priority 3: Food Score - Harmful Reduction - WARNING
+  if (foodScore < 0) {
+    recommendations.push({
+      text: 'Зарарли маҳсулотларни камайтиринг.',
+      type: 'warning',
+    });
+  }
+
+  // Priority 4: Steps - Severe inactivity - WARNING/IMPROVE
+  if (steps < 1000) {
+    recommendations.push({
+      text: 'Кунига камида 5000 қадам юринг.',
+      type: 'warning',
+    });
+  } else if (steps < 5000) {
+    recommendations.push({
+      text: 'Қадамлар сонини ошириб боринг.',
+      type: 'improve',
+    });
+  }
+
+  // Priority 5: Food Score - Healthy addition - IMPROVE
+  if (foodScore < 3) {
+    recommendations.push({
+      text: 'Калций ва витамин D га бой овқатлар енг.',
+      type: 'improve',
+    });
+  }
+
+  // Priority 6: STZI Improvement - IMPROVE
+  if (stzi > 0 && stzi < 1) {
+    recommendations.push({
+      text: 'Қуёш нури ва фаол ҳаракатни кўпайтиринг.',
+      type: 'improve',
+    });
+  }
+
+  // Sort by priority (critical > warning > improve)
+  const priorityMap: Record<RecommendationType, number> = {
+    critical: 0,
+    warning: 1,
+    improve: 2,
+  };
+
+  const uniqueRecommendations = Array.from(
+    new Map(recommendations.map((item) => [item.text, item])).values()
+  );
+
+  return uniqueRecommendations
+    .sort((a, b) => priorityMap[a.type] - priorityMap[b.type])
+    .slice(0, 5);
 };

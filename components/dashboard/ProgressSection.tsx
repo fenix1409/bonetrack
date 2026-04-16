@@ -1,7 +1,9 @@
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ProgressRing } from '@/components/ui/ProgressRing';
 import { Card } from '@/components/ui/Card';
+import { getSTZIExplanation } from '@/utils/calculations';
 
 interface ProgressSectionProps {
   stziValue: number;
@@ -31,7 +33,7 @@ export const ProgressSection = React.memo(({
             color={status.color}
           />
           <View style={styles.ringOverlay}>
-            <Text style={[styles.stziVal, { color: status.color }]}>{stziValue.toFixed(1)}</Text>
+            <Text style={[styles.stziVal, { color: status.color }]}>{(stziValue ?? 0).toFixed(1)}</Text>
             <Text style={[styles.stziLabel, { color: textColorMuted }]}>СТЗИ</Text>
           </View>
         </View>
@@ -43,6 +45,24 @@ export const ProgressSection = React.memo(({
           <Text style={[styles.stziDesc, { color: textColorMuted }]}>
             Суяк тўқимасининг зичлик индекси
           </Text>
+          <Text style={[styles.stziExplanation, { color: textColorMuted }]}>
+            {getSTZIExplanation(stziValue)}
+          </Text>
+          {stziValue === 0 && (
+            <View style={[styles.criticalWarning, { backgroundColor: status.color + '20' }]}>
+              <View style={styles.criticalHeader}>
+                <MaterialCommunityIcons name="alert-decagram" size={24} color={status.color} />
+                <Text style={[styles.criticalWarningText, { color: status.color }]}>
+                  КРИТИК ҲОЛАТ: СТЗИ кўрсаткичи жуда паст!
+                </Text>
+              </View>
+            </View>
+          )}
+          {stziValue > 0 && stziValue <= 0.5 && (
+            <Text style={[styles.lowStziWarning, { color: status.color }]}>
+              * Носоғлом турмуш тарзи СТЗИни пасайтирмоқда
+            </Text>
+          )}
         </View>
       </View>
     </Card>
@@ -60,4 +80,9 @@ const styles = StyleSheet.create({
   statusBadge: { paddingHorizontal: 16, paddingVertical: 6, borderRadius: 20, marginBottom: 8 },
   statusText: { fontSize: 16, fontWeight: '700' },
   stziDesc: { fontSize: 13, textAlign: 'center' },
+  stziExplanation: { fontSize: 14, textAlign: 'center', marginTop: 12, paddingHorizontal: 20, fontWeight: '500', lineHeight: 20 },
+  criticalWarning: { marginTop: 16, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,0,0,0.2)' },
+  criticalHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, justifyContent: 'center' },
+  criticalWarningText: { fontSize: 14, fontWeight: '800', textAlign: 'center' },
+  lowStziWarning: { fontSize: 12, marginTop: 12, textAlign: 'center', fontWeight: '600', fontStyle: 'italic' },
 });

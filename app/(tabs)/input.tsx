@@ -82,7 +82,7 @@ export default function InputScreen() {
                     <MaterialCommunityIcons name="bone" size={64} color={theme.primary} style={{ marginBottom: 20 }} />
                     <Text style={[styles.emptyTitle, { color: theme.text }]}>Профил топилмади</Text>
                     <Text style={[styles.emptyBody, { color: theme.textMuted }]}>Аввал профилни тўлдиринг.</Text>
-                    <Button title="Профилга ўтиш" onPress={() => router.push('/profile')} />
+                    <Button title="Профилга ўтиш" onPress={() => router.push('/(tabs)/profile')} />
                 </Card>
             </View>
         );
