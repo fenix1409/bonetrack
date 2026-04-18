@@ -54,8 +54,8 @@ export const StepsInput = React.memo(({ control, errors, theme }: StepsInputProp
               value={value}
               selectionColor={theme.primary}
             />
-            {value && !isNaN(parseInt(value)) && (
-              <View style={styles.kmBadge}>
+            {value !== undefined && value !== '' && !isNaN(parseInt(value)) && (
+              <View style={[styles.kmBadge, { backgroundColor: theme.primary + '15' }]}>
                 <MaterialCommunityIcons name="map-marker-distance" size={14} color={theme.primary} />
                 <Text style={[styles.kmPreview, { color: theme.primary }]}>
                   {(stepsToKm(parseInt(value)) ?? 0).toFixed(2)} км
@@ -103,7 +103,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     alignItems: 'center', 
     gap: 4, 
-    backgroundColor: 'rgba(16, 185, 129, 0.1)', 
     alignSelf: 'flex-start',
     paddingHorizontal: 10,
     paddingVertical: 4,

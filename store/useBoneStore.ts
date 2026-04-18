@@ -51,7 +51,7 @@ export const useBoneStore = create<BoneState>()(
           const bmiScore = getBMIScore(bmi);
           const foodScore = getFoodScore(foods);
           const stepsScore = getStepsScore(steps);
-          const conditionScore = CONDITIONS[condition] || 0;
+          const conditionScore = CONDITIONS[condition as keyof typeof CONDITIONS] || 0;
 
           const stzi = calculateSTZI({
             bmiScore,

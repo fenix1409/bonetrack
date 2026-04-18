@@ -1,4 +1,4 @@
-import { calculateSTZI, getFoodScore, getStepsScore, calculateBMI, getBMIScore } from './utils/calculations.ts';
+import { calculateSTZI, getFoodScore, getStepsScore, calculateBMI, getBMIScore } from './utils/calculations';
 
 // Simulating user inputs:
 // Steps: 10,000

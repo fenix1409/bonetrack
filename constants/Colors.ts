@@ -3,6 +3,39 @@ const primaryDark = '#059669'; // Emerald 600
 const accent = '#3B82F6'; // Blue 500
 const secondary = '#8B5CF6'; // Violet 500
 
+export type Theme = {
+    text: string;
+    textMuted: string;
+    background: string;
+    surface: string;
+    card: string;
+    primary: string;
+    primaryDark: string;
+    accent: string;
+    secondary: string;
+    primaryBg: string;
+    tint: string;
+    tabIconDefault: string;
+    tabIconSelected: string;
+    border: string;
+    excellent: string;
+    excellentBg: string;
+    medium: string;
+    mediumBg: string;
+    low: string;
+    lowBg: string;
+    shadow: string;
+    divider: string;
+    inputBg: string;
+    goodChip: string;
+    goodChipText: string;
+    mediumChip: string;
+    mediumChipText: string;
+    harmfulChip: string;
+    harmfulChipText: string;
+    overlay: string;
+};
+
 export default {
     light: {
         text: '#1F2937', // Gray 800

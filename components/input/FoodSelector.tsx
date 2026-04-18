@@ -68,8 +68,8 @@ export const FoodSelector = React.memo(({ selectedFoods, onToggle, theme }: Food
   return (
     <Card style={styles.card} padding={20}>
       <View style={styles.titleRow}>
-        <View style={[styles.iconCircle, { backgroundColor: '#F59E0B15' }]}>
-          <MaterialCommunityIcons name="food-apple" size={20} color="#F59E0B" />
+        <View style={[styles.iconCircle, { backgroundColor: theme.medium + '15' }]}>
+          <MaterialCommunityIcons name="food-apple" size={20} color={theme.medium} />
         </View>
         <Text style={[styles.cardTitle, { color: theme.text }]}>Бугунги овқатланиш</Text>
       </View>

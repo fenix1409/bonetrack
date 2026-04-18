@@ -26,7 +26,9 @@ export const ConditionPicker = React.memo(({ value, onChange, theme }: Condition
       <View style={styles.conditionsGrid}>
         {Object.entries(CONDITION_LABELS).map(([key, { label, icon }]) => {
           const active = value === key;
-          const [title, time] = label.split(' (');
+          const splitIndex = label.indexOf(' (');
+          const title = splitIndex !== -1 ? label.substring(0, splitIndex) : label;
+          const time = splitIndex !== -1 ? label.substring(splitIndex + 2, label.length - 1) : null;
           
           return (
             <Pressable
@@ -63,7 +65,7 @@ export const ConditionPicker = React.memo(({ value, onChange, theme }: Condition
                     styles.conditionTime, 
                     { color: active ? theme.secondary : theme.textMuted }
                   ]}>
-                    {time.replace(')', '')}
+                    {time}
                   </Text>
                 )}
               </View>
