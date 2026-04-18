@@ -44,7 +44,7 @@ export default function RootLayout() {
   }, [isFirstLaunch, profile, segments, isReady]);
 
   if (!isReady || !_hasHydrated) {
-    return <Loading message="Юкланмокда..." />;
+    return <Loading message="Юкланмоқда..." />;
   }
 
   const initialRouteName = isFirstLaunch ? "onboarding" : "(tabs)";
