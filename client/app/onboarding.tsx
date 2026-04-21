@@ -1,41 +1,61 @@
 import { Button } from '@/components/ui/Button';
 import Colors from '@/constants/Colors';
 import { useBoneStore } from '@/store/useBoneStore';
+<<<<<<< HEAD
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, Text, useColorScheme, View } from 'react-native';
+=======
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Dimensions, StyleSheet, Text, useColorScheme, View } from 'react-native';
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 import Animated, {
   FadeInRight,
   FadeInUp
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+<<<<<<< HEAD
+=======
+const { width } = Dimensions.get('window');
+
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 const SLIDES = [
   {
     id: 1,
     title: 'Xush kelibsiz!',
     description: 'Suyaklaringiz salomatligini kuzatish va mustahkamlash uchun moʻljallangan ilovaga xush kelibsiz.',
+<<<<<<< HEAD
     icon: 'bone',
     supportIcons: ['shield-check', 'chart-line', 'heart-pulse'],
     metric: 'STZI',
     caption: 'Bone health',
+=======
+    emoji: '🦴',
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
     color: '#10B981',
   },
   {
     id: 2,
     title: 'Faollikni oʻlchang',
     description: 'Kunlik qadamlaringizni kiriting va ular suyaklaringizga qanday taʼsir qilishini bilib oling.',
+<<<<<<< HEAD
     icon: 'walk',
     supportIcons: ['map-marker-distance', 'speedometer', 'calendar-check'],
     metric: '5K+',
     caption: 'Daily steps',
+=======
+    emoji: '🏃',
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
     color: '#3B82F6',
   },
   {
     id: 3,
     title: 'Toʻgʻri ovqatlaning',
     description: 'Sogʻlom suyaklar uchun foydali mahsulotlarni tanlashda sizga yordam beramiz.',
+<<<<<<< HEAD
     icon: 'food-apple',
     supportIcons: ['pill', 'fish', 'white-balance-sunny'],
     metric: 'Ca + D',
@@ -43,6 +63,12 @@ const SLIDES = [
     color: '#8B5CF6',
   },
 ] as const;
+=======
+    emoji: '🥦',
+    color: '#8B5CF6',
+  },
+];
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 
 export default function OnboardingScreen() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -85,6 +111,7 @@ export default function OnboardingScreen() {
 
       <View style={styles.content}>
         <Animated.View
+<<<<<<< HEAD
           key={`visual-${currentSlide}`}
           entering={FadeInUp.duration(600).springify()}
           style={styles.visualWrap}
@@ -115,6 +142,13 @@ export default function OnboardingScreen() {
           <View style={[styles.supportBubble, styles.supportBubbleBottom, { backgroundColor: c.card }]}>
             <MaterialCommunityIcons name={slide.supportIcons[2]} size={22} color={slide.color} />
           </View>
+=======
+          key={`emoji-${currentSlide}`}
+          entering={FadeInUp.duration(600).springify()}
+          style={styles.emojiContainer}
+        >
+          <Text style={styles.emoji}>{slide.emoji}</Text>
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
         </Animated.View>
 
         <Animated.View
@@ -144,7 +178,11 @@ export default function OnboardingScreen() {
         </View>
 
         <Button
+<<<<<<< HEAD
           title={currentSlide === SLIDES.length - 1 ? 'Boshlash' : 'Keyingisi'}
+=======
+          title={currentSlide === SLIDES.length - 1 ? "Boshlash" : "Keyingisi"}
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
           onPress={handleNext}
           size="large"
           style={styles.nextBtn}
@@ -169,6 +207,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 40,
   },
+<<<<<<< HEAD
   visualWrap: {
     width: 240,
     height: 240,
@@ -264,6 +303,19 @@ const styles = StyleSheet.create({
   supportBubbleBottom: {
     bottom: 10,
     right: 34,
+=======
+  emojiContainer: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  emoji: {
+    fontSize: 80,
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   },
   textContainer: {
     alignItems: 'center',

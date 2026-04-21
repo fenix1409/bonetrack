@@ -7,9 +7,16 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import Colors from '@/constants/Colors';
+<<<<<<< HEAD
 import { Recommendation, getRecommendations, getStatusColors, stepsToKm } from '@/utils/calculations';
 import { useBoneStore } from '@/store/useBoneStore';
 
+=======
+import { Recommendation, RecommendationInput, getRecommendations, getStatusColors, stepsToKm } from '@/utils/calculations';
+import { useBoneStore } from '@/store/useBoneStore';
+
+// Dashboard Components
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 import { DetailRow } from '@/components/dashboard/DetailRow';
 import { ProgressSection } from '@/components/dashboard/ProgressSection';
 import { RecommendationContainer } from '@/components/dashboard/RecommendationContainer';

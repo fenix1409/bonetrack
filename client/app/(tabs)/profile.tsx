@@ -4,6 +4,10 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
 
+<<<<<<< HEAD
+=======
+// Refactored Imports
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 import { useBoneStore } from '@/store/useBoneStore';
 import { UserProfile } from '@/types/bone';
 import { getBMIScore, calculateBMI, validateProfile } from '@/utils/calculations';
@@ -12,6 +16,10 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { SuccessModal } from '@/components/ui/SuccessModal';
 
+<<<<<<< HEAD
+=======
+// Profile Components
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 import { ProfileField } from '@/components/profile/ProfileField';
 import { GenderPicker } from '@/components/profile/GenderPicker';
 import { BMIInsight } from '@/components/profile/BMIInsight';

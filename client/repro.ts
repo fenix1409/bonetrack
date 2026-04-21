@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { calculateSTZI, getFoodScore, getStepsScore } from './utils/calculations';
+=======
+import { calculateSTZI, getFoodScore, getStepsScore, calculateBMI, getBMIScore } from './utils/calculations';
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 
 // Simulating user inputs:
 // Steps: 10,000

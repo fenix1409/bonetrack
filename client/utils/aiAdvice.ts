@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { getApiBaseUrl, getMissingApiUrlError } from './api';
+=======
+import { Platform } from 'react-native';
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 
 export type AIAdviceInput = {
   steps: number;
@@ -16,6 +20,13 @@ export type AIAdviceResponse = {
   actions: string[];
 };
 
+<<<<<<< HEAD
+=======
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL ||
+  (Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000');
+
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 const REQUEST_TIMEOUT_MS = 12_000;
 
 const isAdviceResponse = (value: unknown): value is AIAdviceResponse => {
@@ -35,17 +46,25 @@ const isAdviceResponse = (value: unknown): value is AIAdviceResponse => {
   );
 };
 
+<<<<<<< HEAD
 export async function getAIAdvice(data: AIAdviceInput, signal: AbortSignal): Promise<AIAdviceResponse> {
   const apiBaseUrl = getApiBaseUrl();
   if (!apiBaseUrl) {
     throw new Error(getMissingApiUrlError());
   }
 
+=======
+export async function getAIAdvice(data: AIAdviceInput): Promise<AIAdviceResponse> {
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
+<<<<<<< HEAD
     const response = await fetch(`${apiBaseUrl}/chat`, {
+=======
+    const response = await fetch(`${API_BASE_URL}/chat`, {
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
       method: 'POST',
       headers: {
         Accept: 'application/json',

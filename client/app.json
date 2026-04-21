@@ -1,5 +1,6 @@
 {
   "expo": {
+<<<<<<< HEAD
     "splash": {
       "image": "./assets/logo.png",
       "resizeMode": "contain",
@@ -8,6 +9,8 @@
         "backgroundColor": "#006142"
       }
     },
+=======
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
     "name": "BoneTrack",
     "slug": "BoneTrack",
     "version": "1.0.0",
@@ -29,7 +32,11 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.fenix1409.bonetrack",
+<<<<<<< HEAD
       "usesCleartextTraffic": false
+=======
+      "usesCleartextTraffic": true
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
     },
     "web": {
       "output": "static",

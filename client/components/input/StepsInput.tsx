@@ -35,8 +35,12 @@ export const StepsInput = React.memo(({ control, errors, theme }: StepsInputProp
         rules={{ 
           required: 'Қадамларни киритинг', 
           pattern: { value: /^\d+$/, message: 'Тўғри рақам киритинг' },
+<<<<<<< HEAD
           min: { value: 0, message: 'Қадамлар 0 дан кам бўлиши мумкин эмас' },
           max: { value: 100000, message: 'Қадамлар 100000 дан ошмасин' }
+=======
+          min: { value: 0, message: 'Қадамлар 0 дан кам бўлиши мумкин эмас' }
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
         }}
         name="steps"
         render={({ field: { onChange, onBlur, value } }) => (
@@ -55,11 +59,19 @@ export const StepsInput = React.memo(({ control, errors, theme }: StepsInputProp
               value={value}
               selectionColor={theme.primary}
             />
+<<<<<<< HEAD
             {value !== undefined && value !== '' && !Number.isNaN(Number.parseInt(value, 10)) && (
               <View style={[styles.kmBadge, { backgroundColor: theme.primary + '15' }]}>
                 <MaterialCommunityIcons name="map-marker-distance" size={14} color={theme.primary} />
                 <Text style={[styles.kmPreview, { color: theme.primary }]}>
                   {(stepsToKm(Number.parseInt(value, 10)) ?? 0).toFixed(2)} км
+=======
+            {value !== undefined && value !== '' && !isNaN(parseInt(value)) && (
+              <View style={[styles.kmBadge, { backgroundColor: theme.primary + '15' }]}>
+                <MaterialCommunityIcons name="map-marker-distance" size={14} color={theme.primary} />
+                <Text style={[styles.kmPreview, { color: theme.primary }]}>
+                  {(stepsToKm(parseInt(value)) ?? 0).toFixed(2)} км
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
                 </Text>
               </View>
             )}

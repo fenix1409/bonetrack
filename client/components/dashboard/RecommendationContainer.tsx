@@ -13,19 +13,31 @@ interface RecommendationGroupProps {
 }
 
 const RecommendationGroup = ({ type, items, theme, index }: RecommendationGroupProps) => {
+<<<<<<< HEAD
+=======
+  if (items.length === 0) return null;
+
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 500,
+<<<<<<< HEAD
       delay: index * 150, 
+=======
+      delay: index * 150, // Staggered appearance
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
       useNativeDriver: true,
     }).start();
   }, [fadeAnim, index]);
 
+<<<<<<< HEAD
   if (items.length === 0) return null;
 
+=======
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   const getConfig = () => {
     switch (type) {
       case 'critical':
@@ -121,10 +133,17 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 24,
     marginBottom: 24,
+<<<<<<< HEAD
     gap: 16, 
   },
   smallMainCard: {
     padding: 12, 
+=======
+    gap: 16, // Increased gap for better spacing between groups
+  },
+  smallMainCard: {
+    padding: 12, // More compact for small screens
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   },
   groupContainer: {
     borderRadius: 16,
@@ -140,7 +159,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   groupTitle: {
+<<<<<<< HEAD
     fontSize: 14,
+=======
+    fontSize: 14, // Adjusted for better balance on all screens
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -159,7 +182,11 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   itemText: {
+<<<<<<< HEAD
     fontSize: 14, 
+=======
+    fontSize: 14, // Consistent font size
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
     lineHeight: 20,
     fontWeight: '500',
     flex: 1,

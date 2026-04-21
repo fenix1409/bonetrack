@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+// components/MessageBubble.tsx  ← React.memo bilan alohida komponent
+
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -5,9 +10,16 @@ import type { Message } from '@/hooks/useChat';
 
 interface Props {
   item: Message;
+<<<<<<< HEAD
   colors: any;
 }
 
+=======
+  colors: any; // sizning Colors tipi
+}
+
+// ✅ React.memo — faqat o'zgargan bubble re-render bo'ladi
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 export const MessageBubble = memo(({ item, colors: c }: Props) => {
   const isUser = item.sender === 'user';
 

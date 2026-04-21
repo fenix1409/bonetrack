@@ -8,6 +8,7 @@ const chatSchema = z.object({
       .string()
       .trim()
       .min(1, 'Prompt is required.')
+<<<<<<< HEAD
       .max(500, 'Prompt is too long (max 500 characters).'),
    conversationId: z.string().uuid(),
    healthContext: z.object({
@@ -15,6 +16,15 @@ const chatSchema = z.object({
       foodScore: z.number().min(-3).max(10),
       bmi: z.number().min(0).max(80),
       stzi: z.number().min(0).max(2),
+=======
+      .max(1000, 'Prompt is too long (max 1000 characters'),
+   conversationId: z.string().uuid(),
+   healthContext: z.object({
+      steps: z.number().min(0),
+      foodScore: z.number(),
+      bmi: z.number().min(0),
+      stzi: z.number().min(0),
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
    }),
 });
 
@@ -38,11 +48,14 @@ export const chatController = {
          res.json({ message: response.message });
       } catch (error) {
          console.error('Chat error:', error);
+<<<<<<< HEAD
          if (error instanceof Error && error.name === 'AbortError') {
             res.status(504).json({ error: 'AI request timed out.' });
             return;
          }
 
+=======
+>>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
          res.status(500).json({ error: 'Failed to generate a response.' });
       }
    },
