@@ -88,7 +88,6 @@ type StatusColors = {
 ================================ */
 
 export const validateProfile = (data: Partial<UserProfile>): string | null => {
-<<<<<<< HEAD
   if (data.age == null || !Number.isFinite(data.age) || data.age < 1 || data.age > 120) {
     return 'Please enter a valid age (1-120)';
   }
@@ -98,17 +97,6 @@ export const validateProfile = (data: Partial<UserProfile>): string | null => {
   }
 
   if (data.weight == null || !Number.isFinite(data.weight) || data.weight < 10 || data.weight > 300) {
-=======
-  if (data.age == null || data.age < 1 || data.age > 120) {
-    return 'Please enter a valid age (1-120)';
-  }
-
-  if (data.height == null || data.height < 50 || data.height > 250) {
-    return 'Please enter a valid height (50-250cm)';
-  }
-
-  if (data.weight == null || data.weight < 10 || data.weight > 300) {
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
     return 'Please enter a valid weight (10-300kg)';
   }
 
@@ -124,23 +112,15 @@ export const validateProfile = (data: Partial<UserProfile>): string | null => {
 ================================ */
 
 export const calculateBMI = (weight: number, heightCm: number): number => {
-<<<<<<< HEAD
   if (!Number.isFinite(weight) || !Number.isFinite(heightCm) || weight <= 0 || heightCm <= 0) {
     throw new Error('Invalid BMI input');
-=======
-  if (heightCm <= 0) {
-    throw new Error('Invalid height');
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   }
   const heightM = heightCm / 100;
   return Math.round((weight / (heightM * heightM)) * 100) / 100;
 };
 
 export const getBMIScore = (bmi: number): number => {
-<<<<<<< HEAD
   if (!Number.isFinite(bmi)) return 0;
-=======
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   if (bmi >= 18.5 && bmi <= 25) return 2;
   if (bmi > 25 && bmi <= 30) return 1;
   return 0;
@@ -151,11 +131,8 @@ export const getBMIScore = (bmi: number): number => {
 ================================ */
 
 export const getFoodScore = (foodIds: string[]): number => {
-<<<<<<< HEAD
   if (!Array.isArray(foodIds)) return 0;
 
-=======
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   const rawScore = foodIds.reduce((total, id) => {
     const item = FOOD_ITEMS[id];
     if (!item) return total;
@@ -174,11 +151,7 @@ export const getFoodScore = (foodIds: string[]): number => {
 ================================ */
 
 export const getStepsScore = (steps: number): number => {
-<<<<<<< HEAD
   if (!Number.isFinite(steps) || steps < 0) return 0;
-=======
-  if (steps < 0) return 0;
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 
   for (const range of STEPS_RANGES) {
     if (steps < range.max) return range.score;
@@ -188,10 +161,7 @@ export const getStepsScore = (steps: number): number => {
 };
 
 export const stepsToKm = (steps: number): number => {
-<<<<<<< HEAD
   if (!Number.isFinite(steps) || steps <= 0) return 0;
-=======
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   return Math.round(((steps * 0.75) / 1000) * 100) / 100;
 };
 
@@ -200,10 +170,7 @@ export const stepsToKm = (steps: number): number => {
 ================================ */
 
 export const getAgeCoef = (age: number): number => {
-<<<<<<< HEAD
   if (!Number.isFinite(age)) return 1.0;
-=======
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   if (age >= 1 && age <= 19) return 1.2;
   if (age >= 20 && age <= 39) return 1.0;
   if (age >= 40 && age <= 59) return 0.8;
@@ -224,18 +191,12 @@ export const calculateSTZI = (params: {
 }): number => {
   const { bmiScore, foodScore, stepsScore, conditionKey, age } = params;
   const conditionScore = CONDITIONS[conditionKey as ConditionKey] ?? 0;
-<<<<<<< HEAD
   const safeBmiScore = Number.isFinite(bmiScore) ? bmiScore : 0;
   const safeFoodScore = Number.isFinite(foodScore) ? foodScore : 0;
   const safeStepsScore = Number.isFinite(stepsScore) ? stepsScore : 0;
 
   // Fix: Ensure total score is never below MIN_TOTAL_SCORE (0)
   const totalRaw = safeBmiScore + safeFoodScore + safeStepsScore + conditionScore;
-=======
-
-  // Fix: Ensure total score is never below MIN_TOTAL_SCORE (0)
-  const totalRaw = bmiScore + foodScore + stepsScore + conditionScore;
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   const total = Math.max(MIN_TOTAL_SCORE, totalRaw);
 
   const coef = getAgeCoef(age);
@@ -372,8 +333,4 @@ export const getRecommendations = (data: RecommendationInput): Recommendation[] 
   return uniqueRecommendations
     .sort((a, b) => priorityMap[a.type] - priorityMap[b.type])
     .slice(0, 5);
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c

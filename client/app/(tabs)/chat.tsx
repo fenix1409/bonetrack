@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-=======
-// screens/ChatScreen.tsx  ← faqat UI, logika hook da
-
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 import Colors from '@/constants/Colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useState, useRef, useCallback } from 'react';
@@ -21,10 +16,6 @@ export default function ChatScreen() {
   const insets = useSafeAreaInsets();
   const tabBarBottomSpace = Math.max(insets.bottom, 20) + 64;
 
-<<<<<<< HEAD
-=======
-  // ✅ Barcha logika hook da
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   const { messages, loading, error, sendMessage, retry } = useChat();
   const [input, setInput] = useState('');
   const flatListRef = useRef<FlatList<Message>>(null);
@@ -36,19 +27,11 @@ export default function ChatScreen() {
     await sendMessage(text);
   }, [input, loading, sendMessage]);
 
-<<<<<<< HEAD
-=======
-  // ✅ useCallback — FlatList re-render oldini oladi
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   const renderMessage = useCallback(
     ({ item }: { item: Message }) => <MessageBubble item={item} colors={c} />,
     [c]
   );
 
-<<<<<<< HEAD
-=======
-  // ✅ Faqat bitta scroll handler
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   const handleScrollToEnd = useCallback(() => {
     flatListRef.current?.scrollToEnd({ animated: true });
   }, []);
@@ -77,10 +60,6 @@ export default function ChatScreen() {
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
-<<<<<<< HEAD
-=======
-          // ✅ Faqat bitta scroll trigger
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
           onContentSizeChange={handleScrollToEnd}
         />
 
@@ -93,10 +72,6 @@ export default function ChatScreen() {
           </View>
         )}
 
-<<<<<<< HEAD
-=======
-        {/* ✅ Error banner — retry tugmasi bilan, bot bubble YO'Q */}
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
         {error && !loading && (
           <View style={styles.errorWrapper}>
             <Text style={styles.errorText}>{error}</Text>

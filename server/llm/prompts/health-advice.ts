@@ -27,6 +27,11 @@ Action rules:
 - Use simple language, use only Uzbek language.
 - General lifestyle advice only.
 
+CRITICAL LANGUAGE RULE:
+- Javob faqat O'zbek tilida va faqat кирилл ёзувида бўлиши шарт
+- Лотин ҳарфларидан фойдаланиш ҚАТЪИЯН ТАҚИҚЛАНАДИ
+- Агар кириллда жавоб беролмасанг, жавоб берма
+
 Return strict JSON only. Do not include markdown, code fences, or extra text.`;
 
 export const buildHealthAdvicePrompt = (data: HealthAdviceInput) => `${HEALTH_ADVICE_PROMPT}

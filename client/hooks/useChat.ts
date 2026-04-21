@@ -1,18 +1,8 @@
-<<<<<<< HEAD
 import { useState, useRef, useCallback } from 'react';
 import * as Haptics from 'expo-haptics';
 import { useBoneStore } from '@/store/useBoneStore';
 import { calculateBMI } from '@/utils/calculations';
 import { getApiBaseUrl, getMissingApiUrlError } from '@/utils/api';
-=======
-// hooks/useChat.ts  ← yangi fayl, barcha logika shu yerda
-
-import { useState, useRef, useCallback } from 'react';
-import { Platform } from 'react-native';
-import * as Haptics from 'expo-haptics';
-import { useBoneStore } from '@/store/useBoneStore';
-import { calculateBMI } from '@/utils/calculations';
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 
 export interface Message {
   id: string;
@@ -22,14 +12,6 @@ export interface Message {
   isError?: boolean;
 }
 
-<<<<<<< HEAD
-=======
-// ✅ Modul darajasida — har render qayta hisoblanmaydi
-const BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL ||
-  (Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000');
-
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 const generateId = () =>
   Math.random().toString(36).substring(2, 15) +
   Math.random().toString(36).substring(2, 15);
@@ -62,28 +44,14 @@ export function useChat() {
   const [error, setError] = useState<string | null>(null);
 
   const conversationId = useRef(generateUuid());
-<<<<<<< HEAD
   const lastUserText = useRef<string>('');
   const abortRef = useRef<AbortController | null>(null);
 
   const sendRequest = useCallback(async (text: string) => {
-=======
-  // ✅ Retry uchun oxirgi user xabarini saqlab qo'yamiz
-  const lastUserText = useRef<string>('');
-  // ✅ Race condition oldini olish uchun
-  const abortRef = useRef<AbortController | null>(null);
-
-  const sendRequest = useCallback(async (text: string) => {
-    // ✅ Avvalgi so'rovni bekor qilamiz
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
 
-<<<<<<< HEAD
-=======
-    // ✅ Timeout
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
     const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
     setLoading(true);
@@ -91,7 +59,6 @@ export function useChat() {
 
     const latestLog = history[0];
     const bmi = profile ? calculateBMI(profile.weight, profile.height) : 0;
-<<<<<<< HEAD
     const apiBaseUrl = getApiBaseUrl();
 
     try {
@@ -100,11 +67,6 @@ export function useChat() {
       }
 
       const response = await fetch(`${apiBaseUrl}/api/chat`, {
-=======
-
-    try {
-      const response = await fetch(`${BASE_URL}/api/chat`, {
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -123,7 +85,6 @@ export function useChat() {
         signal: controller.signal,
       });
 
-<<<<<<< HEAD
       const data = await response.json().catch(() => null);
 
       if (!response.ok) {
@@ -132,12 +93,6 @@ export function useChat() {
 
       if (!data || typeof data.message !== 'string' || !data.message.trim()) {
         throw new Error('Invalid chat response.');
-=======
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || `Server error: ${response.status}`);
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
       }
 
       const botMessage: Message = {
@@ -151,15 +106,8 @@ export function useChat() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (err) {
       if ((err as Error).name === 'AbortError') {
-<<<<<<< HEAD
         setError('So\'rov vaqti tugadi. Qayta urinib ko\'ring.');
       } else {
-=======
-        // ✅ Timeout yoki manual abort — faqat timeout xabar
-        setError('So\'rov vaqti tugadi. Qayta urinib ko\'ring.');
-      } else {
-        console.error('Chat error:', err);
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
         setError('Сервер билан боғланишда хатолик юз берди.');
       }
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -191,10 +139,6 @@ export function useChat() {
     [loading, sendRequest]
   );
 
-<<<<<<< HEAD
-=======
-  // ✅ Retry — oxirgi xabarni qayta yuboradi
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   const retry = useCallback(() => {
     if (!lastUserText.current || loading) return;
     sendRequest(lastUserText.current);

@@ -6,10 +6,6 @@ import { useBoneStore } from '@/store/useBoneStore';
 import Colors from '@/constants/Colors';
 import { Card } from '@/components/ui/Card';
 
-<<<<<<< HEAD
-=======
-// Stats Components
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 import { LogCard } from '@/components/stats/LogCard';
 import { StatsHero } from '@/components/stats/StatsHero';
 import { StatsChart } from '@/components/stats/StatsChart';

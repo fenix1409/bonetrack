@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { getApiBaseUrl, getMissingApiUrlError } from './api';
-=======
-import { Platform } from 'react-native';
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 
 export type AIAdviceInput = {
   steps: number;
@@ -20,13 +16,6 @@ export type AIAdviceResponse = {
   actions: string[];
 };
 
-<<<<<<< HEAD
-=======
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL ||
-  (Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000');
-
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 const REQUEST_TIMEOUT_MS = 12_000;
 
 const isAdviceResponse = (value: unknown): value is AIAdviceResponse => {
@@ -46,25 +35,17 @@ const isAdviceResponse = (value: unknown): value is AIAdviceResponse => {
   );
 };
 
-<<<<<<< HEAD
 export async function getAIAdvice(data: AIAdviceInput, signal: AbortSignal): Promise<AIAdviceResponse> {
   const apiBaseUrl = getApiBaseUrl();
   if (!apiBaseUrl) {
     throw new Error(getMissingApiUrlError());
   }
 
-=======
-export async function getAIAdvice(data: AIAdviceInput): Promise<AIAdviceResponse> {
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
-<<<<<<< HEAD
     const response = await fetch(`${apiBaseUrl}/chat`, {
-=======
-    const response = await fetch(`${API_BASE_URL}/chat`, {
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -77,22 +58,22 @@ export async function getAIAdvice(data: AIAdviceInput): Promise<AIAdviceResponse
     const json = await response.json().catch(() => null);
 
     if (!response.ok) {
-      throw new Error(json?.error || `Server error: ${response.status}`);
+      throw new Error(json?.error || `Сервер хатолиги: ${response.status}`);
     }
 
     if (!isAdviceResponse(json)) {
-      throw new Error('Invalid AI advice response.');
+      throw new Error('Нотўғри AI маслахати жавоб.');
     }
 
     return json;
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('The AI advice request took too long. Please try again.');
+      throw new Error('AI маслахати сўровида жуда ўзун вақт олди. Қайта уринг.');
     }
 
     throw error instanceof Error
       ? error
-      : new Error('Unable to load AI advice. Please try again.');
+      : new Error('AI маслахатини юклаб бўлмади. Қайта уринг.');
   } finally {
     clearTimeout(timeout);
   }

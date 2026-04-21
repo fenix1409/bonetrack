@@ -6,10 +6,7 @@ import { useBoneStore } from '@/store/useBoneStore';
 import { StepsInput } from '@/components/input/StepsInput';
 import { ConditionPicker } from '@/components/input/ConditionPicker';
 import { FoodSelector } from '@/components/input/FoodSelector';
-<<<<<<< HEAD
 import { CONDITIONS } from '@/utils/calculations';
-=======
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -20,7 +17,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 type InputFormData = {
     steps: string;
     foods: string[];
-<<<<<<< HEAD
     condition: keyof typeof CONDITIONS;
 };
 
@@ -29,11 +25,6 @@ const toConditionKey = (value: string | undefined): keyof typeof CONDITIONS =>
         ? value as keyof typeof CONDITIONS
         : 'summer';
 
-=======
-    condition: string;
-};
-
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 export default function InputScreen() {
     const colorScheme = useColorScheme() ?? 'light';
     const theme = Colors[colorScheme];
@@ -53,11 +44,7 @@ export default function InputScreen() {
         defaultValues: {
             steps: existingLog?.steps.toString() ?? '',
             foods: existingLog?.selectedFoodIds ?? [],
-<<<<<<< HEAD
             condition: toConditionKey(existingLog?.conditionKey)
-=======
-            condition: existingLog?.conditionKey ?? 'summer'
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
         }
     });
 
@@ -72,7 +59,6 @@ export default function InputScreen() {
     }, [selectedFoods, setValue]);
 
     const handleConditionChange = useCallback((key: string) => {
-<<<<<<< HEAD
         if (!Object.prototype.hasOwnProperty.call(CONDITIONS, key)) return;
         setValue('condition', key as keyof typeof CONDITIONS, { shouldDirty: true });
     }, [setValue]);
@@ -80,14 +66,6 @@ export default function InputScreen() {
     const onSubmit = useCallback(async (data: InputFormData) => {
         const steps = Number.parseInt(data.steps, 10);
         if (!Number.isFinite(steps) || steps < 0 || steps > 100000) return;
-=======
-        setValue('condition', key, { shouldDirty: true });
-    }, [setValue]);
-
-    const onSubmit = useCallback(async (data: InputFormData) => {
-        const steps = parseInt(data.steps);
-        if (isNaN(steps) || steps < 0) return;
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 
         await new Promise(resolve => setTimeout(resolve, 600));
 
@@ -136,13 +114,9 @@ export default function InputScreen() {
 
                 <Button
                     title="Сақлаш ва натижани кўриш"
-<<<<<<< HEAD
                     onPress={() => {
                         void handleSubmit(onSubmit)();
                     }}
-=======
-                    onPress={handleSubmit(onSubmit)}
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
                     size="large"
                     loading={isSubmitting}
                     style={[styles.saveBtn, { backgroundColor: theme.primary }]}

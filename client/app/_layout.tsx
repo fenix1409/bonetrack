@@ -19,18 +19,10 @@ export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-<<<<<<< HEAD
     if (_hasHydrated) {
       const timer = setTimeout(() => {
         setIsReady(true);
       }, 1000);
-=======
-    // Wait for store to hydrate AND initial delay
-    if (_hasHydrated) {
-      const timer = setTimeout(() => {
-        setIsReady(true);
-      }, 1000); // Reduced delay to 1s as requested previously but kept for smoother feel
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
       return () => clearTimeout(timer);
     }
   }, [_hasHydrated]);
@@ -38,10 +30,6 @@ export default function RootLayout() {
   useEffect(() => {
     if (!isReady || !_hasHydrated) return;
 
-<<<<<<< HEAD
-=======
-    const inAuthGroup = segments[0] === '(tabs)';
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
     const inOnboarding = segments[0] === 'onboarding';
 
     if (isFirstLaunch && !inOnboarding) {
@@ -51,11 +39,7 @@ export default function RootLayout() {
     } else if (!isFirstLaunch && profile && (inOnboarding || segments[1] === 'profile')) {
       if (inOnboarding) router.replace('/(tabs)');
     }
-<<<<<<< HEAD
   }, [_hasHydrated, isFirstLaunch, profile, router, segments, isReady]);
-=======
-  }, [isFirstLaunch, profile, segments, isReady]);
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 
   if (!isReady || !_hasHydrated) {
     return <Loading message="Юкланмоқда..." />;

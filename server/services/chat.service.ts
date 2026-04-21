@@ -33,16 +33,7 @@ export const chatService = {
          instructions: buildInstructions(healthContext),
          prompt,
          temperature: 0.1, // Kechikishni kamaytirish va aniqlikni oshirish uchun
-<<<<<<< HEAD
          maxTokens: 160, // Qisqaroq javob tezroq keladi
-         previousResponseId:
-            conversationRepository.getLastResponseId(conversationId),
-         timeoutMs: 12_000,
-=======
-         maxTokens: 220, // Qisqaroq javob tezroq keladi
-         previousResponseId:
-            conversationRepository.getLastResponseId(conversationId),
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
       });
 
       conversationRepository.setLastResponseId(conversationId, response.id);

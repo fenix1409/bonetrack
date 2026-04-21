@@ -1,9 +1,5 @@
 import React from 'react';
-<<<<<<< HEAD
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
-=======
-import { StyleSheet, Text, View, ViewStyle, TextStyle } from 'react-native';
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface PageHeaderProps {

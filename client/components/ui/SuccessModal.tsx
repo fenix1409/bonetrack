@@ -42,11 +42,7 @@ export function SuccessModal({
             scale.setValue(0);
             opacity.setValue(0);
         }
-<<<<<<< HEAD
     }, [visible, opacity, scale]);
-=======
-    }, [visible]);
->>>>>>> 58c92d520a5012ccad011b3853cae84473d19d2c
 
     return (
         <Modal
