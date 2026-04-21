@@ -17,6 +17,7 @@ export const TABS = [
   { name: 'stats', title: 'Stats', icon: 'chart-box' },
   { name: 'input', title: 'Add', icon: 'plus-circle' },
   { name: 'explore', title: 'Tips', icon: 'lightbulb' },
+  { name: 'chat', title: 'Chat', icon: 'robot' },
   { name: 'profile', title: 'Profile', icon: 'account' },
 ] as const;
 

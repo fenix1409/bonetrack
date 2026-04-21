@@ -72,6 +72,26 @@ export default function DashboardScreen() {
     );
   }
 
+  if (!todayLog) {
+    return (
+      <SafeAreaView style={[styles.fill, styles.center, { backgroundColor: c.background }]}>
+        <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
+        <Card variant="elevated" style={styles.emptyCard} padding={32}>
+          <MaterialCommunityIcons name="calendar-today" size={64} color={c.primary} style={{ marginBottom: 20 }} />
+          <Text style={[styles.emptyTitle, { color: c.text }]}>Бугунги маълумотлар йўқ</Text>
+          <Text style={[styles.emptyBody, { color: c.textMuted }]}>
+            Бугунги кўрсаткичларни кўриш учун аввал маълумотларни киритинг. Акс ҳолда, СТЗИ хавфли даражада бўлиши мумкин.
+          </Text>
+          <Button
+            title="Маълумотларни киритиш"
+            onPress={() => router.push('/(tabs)/input')}
+            style={{ width: '100%' }}
+          />
+        </Card>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <View style={[styles.fill, { backgroundColor: c.background }]}>
       <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />

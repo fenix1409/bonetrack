@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "bonetrack",
-    "slug": "bonetrack",
+    "name": "BoneTrack",
+    "slug": "BoneTrack",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo.png",
-    "scheme": "bonetrack",
+    "scheme": "BoneTrack",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -19,7 +19,9 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.fenix1409.bonetrack",
+      "usesCleartextTraffic": true
     },
     "web": {
       "output": "static",
@@ -43,6 +45,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "bf434711-ebc1-4075-8ed8-90ea28f5811f"
+      }
     }
   }
 }
