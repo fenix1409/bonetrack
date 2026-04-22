@@ -72,45 +72,45 @@ export const AISection = memo((p: Props) => {
               <ActivityIndicator size="small" color={c.accent} />
               <Text style={[s.summary, { color: c.text }]}>AI таҳлил қилмоқда...</Text>
             </View>
-          ) : <>
-            <Text style={[s.summary, { color: c.text }]}>{advice?.summary}</Text>
-            <View style={s.metrics}>
-              {([['Қадамлар', aiInput.steps], ['Озик', aiInput.foodScore], ['БМИ', aiInput.bmi.toFixed(1)]] as [string, any][]).map(([k, v]) => (
-                <Text key={k} style={[s.metric, { color: c.textMuted }]}>{k}: {v}</Text>
-              ))}
-            </View>
-            {!!advice?.issues?.length && (
-              <View style={s.block}>
-                <Text style={[s.blockTitle, { color: c.text }]}>Масъалалар</Text>
-                {advice.issues.map((issue, i) => (
-                  <View key={i} style={s.listItem}>
-                    <View style={[s.bullet, { backgroundColor: c.medium }]} />
-                    <Text style={[s.listText, { color: c.textMuted }]}>{issue}</Text>
-                  </View>
-                ))}
-              </View>
-            )}
-            {!!advice?.actions?.length && (
-              <View style={s.block}>
-                <Text style={[s.blockTitle, { color: c.text }]}>Маслахатлар</Text>
-                {advice.actions.map((action, i) => (
-                  <View key={i} style={[s.action, { backgroundColor: c.primaryBg }]}>
-                    <MaterialCommunityIcons name="check-circle-outline" size={18} color={c.primary} />
-                    <Text style={[s.actionText, { color: c.text }]}>{action}</Text>
-                  </View>
-                ))}
-              </View>
-            )}
-          </>}
-
-          {!!error && !loading && (
+          ) : error ? (
             <View style={[s.errorBox, { backgroundColor: c.lowBg }]}>
               <Text style={[s.errorText, { color: c.low }]}>{error}</Text>
               <TouchableOpacity onPress={onRetry} style={[s.retry, { backgroundColor: c.low }]}>
                 <Text style={s.retryText}>Қайта уринг</Text>
               </TouchableOpacity>
             </View>
-          )}
+          ) : advice ? (
+            <>
+              <Text style={[s.summary, { color: c.text }]}>{advice.summary}</Text>
+              <View style={s.metrics}>
+                {([['Қадамлар', aiInput.steps], ['Озик', aiInput.foodScore], ['БМИ', aiInput.bmi.toFixed(1)]] as [string, any][]).map(([k, v]) => (
+                  <Text key={k} style={[s.metric, { color: c.textMuted }]}>{k}: {v}</Text>
+                ))}
+              </View>
+              {!!advice.issues?.length && (
+                <View style={s.block}>
+                  <Text style={[s.blockTitle, { color: c.text }]}>Масъалалар</Text>
+                  {advice.issues.map((issue, i) => (
+                    <View key={i} style={s.listItem}>
+                      <View style={[s.bullet, { backgroundColor: c.medium }]} />
+                      <Text style={[s.listText, { color: c.textMuted }]}>{issue}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+              {!!advice.actions?.length && (
+                <View style={s.block}>
+                  <Text style={[s.blockTitle, { color: c.text }]}>Маслахатлар</Text>
+                  {advice.actions.map((action, i) => (
+                    <View key={i} style={[s.action, { backgroundColor: c.primaryBg }]}>
+                      <MaterialCommunityIcons name="check-circle-outline" size={18} color={c.primary} />
+                      <Text style={[s.actionText, { color: c.text }]}>{action}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </>
+          ) : null}
         </Card>
       </Animated.View>
     </View>

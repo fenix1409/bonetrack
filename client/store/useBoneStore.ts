@@ -2,14 +2,16 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserProfile, DailyLog } from '../types/bone';
-import { 
-  calculateBMI, 
-  getBMIScore, 
-  getFoodScore, 
-  getStepsScore, 
-  CONDITIONS, 
-  calculateSTZI 
+import type { WalkingCondition } from '../components/input/WalkingConditionPicker';
+import {
+  calculateBMI,
+  getBMIScore,
+  getFoodScore,
+  getStepsScore,
+  CONDITIONS,
+  calculateSTZI
 } from '../utils/calculations';
+import { getWalkingConditionScore } from '../utils/walkingConditionScore';
 
 interface BoneState {
   profile: UserProfile | null;
@@ -19,7 +21,7 @@ interface BoneState {
   setProfile: (profile: UserProfile) => void;
   completeOnboarding: () => void;
   setHasHydrated: (state: boolean) => void;
-  addDailyLog: (data: { steps: number; foods: string[]; condition: keyof typeof CONDITIONS }) => void;
+  addDailyLog: (data: { steps: number; foods: string[]; walkingCondition: WalkingCondition }) => void;
   resetStore: () => void;
 }
 
@@ -27,9 +29,6 @@ const getTodayDate = () => {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 };
-
-const isConditionKey = (value: string): value is keyof typeof CONDITIONS =>
-  Object.prototype.hasOwnProperty.call(CONDITIONS, value);
 
 export const useBoneStore = create<BoneState>()(
   persist(
@@ -40,28 +39,28 @@ export const useBoneStore = create<BoneState>()(
       _hasHydrated: false,
 
       setProfile: (profile) => set({ profile }),
-      
+
       completeOnboarding: () => set({ isFirstLaunch: false }),
-      
+
       setHasHydrated: (state) => set({ _hasHydrated: state }),
 
-      addDailyLog: ({ steps, foods, condition }) => {
+      addDailyLog: ({ steps, foods, walkingCondition }) => {
         const { profile, history } = get();
         if (!profile) return;
 
-        if (!Number.isFinite(steps) || steps < 0 || !isConditionKey(condition)) return;
+        if (!Number.isFinite(steps) || steps < 0) return;
 
         const bmi = calculateBMI(profile.weight, profile.height);
         const bmiScore = getBMIScore(bmi);
         const foodScore = getFoodScore(foods);
         const stepsScore = getStepsScore(steps);
-        const conditionScore = CONDITIONS[condition];
+        const conditionScore = getWalkingConditionScore(walkingCondition);
 
         const stzi = calculateSTZI({
           bmiScore,
           foodScore,
           stepsScore,
-          conditionKey: condition,
+          conditionKey: 'summer',
           age: profile.age,
         });
 
@@ -75,7 +74,8 @@ export const useBoneStore = create<BoneState>()(
           conditionScore,
           steps,
           selectedFoodIds: foods,
-          conditionKey: condition,
+          walkingCondition,
+          conditionKey: 'summer',
         };
 
         const existingIndex = history.findIndex((l) => l.date === today);
@@ -84,14 +84,14 @@ export const useBoneStore = create<BoneState>()(
           newHistory[existingIndex] = newLog;
           set({ history: newHistory });
         } else {
-          set({ history: [newLog, ...history] }); 
+          set({ history: [newLog, ...history] });
         }
       },
 
       resetStore: () => set({ profile: null, history: [], isFirstLaunch: true }),
     }),
     {
-      name: 'bonetrack-storage-v2', 
+      name: 'bonetrack-storage-v2',
       storage: createJSONStorage(() => AsyncStorage),
       onRehydrateStorage: (state) => {
         return () => state?.setHasHydrated(true);

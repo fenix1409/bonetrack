@@ -4,9 +4,8 @@ import { SuccessModal } from '@/components/ui/SuccessModal';
 import Colors from '@/constants/Colors';
 import { useBoneStore } from '@/store/useBoneStore';
 import { StepsInput } from '@/components/input/StepsInput';
-import { ConditionPicker } from '@/components/input/ConditionPicker';
+import { WalkingConditionPicker, type WalkingCondition } from '@/components/input/WalkingConditionPicker';
 import { FoodSelector } from '@/components/input/FoodSelector';
-import { CONDITIONS } from '@/utils/calculations';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -17,13 +16,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 type InputFormData = {
     steps: string;
     foods: string[];
-    condition: keyof typeof CONDITIONS;
+    condition: WalkingCondition;
 };
 
-const toConditionKey = (value: string | undefined): keyof typeof CONDITIONS =>
-    value && Object.prototype.hasOwnProperty.call(CONDITIONS, value)
-        ? value as keyof typeof CONDITIONS
-        : 'summer';
+const DEFAULT_WALKING_CONDITION: WalkingCondition = {
+    season: 'spring_summer',
+    timeOfDay: 'morning',
+    frequency: 'always',
+};
 
 export default function InputScreen() {
     const colorScheme = useColorScheme() ?? 'light';
@@ -44,7 +44,7 @@ export default function InputScreen() {
         defaultValues: {
             steps: existingLog?.steps.toString() ?? '',
             foods: existingLog?.selectedFoodIds ?? [],
-            condition: toConditionKey(existingLog?.conditionKey)
+            condition: DEFAULT_WALKING_CONDITION
         }
     });
 
@@ -58,9 +58,8 @@ export default function InputScreen() {
         setValue('foods', next, { shouldDirty: true });
     }, [selectedFoods, setValue]);
 
-    const handleConditionChange = useCallback((key: string) => {
-        if (!Object.prototype.hasOwnProperty.call(CONDITIONS, key)) return;
-        setValue('condition', key as keyof typeof CONDITIONS, { shouldDirty: true });
+    const handleConditionChange = useCallback((newCondition: WalkingCondition) => {
+        setValue('condition', newCondition, { shouldDirty: true });
     }, [setValue]);
 
     const onSubmit = useCallback(async (data: InputFormData) => {
@@ -72,7 +71,7 @@ export default function InputScreen() {
         addDailyLog({
             steps,
             foods: data.foods,
-            condition: data.condition
+            walkingCondition: data.condition
         });
         setShowSuccess(true);
     }, [addDailyLog]);
@@ -109,7 +108,7 @@ export default function InputScreen() {
                 </View>
 
                 <StepsInput control={control as any} errors={errors} theme={theme} />
-                <ConditionPicker value={condition} onChange={handleConditionChange} theme={theme} />
+                <WalkingConditionPicker value={condition} onChange={handleConditionChange} theme={theme} />
                 <FoodSelector selectedFoods={selectedFoods} onToggle={toggleFood} theme={theme} />
 
                 <Button

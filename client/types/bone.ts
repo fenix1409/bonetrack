@@ -11,7 +11,7 @@ export interface NutritionChoice {
 }
 
 export interface DailyLog {
-  date: string; // Year-Month-Dayy
+  date: string; // Year-Month-Day
   stzi: number;
   bmiScore: number;
   foodScore: number;
@@ -19,5 +19,6 @@ export interface DailyLog {
   conditionScore: number;
   steps: number;
   selectedFoodIds?: string[];
+  walkingCondition?: any; // WalkingCondition type
   conditionKey?: string;
 }

@@ -55,7 +55,7 @@ export default function TipsScreen() {
   useEffect(() => { if (aiInput) loadAdvice(aiInput); }, [aiInput]); // eslint-disable-line
 
   useEffect(() => {
-    Animated.timing(aiEntrance, { toValue: advice || aiLoading ? 1 : 0, duration: 360, useNativeDriver: true }).start();
+    Animated.timing(aiEntrance, { toValue: advice || aiLoading || !!aiError ? 1 : 0, duration: 360, useNativeDriver: true }).start();
   }, [advice, aiEntrance, aiLoading]);
 
   const onRefresh = useCallback(() => {
