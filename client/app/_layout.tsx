@@ -42,7 +42,7 @@ export default function RootLayout() {
   }, [_hasHydrated, isFirstLaunch, profile, router, segments, isReady]);
 
   if (!isReady || !_hasHydrated) {
-    return <Loading message="Юкланмоқда..." />;
+    return <Loading onFinish={() => {}} />;
   }
 
   const initialRouteName = isFirstLaunch ? "onboarding" : "(tabs)";
