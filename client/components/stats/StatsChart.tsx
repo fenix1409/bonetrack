@@ -2,32 +2,30 @@ import React from 'react';
 import { StyleSheet, Text, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { Card } from '@/components/ui/Card';
-import { DailyLog } from '@/types/bone';
 import Colors from '@/constants/Colors';
+import type { ChartDataPoint } from '@/utils/statistics';
 
 const { width } = Dimensions.get('window');
 const CHART_W = width - 72;
 
 interface StatsChartProps {
-  logs: DailyLog[];
+  points: ChartDataPoint[];
   theme: typeof Colors['light'];
   colorScheme: 'light' | 'dark';
 }
 
-export const StatsChart = React.memo(({ logs, theme, colorScheme }: StatsChartProps) => {
-  const chartLogs = logs.slice(-7).sort((a, b) => a.date.localeCompare(b.date));
-  
+export const StatsChart = React.memo(({ points, theme, colorScheme }: StatsChartProps) => {
   const chartData = {
-    labels: chartLogs.length > 0 ? chartLogs.map(l => l.date.substring(8)) : ['-'],
-    datasets: [{ 
-      data: chartLogs.length > 0 ? chartLogs.map(l => l.stzi ?? 0) : [0], 
-      strokeWidth: 3 
+    labels: points.length > 0 ? points.map((point) => point.label) : ['-'],
+    datasets: [{
+      data: points.length > 0 ? points.map((point) => point.value) : [0],
+      strokeWidth: 3,
     }],
   };
 
   return (
     <Card style={styles.chartCard}>
-      <Text style={[styles.sectionTitle, { color: theme.text }]}>Сўнги 7 кун</Text>
+      <Text style={[styles.sectionTitle, { color: theme.text }]}>Сўнгги 7 кун</Text>
       <LineChart
         data={chartData}
         width={CHART_W}
@@ -50,6 +48,8 @@ export const StatsChart = React.memo(({ logs, theme, colorScheme }: StatsChartPr
     </Card>
   );
 });
+
+StatsChart.displayName = 'StatsChart';
 
 const styles = StyleSheet.create({
   chartCard: { marginBottom: 24, padding: 20 },

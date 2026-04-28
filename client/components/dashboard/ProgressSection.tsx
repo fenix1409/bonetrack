@@ -34,7 +34,7 @@ export const ProgressSection = React.memo(({
           />
           <View style={styles.ringOverlay}>
             <Text style={[styles.stziVal, { color: status.color }]}>{(stziValue ?? 0).toFixed(1)}</Text>
-            <Text style={[styles.stziLabel, { color: textColorMuted }]}>СТЗИ</Text>
+            <Text style={[styles.stziLabel, { color: textColorMuted }]}>STZI</Text>
           </View>
         </View>
 
@@ -53,14 +53,14 @@ export const ProgressSection = React.memo(({
               <View style={styles.criticalHeader}>
                 <MaterialCommunityIcons name="alert-decagram" size={24} color={status.color} />
                 <Text style={[styles.criticalWarningText, { color: status.color }]}>
-                  КРИТИК ҲОЛАТ: СТЗИ кўрсаткичи жуда паст!
+                  КРИТИК ҲОЛАТ: STZI кўрсаткичи жуда паст!
                 </Text>
               </View>
             </View>
           )}
           {stziValue > 0 && stziValue <= 0.5 && (
             <Text style={[styles.lowStziWarning, { color: status.color }]}>
-              * Носоғлом турмуш тарзи СТЗИни пасайтирмоқда
+              * Носоғлом турмуш тарзи STZI кўрсаткичини пасайтирмоқда
             </Text>
           )}
         </View>
@@ -68,6 +68,8 @@ export const ProgressSection = React.memo(({
     </Card>
   );
 });
+
+ProgressSection.displayName = 'ProgressSection';
 
 const styles = StyleSheet.create({
   mainCard: { marginBottom: 24, paddingVertical: 24 },

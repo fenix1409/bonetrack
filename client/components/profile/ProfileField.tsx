@@ -1,18 +1,21 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Controller, Control } from 'react-hook-form';
+import { Controller, Control, FieldErrors } from 'react-hook-form';
 import { UserProfile } from '@/types/bone';
+import type { Theme } from '@/constants/Colors';
+
+type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 interface ProfileFieldProps {
   label: string;
   unit: string;
   placeholder: string;
-  icon: string;
+  icon: IconName;
   name: keyof UserProfile;
   control: Control<UserProfile>;
-  errors: any;
-  theme: any;
+  errors: FieldErrors<UserProfile>;
+  theme: Theme;
   min: number;
   max: number;
 }
@@ -32,7 +35,7 @@ export const ProfileField = React.memo(({
   return (
     <View style={styles.fieldWrap}>
       <View style={styles.titleRow}>
-        <MaterialCommunityIcons name={icon as any} size={22} color={theme.primary} />
+        <MaterialCommunityIcons name={icon} size={22} color={theme.primary} />
         <Text style={[styles.label, { color: theme.text }]}>{label}</Text>
       </View>
       <Controller
@@ -63,6 +66,8 @@ export const ProfileField = React.memo(({
     </View>
   );
 });
+
+ProfileField.displayName = 'ProfileField';
 
 const styles = StyleSheet.create({
   fieldWrap: { marginBottom: 20 },

@@ -4,10 +4,11 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Controller, Control } from 'react-hook-form';
 import { Button } from '@/components/ui/Button';
 import { UserProfile } from '@/types/bone';
+import type { Theme } from '@/constants/Colors';
 
 interface GenderPickerProps {
   control: Control<UserProfile>;
-  theme: any;
+  theme: Theme;
 }
 
 export const GenderPicker = React.memo(({ control, theme }: GenderPickerProps) => {
@@ -40,6 +41,8 @@ export const GenderPicker = React.memo(({ control, theme }: GenderPickerProps) =
     </View>
   );
 });
+
+GenderPicker.displayName = 'GenderPicker';
 
 const styles = StyleSheet.create({
   fieldWrap: { marginBottom: 20 },

@@ -4,7 +4,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { FOOD_LABELS } from '@/constants/data';
-import { FOOD_ITEMS } from '@/utils/calculations';
+import { FOOD_ITEMS, type FoodItemId } from '@/utils/calculations';
 import { Theme } from '@/constants/Colors';
 
 interface FoodSelectorProps {
@@ -14,10 +14,10 @@ interface FoodSelectorProps {
 }
 
 const FoodGroup = React.memo(({
-  title, items, selectedFoods, onToggle, theme, config
+  title, items, selectedFoods, onToggle, theme, config,
 }: {
   title: string;
-  items: [string, any][];
+  items: [FoodItemId, typeof FOOD_ITEMS[FoodItemId]][];
   selectedFoods: string[];
   onToggle: (id: string) => void;
   theme: Theme;
@@ -41,12 +41,12 @@ const FoodGroup = React.memo(({
             style={[
               styles.foodChip,
               { backgroundColor: isSelected ? config.selectedBg : config.chipBg },
-              isSelected && styles.foodChipActive
+              isSelected && styles.foodChipActive,
             ]}
-            textStyle={{ 
-              color: isSelected ? config.selectedText : config.chipText, 
+            textStyle={{
+              color: isSelected ? config.selectedText : config.chipText,
               fontSize: 13,
-              fontWeight: isSelected ? '700' : '600'
+              fontWeight: isSelected ? '700' : '600',
             }}
           />
         );
@@ -55,13 +55,15 @@ const FoodGroup = React.memo(({
   </View>
 ));
 
+FoodGroup.displayName = 'FoodGroup';
+
 export const FoodSelector = React.memo(({ selectedFoods, onToggle, theme }: FoodSelectorProps) => {
   const groupedFoods = useMemo(() => {
-    const entries = Object.entries(FOOD_ITEMS);
+    const entries = Object.entries(FOOD_ITEMS) as [FoodItemId, typeof FOOD_ITEMS[FoodItemId]][];
     return {
-      good: entries.filter(([, v]) => v.category === 'good'),
-      medium: entries.filter(([, v]) => v.category === 'medium'),
-      harmful: entries.filter(([, v]) => v.category === 'harmful'),
+      good: entries.filter(([, value]) => value.category === 'good'),
+      medium: entries.filter(([, value]) => value.category === 'medium'),
+      harmful: entries.filter(([, value]) => value.category === 'harmful'),
     };
   }, []);
 
@@ -74,8 +76,8 @@ export const FoodSelector = React.memo(({ selectedFoods, onToggle, theme }: Food
         <Text style={[styles.cardTitle, { color: theme.text }]}>Бугунги овқатланиш</Text>
       </View>
 
-      <FoodGroup 
-        title="Фойдали" 
+      <FoodGroup
+        title="Фойдали"
         items={groupedFoods.good}
         selectedFoods={selectedFoods}
         onToggle={onToggle}
@@ -84,12 +86,12 @@ export const FoodSelector = React.memo(({ selectedFoods, onToggle, theme }: Food
           chipBg: theme.goodChip,
           chipText: theme.goodChipText,
           selectedBg: theme.excellent,
-          selectedText: '#fff'
+          selectedText: '#fff',
         }}
       />
-      
-      <FoodGroup 
-        title="Ўртача" 
+
+      <FoodGroup
+        title="Ўртача"
         items={groupedFoods.medium}
         selectedFoods={selectedFoods}
         onToggle={onToggle}
@@ -98,12 +100,12 @@ export const FoodSelector = React.memo(({ selectedFoods, onToggle, theme }: Food
           chipBg: theme.mediumChip,
           chipText: theme.mediumChipText,
           selectedBg: theme.medium,
-          selectedText: '#fff'
+          selectedText: '#fff',
         }}
       />
 
-      <FoodGroup 
-        title="Зарарли" 
+      <FoodGroup
+        title="Зарарли"
         items={groupedFoods.harmful}
         selectedFoods={selectedFoods}
         onToggle={onToggle}
@@ -112,12 +114,14 @@ export const FoodSelector = React.memo(({ selectedFoods, onToggle, theme }: Food
           chipBg: theme.harmfulChip,
           chipText: theme.harmfulChipText,
           selectedBg: theme.low,
-          selectedText: '#fff'
+          selectedText: '#fff',
         }}
       />
     </Card>
   );
 });
+
+FoodSelector.displayName = 'FoodSelector';
 
 const styles = StyleSheet.create({
   card: { marginBottom: 20, borderRadius: 24 },

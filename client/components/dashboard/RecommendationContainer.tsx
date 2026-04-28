@@ -5,6 +5,8 @@ import { Card } from '@/components/ui/Card';
 import { Recommendation, RecommendationType } from '@/utils/calculations';
 import Colors from '@/constants/Colors';
 
+type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+
 interface RecommendationGroupProps {
   type: RecommendationType;
   items: string[];
@@ -26,7 +28,7 @@ const RecommendationGroup = ({ type, items, theme, index }: RecommendationGroupP
 
   if (items.length === 0) return null;
 
-  const getConfig = () => {
+  const getConfig = (): { icon: IconName; title: string; bg: string; color: string } => {
     switch (type) {
       case 'critical':
         return {
@@ -60,7 +62,7 @@ const RecommendationGroup = ({ type, items, theme, index }: RecommendationGroupP
       { backgroundColor: config.bg, opacity: fadeAnim }
     ]}>
       <View style={styles.groupHeader}>
-        <MaterialCommunityIcons name={config.icon as any} size={22} color={config.color} />
+        <MaterialCommunityIcons name={config.icon} size={22} color={config.color} />
         <Text style={[styles.groupTitle, { color: config.color }]}>{config.title}</Text>
       </View>
       <View style={styles.itemsList}>
@@ -115,6 +117,8 @@ export const RecommendationContainer = React.memo(({ recommendations, theme }: R
     </Card>
   );
 });
+
+RecommendationContainer.displayName = 'RecommendationContainer';
 
 const styles = StyleSheet.create({
   mainCard: {

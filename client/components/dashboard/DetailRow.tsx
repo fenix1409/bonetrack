@@ -18,6 +18,8 @@ export const DetailRow = React.memo(({ label, score, accent, textColor, border }
   </View>
 ));
 
+DetailRow.displayName = 'DetailRow';
+
 const styles = StyleSheet.create({
   rowWrap: { 
     flexDirection: 'row', 

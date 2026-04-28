@@ -1,11 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { Theme } from '@/constants/Colors';
 
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
-  theme: any;
+  theme: Theme;
   rightElement?: React.ReactNode;
   style?: ViewStyle;
 }

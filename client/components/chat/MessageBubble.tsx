@@ -2,10 +2,11 @@ import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { Message } from '@/hooks/useChat';
+import type { Theme } from '@/constants/Colors';
 
 interface Props {
   item: Message;
-  colors: any;
+  colors: Theme;
 }
 
 export const MessageBubble = memo(({ item, colors: c }: Props) => {

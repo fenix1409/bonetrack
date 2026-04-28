@@ -5,6 +5,8 @@ import { Card } from '@/components/ui/Card';
 
 import { RecommendationType } from '@/utils/calculations';
 
+type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+
 interface RecommendationCardProps {
   recommendation: string;
   type?: RecommendationType;
@@ -20,7 +22,7 @@ export const RecommendationCard = React.memo(({
   statusBg,
   textColor,
 }: RecommendationCardProps) => {
-  const getIcon = () => {
+  const getIcon = (): IconName => {
     switch (type) {
       case 'critical': return 'alert-decagram';
       case 'warning': return 'alert-circle';
@@ -50,7 +52,7 @@ export const RecommendationCard = React.memo(({
     <Card style={[styles.recCard, { borderLeftColor: colors.main, backgroundColor: colors.bg }]}>
       <View style={styles.recHeader}>
         <View style={[styles.recIconWrap, { backgroundColor: colors.main + '20' }]}>
-          <MaterialCommunityIcons name={getIcon() as any} size={24} color={colors.main} />
+          <MaterialCommunityIcons name={getIcon()} size={24} color={colors.main} />
         </View>
         <Text style={[styles.recTitle, { color: colors.main }]}>{getLabel()}</Text>
       </View>
@@ -60,6 +62,8 @@ export const RecommendationCard = React.memo(({
     </Card>
   );
 });
+
+RecommendationCard.displayName = 'RecommendationCard';
 
 const styles = StyleSheet.create({
   recCard: { padding: 20, borderRadius: 24, marginBottom: 20, borderLeftWidth: 5 },

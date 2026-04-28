@@ -12,7 +12,7 @@ interface LogCardProps {
 
 export const LogCard = React.memo(({ log, theme }: LogCardProps) => {
   const status = getStatusColors(log.stzi, theme);
-  
+
   return (
     <Card style={[styles.wrap, { borderLeftColor: status.color }]}>
       <View style={{ flex: 1 }}>
@@ -29,12 +29,14 @@ export const LogCard = React.memo(({ log, theme }: LogCardProps) => {
   );
 });
 
+LogCard.displayName = 'LogCard';
+
 const styles = StyleSheet.create({
   wrap: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    padding: 16, 
-    marginBottom: 12, 
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    marginBottom: 12,
     borderLeftWidth: 4,
   },
   date: { fontSize: 13, fontWeight: '600', marginBottom: 4 },

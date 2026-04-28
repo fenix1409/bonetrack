@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import type { Theme } from '@/constants/Colors';
 
 interface MedicalDisclaimerProps {
-    theme: any;
+    theme: Theme;
 }
 
 export const MedicalDisclaimer = React.memo(({ theme }: MedicalDisclaimerProps) => {
@@ -13,11 +14,13 @@ export const MedicalDisclaimer = React.memo(({ theme }: MedicalDisclaimerProps) 
                 <MaterialCommunityIcons name="alert-decagram-outline" size={20} color={theme.primary} />
             </View>
             <Text style={[styles.text, { color: theme.textMuted }]}>
-                Бу тиббий қурилма эмас, факат шифокор маслаҳати учун қўшимча малумот берувчи ёрдамчи восита бўлиб, фақатгина шифокор назорати остида ўтказилиши мумкин
+                Бу тиббий қурилма эмас. У шифокор маслаҳатига қўшимча маълумот берувчи ёрдамчи восита сифатида ишлатилади.
             </Text>
         </View>
     );
 });
+
+MedicalDisclaimer.displayName = 'MedicalDisclaimer';
 
 const styles = StyleSheet.create({
     container: {

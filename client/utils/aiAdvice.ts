@@ -62,18 +62,18 @@ export async function getAIAdvice(data: AIAdviceInput, signal: AbortSignal): Pro
     }
 
     if (!isAdviceResponse(json)) {
-      throw new Error('Нотўғри AI маслахати жавоб.');
+      throw new Error('Нотўғри AI маслаҳати жавоби.');
     }
 
     return json;
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('AI маслахати сўровида жуда ўзун вақт олди. Қайта уринг.');
+      throw new Error('AI маслаҳати сўрови жуда узоқ вақт олди. Қайта уриннг.');
     }
 
     throw error instanceof Error
       ? error
-      : new Error('AI маслахатини юклаб бўлмади. Қайта уринг.');
+      : new Error('AI маслаҳатини юклаб бўлмади. Қайта уриннг.');
   } finally {
     clearTimeout(timeout);
   }

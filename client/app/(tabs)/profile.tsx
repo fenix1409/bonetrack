@@ -16,12 +16,14 @@ import { ProfileField } from '@/components/profile/ProfileField';
 import { GenderPicker } from '@/components/profile/GenderPicker';
 import { BMIInsight } from '@/components/profile/BMIInsight';
 
+type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+
 interface Field {
     key: keyof Omit<UserProfile, 'gender'>;
     label: string;
     placeholder: string;
     unit: string;
-    icon: string;
+    icon: IconName;
     min: number;
     max: number;
 }
@@ -62,7 +64,7 @@ export default function ProfileScreen() {
         const score = getBMIScore(bmi);
 
         let label = { text: 'Нормал (меъёрий вазн)', color: c.excellent, bg: c.excellentBg };
-        if (bmi < 18.5) label = { text: 'Вазн меёридан паст', color: c.medium, bg: c.mediumBg };
+        if (bmi < 18.5) label = { text: 'Вазн меъёридан паст', color: c.medium, bg: c.mediumBg };
         else if (bmi <= 25) label = { text: 'Нормал (меъёрий вазн)', color: c.excellent, bg: c.excellentBg };
         else if (bmi <= 30) label = { text: 'Ортиқча вазн', color: c.medium, bg: c.mediumBg };
         else label = { text: 'Семизлик', color: c.low, bg: c.lowBg };
@@ -93,7 +95,7 @@ export default function ProfileScreen() {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={[styles.header, { paddingBottom: 0 }]}>
-                    <Text style={[styles.mainTitle, { color: c.text }]}>Профиль</Text>
+                    <Text style={[styles.mainTitle, { color: c.text }]}>Профил</Text>
                     <Text style={[styles.subTitle, { color: c.textMuted }]}>Маълумотларингизни бошқаринг</Text>
                 </View>
 
@@ -105,7 +107,7 @@ export default function ProfileScreen() {
                         {profile ? 'Фойдаланувчи' : 'Янги фойдаланувчи'}
                     </Text>
                     <Text style={[styles.heroSub, { color: c.textMuted }]}>
-                        СТЗИ аниқлиги учун маълумотларингизни киритинг
+                        STZI аниқлиги учун маълумотларингизни киритинг
                     </Text>
                 </Card>
 

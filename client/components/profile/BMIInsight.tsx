@@ -30,12 +30,14 @@ export const BMIInsight = React.memo(({ bmiInfo }: BMIInsightProps) => {
       </View>
       {bmiInfo.score === 0 && (
         <Text style={[styles.warningText, { color: bmiInfo.label.color }]}>
-          * Вазнингиз меъёрда эмаслиги СТЗИ пасайишига сабаб бўлади.
+          * Вазнингиз меъёрда эмаслиги STZI пасайишига сабаб бўлади.
         </Text>
       )}
     </Card>
   );
 });
+
+BMIInsight.displayName = 'BMIInsight';
 
 const styles = StyleSheet.create({
   bmiCard: { padding: 16, marginBottom: 24, borderRadius: 16 },

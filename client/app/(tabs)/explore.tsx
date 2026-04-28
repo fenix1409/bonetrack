@@ -43,8 +43,13 @@ export default function TipsScreen() {
   const latestLog = useMemo(() => history[0], [history]);
   const bmi = useMemo(() => {
     if (!profile) return null;
-    try { const r = calculateBMI(profile.weight, profile.height); return Number.isFinite(r) ? r : null; }
-    catch { return null; }
+
+    try {
+      const result = calculateBMI(profile.weight, profile.height);
+      return Number.isFinite(result) ? result : null;
+    } catch {
+      return null;
+    }
   }, [profile]);
 
   const aiInput = useMemo(() => {
@@ -52,11 +57,17 @@ export default function TipsScreen() {
     return { steps: latestLog.steps ?? 0, foodScore: latestLog.foodScore ?? 0, bmi, stzi: latestLog.stzi ?? 0 };
   }, [bmi, latestLog, profile]);
 
-  useEffect(() => { if (aiInput) loadAdvice(aiInput); }, [aiInput]); // eslint-disable-line
+  useEffect(() => {
+    if (aiInput) loadAdvice(aiInput);
+  }, [aiInput]); 
 
   useEffect(() => {
-    Animated.timing(aiEntrance, { toValue: advice || aiLoading || !!aiError ? 1 : 0, duration: 360, useNativeDriver: true }).start();
-  }, [advice, aiEntrance, aiLoading]);
+    Animated.timing(aiEntrance, {
+      toValue: advice || aiLoading || !!aiError ? 1 : 0,
+      duration: 360,
+      useNativeDriver: true,
+    }).start();
+  }, [advice, aiEntrance, aiError, aiLoading]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -64,41 +75,80 @@ export default function TipsScreen() {
     else setRefreshing(false);
   }, [aiInput, loadAdvice]);
 
-  const handleRetry = useCallback(() => { if (aiInput) loadAdvice(aiInput); }, [aiInput, loadAdvice]);
+  const handleRetry = useCallback(() => {
+    if (aiInput) loadAdvice(aiInput);
+  }, [aiInput, loadAdvice]);
 
   const personalizedTips = useMemo(() => {
     if (!profile || bmi == null) return [];
     const out: Tip[] = [];
 
-    if (bmi < 18.5) out.push({ icon: 'silverware-variant', title: 'Вазн ва овқатланиш', tag: 'Диққат', category: 'lifestyle', body: 'Сизнинг вазнингиз меъёрдан паст. Бу суяк заифлигига олиб келиши мумкин. Оқсилга бой таомларни кўпайтиринг.' });
+    if (bmi < 18.5) {
+      out.push({
+        icon: 'silverware-variant',
+        title: 'Вазн ва овқатланиш',
+        tag: 'Диққат',
+        category: 'lifestyle',
+        body: 'Вазнингиз меъёрдан паст. Бу суяк заифлигига олиб келиши мумкин. Оқсилга бой таомларни кўпайтиринг.',
+      });
+    }
 
     if (latestLog?.steps != null && latestLog.steps < 3000) {
-      const t = TIPS_BY_CATEGORY.get('activity'); if (t) out.push(t);
+      const tip = TIPS_BY_CATEGORY.get('activity');
+      if (tip) out.push(tip);
     }
 
     const ids = latestLog?.selectedFoodIds ?? [];
-    if (!ids.some(id => CALCIUM_IDS.includes(id))) { const t = TIPS_BY_CATEGORY.get('calcium'); if (t) out.push(t); }
-    if (!ids.some(id => VITAMIN_D_IDS.includes(id))) { const t = TIPS_BY_CATEGORY.get('vitamin_d'); if (t) out.push(t); }
-    if (ids.some(id => HARMFUL_IDS.includes(id)) && LIFESTYLE_HAZARD_TIP) out.push(LIFESTYLE_HAZARD_TIP);
+    if (!ids.some((id) => CALCIUM_IDS.includes(id))) {
+      const tip = TIPS_BY_CATEGORY.get('calcium');
+      if (tip) out.push(tip);
+    }
+    if (!ids.some((id) => VITAMIN_D_IDS.includes(id))) {
+      const tip = TIPS_BY_CATEGORY.get('vitamin_d');
+      if (tip) out.push(tip);
+    }
+    if (ids.some((id) => HARMFUL_IDS.includes(id)) && LIFESTYLE_HAZARD_TIP) {
+      out.push(LIFESTYLE_HAZARD_TIP);
+    }
 
-    if (profile.gender === 'female' && profile.age >= 45) out.push({ icon: 'fountain-pen-tip', title: 'Аёллар саломатлиги', tag: 'Муҳим', category: 'lifestyle', body: 'Менопауза даврида суяк зичлиги тез камайиши мумкин. Кальций ва мунтазам машқларга кўпроқ эътибор беринг.' });
+    if (profile.gender === 'female' && profile.age >= 45) {
+      out.push({
+        icon: 'fountain-pen-tip',
+        title: 'Аёллар саломатлиги',
+        tag: 'Муҳим',
+        category: 'lifestyle',
+        body: 'Менопауза даврида суяк зичлиги тез камайиши мумкин. Кальций ва мунтазам машқларга кўпроқ эътибор беринг.',
+      });
+    }
 
-    return Array.from(new Map(out.map(t => [t.title, t])).values());
+    return Array.from(new Map(out.map((tip) => [tip.title, tip])).values());
   }, [profile, latestLog, bmi]);
 
   return (
     <View style={[s.fill, { backgroundColor: c.background }]}>
       <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
-      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[c.primary]} tintColor={c.primary} />}>
-
+      <ScrollView
+        contentContainerStyle={s.scroll}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[c.primary]} tintColor={c.primary} />}
+      >
         <View style={[s.header, { paddingTop: Math.max(insets.top, 20) }]}>
           <Text style={[s.mainTitle, { color: c.text }]}>Маслаҳатлар</Text>
           <Text style={[s.subTitle, { color: c.textMuted }]}>Суяк саломатлиги учун тавсиялар</Text>
         </View>
 
-        <AISection aiInput={aiInput} advice={advice} loading={aiLoading} error={aiError} onRetry={handleRetry}
-          c={c} pulseOpacity={pulseOpacity} pulseScale={pulseScale} entranceOpacity={aiEntrance} entranceTranslate={entranceTranslate} />
+        <AISection
+          aiInput={aiInput}
+          advice={advice}
+          loading={aiLoading}
+          error={aiError}
+          onRetry={handleRetry}
+          c={c}
+          pulseOpacity={pulseOpacity}
+          pulseScale={pulseScale}
+          entranceOpacity={aiEntrance}
+          entranceTranslate={entranceTranslate}
+        />
 
         {personalizedTips.length > 0 && (
           <View style={s.section}>
@@ -106,7 +156,7 @@ export default function TipsScreen() {
               <MaterialCommunityIcons name="star-face" size={24} color={c.primary} />
               <Text style={[s.sectionTitle, { color: c.text }]}>Сиз учун шахсий</Text>
             </View>
-            {personalizedTips.map(tip => <TipCard key={tip.title} tip={tip} c={c} />)}
+            {personalizedTips.map((tip) => <TipCard key={tip.title} tip={tip} c={c} />)}
           </View>
         )}
 
@@ -115,7 +165,7 @@ export default function TipsScreen() {
             <MaterialCommunityIcons name="format-list-bulleted" size={24} color={c.textMuted} />
             <Text style={[s.sectionTitle, { color: c.text }]}>Умумий тавсиялар</Text>
           </View>
-          {TIPS.map(tip => <TipCard key={tip.title} tip={tip} c={c} />)}
+          {TIPS.map((tip) => <TipCard key={tip.title} tip={tip} c={c} />)}
         </View>
 
         <View style={{ height: 100 }} />

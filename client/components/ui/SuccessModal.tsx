@@ -14,8 +14,8 @@ interface SuccessModalProps {
 export function SuccessModal({ 
     visible, 
     onClose, 
-    title = 'Сақланди', 
-    message = 'Маълумотлар муваффақиятли сақланди!' 
+    title = 'Сақланди',
+    message = 'Маълумотлар муваффақиятли сақланди!'
 }: SuccessModalProps) {
     const colorScheme = useColorScheme() ?? 'light';
     const c = Colors[colorScheme];
@@ -70,7 +70,7 @@ export function SuccessModal({
                     <Text style={[styles.message, { color: c.textMuted }]}>{message}</Text>
                     
                     <Button 
-                        title="Ёпиш" 
+                        title="Ёпиш"
                         onPress={onClose} 
                         style={styles.button}
                         size="large"

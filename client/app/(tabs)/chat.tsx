@@ -44,7 +44,7 @@ export default function ChatScreen() {
         <View style={styles.header}>
           <Text style={[styles.headerTitle, { color: c.text }]}>BoneTrack AI</Text>
           <Text style={[styles.headerSubtitle, { color: c.textMuted }]}>
-            Сўровларингизга тез ва фойдали жавоб
+            Саволларингизга тез ва фойдали жавоб
           </Text>
           <View style={styles.headerStatus}>
             <View style={[styles.onlineDot, { backgroundColor: c.primary }]} />
@@ -67,7 +67,7 @@ export default function ChatScreen() {
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="small" color={c.primary} />
             <Text style={[styles.loadingText, { color: c.textMuted }]}>
-              Бот жавоб қайтамоқда...
+              Бот жавоб қайтармоқда...
             </Text>
           </View>
         )}

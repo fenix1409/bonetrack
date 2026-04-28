@@ -16,7 +16,7 @@ export const TipCard = memo(({ tip, c }: Props) => {
     <Card style={[s.card, tip.warning && { backgroundColor: c.lowBg + '33', borderColor: c.low + '44', borderWidth: 1 }]}>
       <View style={s.row}>
         <View style={[s.icon, { backgroundColor: bg }]}>
-          <MaterialCommunityIcons name={tip.icon as any} size={32} color={color} />
+          <MaterialCommunityIcons name={tip.icon} size={32} color={color} />
         </View>
         <View style={{ flex: 1 }}>
           <Text style={[s.title, { color: c.text }]}>{tip.title}</Text>

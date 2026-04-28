@@ -79,7 +79,7 @@ export default function DashboardScreen() {
           <MaterialCommunityIcons name="calendar-today" size={64} color={c.primary} style={{ marginBottom: 20 }} />
           <Text style={[styles.emptyTitle, { color: c.text }]}>Бугунги маълумотлар йўқ</Text>
           <Text style={[styles.emptyBody, { color: c.textMuted }]}>
-            Бугунги кўрсаткичларни кўриш учун аввал маълумотларни киритинг. Акс ҳолда, СТЗИ хавфли даражада бўлиши мумкин.
+            Бугунги кўрсаткичларни кўриш учун аввал маълумотларни киритинг.
           </Text>
           <Button
             title="Маълумотларни киритиш"
@@ -103,7 +103,7 @@ export default function DashboardScreen() {
         <View style={styles.header}>
           <View>
             <Text style={[styles.welcome, { color: c.textMuted }]}>Хайрли кун!</Text>
-            <Text style={[styles.title, { color: c.text }]}>Суяк Саломатлиги</Text>
+            <Text style={[styles.title, { color: c.text }]}>Суяк саломатлиги</Text>
           </View>
           <View style={[styles.iconBtn, { backgroundColor: c.card }]}>
             <MaterialCommunityIcons name="bell-outline" size={24} color={c.text} />
@@ -121,8 +121,8 @@ export default function DashboardScreen() {
         <Card style={styles.detailCard}>
           <DetailRow label="Қадамлар" score={`${todayLog?.steps ?? 0} та`} accent={c.primary} textColor={c.text} border={c.border} />
           <DetailRow label="Масофа" score={`${(stepsToKm(todayLog?.steps ?? 0) ?? 0).toFixed(2)} км`} accent="#10B981" textColor={c.text} border={c.border} />
-          <DetailRow label="Овқатланиш бали" score={todayLog?.foodScore ?? 0} accent="#F59E0B" textColor={c.text} border={c.border} />
-          <DetailRow label="BMI бали" score={todayLog?.bmiScore ?? 0} accent="#8B5CF6" textColor={c.text} border="transparent" />
+          <DetailRow label="Овқатланиш балли" score={todayLog?.foodScore ?? 0} accent="#F59E0B" textColor={c.text} border={c.border} />
+          <DetailRow label="BMI балли" score={todayLog?.bmiScore ?? 0} accent="#8B5CF6" textColor={c.text} border="transparent" />
         </Card>
 
         <Text style={[styles.sectionTitle, { color: c.text }]}>Тавсиялар</Text>

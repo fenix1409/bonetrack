@@ -5,7 +5,9 @@ import {
   Text, 
   TouchableOpacityProps, 
   ActivityIndicator,
-  useColorScheme 
+  useColorScheme,
+  StyleProp,
+  TextStyle
 } from 'react-native';
 import Colors from '../../constants/Colors';
 
@@ -17,7 +19,7 @@ interface ButtonProps extends TouchableOpacityProps {
   variant?: 'primary' | 'secondary' | 'ghost' | 'outline' | 'danger';
   size?: 'small' | 'medium' | 'large';
   loading?: boolean;
-  textStyle?: any;
+  textStyle?: StyleProp<TextStyle>;
 }
 
 export function Button({ 
