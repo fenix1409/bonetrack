@@ -1,12 +1,8 @@
 import Colors from '@/constants/Colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useState, useRef, useCallback } from 'react';
-import {
-  StyleSheet, View, Text, TextInput, TouchableOpacity,
-  FlatList, KeyboardAvoidingView, Platform, ActivityIndicator,
-  SafeAreaView, StatusBar, useColorScheme,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform, ActivityIndicator, StatusBar, useColorScheme, } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useChat, type Message } from '@/hooks/useChat';
 import { MessageBubble } from '@/components/chat/MessageBubble';
 
@@ -37,7 +33,7 @@ export default function ChatScreen() {
   }, []);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: c.background }, {marginTop: insets.top}]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: c.background }, { marginTop: insets.top }]}>
       <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
       <View style={{ flex: 1, paddingTop: Math.max(insets.top, 20) }}>
 

@@ -23,7 +23,7 @@ export const aiRateLimit = (req: Request, res: Response, next: NextFunction) => 
    }
 
    if (bucket.count >= MAX_REQUESTS) {
-      res.status(429).json({ error: 'Too many requests. Please try again later.' });
+      res.status(429).json({ error: 'Juda ko`p urinishlar. Keyinroq qayta urinib ko\'ring.' });
       return;
    }
 

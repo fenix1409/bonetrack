@@ -21,7 +21,7 @@ export default function StatsScreen() {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1500);
+    setTimeout(() => setRefreshing(false), 800);
   }, []);
 
   return (

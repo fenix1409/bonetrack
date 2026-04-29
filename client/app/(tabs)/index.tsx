@@ -26,9 +26,9 @@ export default function DashboardScreen() {
   const { history, profile } = useBoneStore();
   const [refreshing, setRefreshing] = useState(false);
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
+    setTimeout(() => setRefreshing(false), 800);
   }, []);
 
   const todayLog = useMemo(() => {
@@ -42,7 +42,7 @@ export default function DashboardScreen() {
 
   const recommendations = useMemo<Recommendation[]>(() => {
     if (!profile || !todayLog) return [];
-    
+
     return getRecommendations({
       steps: todayLog.steps ?? 0,
       foodScore: todayLog.foodScore ?? 0,
@@ -126,9 +126,9 @@ export default function DashboardScreen() {
         </Card>
 
         <Text style={[styles.sectionTitle, { color: c.text }]}>Тавсиялар</Text>
-        <RecommendationContainer 
-          recommendations={recommendations} 
-          theme={c} 
+        <RecommendationContainer
+          recommendations={recommendations}
+          theme={c}
         />
         <MedicalDisclaimer theme={c} />
       </ScrollView>
