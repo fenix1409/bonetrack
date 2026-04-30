@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { UserProfile, DailyLog, WalkingCondition } from '../types/bone';
 import { buildDailyLog } from '../utils/stzi';
 import { sortLogsByDateDesc } from '../utils/statistics';
+import { Platform } from 'react-native';
 
 interface BoneState {
   profile: UserProfile | null;
@@ -20,6 +21,27 @@ interface BoneState {
 const getTodayDate = (): string => {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+};
+
+// Use appropriate storage based on platform
+const getStorage = () => {
+  if (Platform.OS === 'web') {
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      return createJSONStorage(() => ({
+        getItem: (key: string) => localStorage.getItem(key) ?? null,
+        setItem: (key: string, value: string) => localStorage.setItem(key, value),
+        removeItem: (key: string) => localStorage.removeItem(key),
+      }));
+    }
+    // Fallback for SSR/build time
+    return createJSONStorage(() => ({
+      getItem: () => null,
+      setItem: () => { },
+      removeItem: () => { },
+    }));
+  }
+  // Native platforms use AsyncStorage
+  return createJSONStorage(() => AsyncStorage);
 };
 
 export const useBoneStore = create<BoneState>()(
@@ -65,7 +87,7 @@ export const useBoneStore = create<BoneState>()(
     }),
     {
       name: 'bonetrack-storage-v2',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: getStorage(),
       onRehydrateStorage: (state) => {
         return () => state?.setHasHydrated(true);
       },

@@ -1,4 +1,3 @@
-// hooks/usePedometer.ts
 import { Pedometer } from 'expo-sensors';
 import { useEffect, useState } from 'react';
 
@@ -21,15 +20,13 @@ export function usePedometer(): PedometerState {
     let subscription: ReturnType<typeof Pedometer.watchStepCount> | null = null;
 
     const init = async () => {
-      // ✅ Expo Pedometer permission API
-      const { status } = await Pedometer.requestPermissionsAsync();
-
-      if (status !== 'granted') {
-        setState({ steps: null, available: false, loading: false, permissionDenied: true });
-        return;
-      }
-
       try {
+        const { status } = await Pedometer.requestPermissionsAsync();
+        if (status !== 'granted') {
+          setState({ steps: null, available: false, loading: false, permissionDenied: true });
+          return;
+        }
+
         const isAvailable = await Pedometer.isAvailableAsync();
         if (!isAvailable) {
           setState({ steps: null, available: false, loading: false, permissionDenied: false });
@@ -38,12 +35,17 @@ export function usePedometer(): PedometerState {
 
         const now = new Date();
         const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-        const result = await Pedometer.getStepCountAsync(startOfDay, now);
 
+        const result = await Pedometer.getStepCountAsync(startOfDay, now);
         setState({ steps: result.steps, available: true, loading: false, permissionDenied: false });
 
-        subscription = Pedometer.watchStepCount(update => {
-          setState(prev => ({ ...prev, steps: (prev.steps ?? 0) + update.steps }));
+        subscription = Pedometer.watchStepCount(async () => {
+          try {
+            const updated = new Date();
+            const fresh = await Pedometer.getStepCountAsync(startOfDay, updated);
+            setState(prev => ({ ...prev, steps: fresh.steps }));
+          } catch {
+          }
         });
       } catch {
         setState({ steps: null, available: false, loading: false, permissionDenied: false });

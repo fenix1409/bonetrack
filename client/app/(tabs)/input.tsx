@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { SuccessModal } from '@/components/ui/SuccessModal';
 import { StepsDisplay } from '@/components/input/StepsDisplay';
+import { StepsInput } from '@/components/input/StepsInput';
 import { WalkingConditionPicker } from '@/components/input/WalkingConditionPicker';
 import { FoodSelector } from '@/components/input/FoodSelector';
 import Colors from '@/constants/Colors';
@@ -17,6 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { WalkingCondition } from '@/types/bone';
 
 type InputFormData = {
+  steps: string;
   foods: string[];
   condition: WalkingCondition;
 };
@@ -49,6 +51,7 @@ export default function InputScreen() {
 
   const { control, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm<InputFormData>({
     defaultValues: {
+      steps: existingLog?.steps?.toString() ?? (steps?.toString() ?? ''),
       foods: existingLog?.selectedFoodIds ?? [],
       condition: DEFAULT_WALKING_CONDITION,
     },
@@ -56,6 +59,13 @@ export default function InputScreen() {
 
   const selectedFoods = watch('foods');
   const condition = watch('condition');
+  const formSteps = watch('steps');
+
+  useMemo(() => {
+    if (available && steps !== null && formSteps === '') {
+      setValue('steps', steps.toString(), { shouldDirty: false });
+    }
+  }, [available, steps, formSteps, setValue]);
 
   const toggleFood = useCallback((id: string) => {
     const next = selectedFoods.includes(id)
@@ -79,14 +89,14 @@ export default function InputScreen() {
   }, []);
 
   const onSubmit = useCallback(async (data: InputFormData) => {
-    const currentSteps = steps ?? 0;
-    const result = calculate(currentSteps, data.foods, data.condition);
+    const userSteps = Number.parseInt(data.steps, 10) || 0;
+    const result = calculate(userSteps, data.foods, data.condition);
     if (!result) return;
 
     await new Promise(resolve => setTimeout(resolve, 600));
-    addDailyLog({ steps: currentSteps, foods: data.foods, walkingCondition: data.condition });
+    addDailyLog({ steps: userSteps, foods: data.foods, walkingCondition: data.condition });
     setShowSuccess(true);
-  }, [addDailyLog, calculate, steps]);
+  }, [addDailyLog, calculate]);
 
   const handleSave = useCallback(() => {
     void handleSubmit(onSubmit, scrollToFirstError)();
@@ -125,6 +135,14 @@ export default function InputScreen() {
         </View>
 
         <StepsDisplay steps={steps} available={available} loading={loading} theme={theme} permissionDenied={permissionDenied} />
+
+        <StepsInput
+          control={control}
+          name="steps"
+          theme={theme}
+          autoSteps={steps}
+          pedometerAvailable={available}
+        />
 
         <View onLayout={e => { sectionYRef.current.condition = e.nativeEvent.layout.y; }}>
           <WalkingConditionPicker value={condition} onChange={handleConditionChange} theme={theme} />

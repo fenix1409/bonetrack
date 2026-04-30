@@ -8,7 +8,7 @@ interface StepsDisplayProps {
     steps: number | null;
     available: boolean;
     loading: boolean;
-    permissionDenied: boolean; // ← yangi
+    permissionDenied: boolean;
     theme: Theme;
 }
 
@@ -30,7 +30,6 @@ export function StepsDisplay({ steps, available, loading, permissionDenied, them
 
     return (
         <Card style={styles.card} padding={20}>
-            {/* Header */}
             <View style={styles.titleRow}>
                 <View style={[styles.iconCircle, { backgroundColor: theme.primary + '15' }]}>
                     <MaterialCommunityIcons name="walk" size={20} color={theme.primary} />
@@ -47,7 +46,6 @@ export function StepsDisplay({ steps, available, loading, permissionDenied, them
                 )}
             </View>
 
-            {/* States */}
             {loading ? (
                 <View style={styles.centerRow}>
                     <ActivityIndicator size="small" color={theme.primary} />
@@ -67,12 +65,11 @@ export function StepsDisplay({ steps, available, loading, permissionDenied, them
                 <View style={[styles.unavailableBox, { backgroundColor: theme.inputBg, borderColor: theme.border }]}>
                     <MaterialCommunityIcons name="alert-circle-outline" size={20} color={theme.textMuted} />
                     <Text style={[styles.unavailableText, { color: theme.textMuted }]}>
-                        Педометр мавжуд эмас. Қурилма сенсорларини текширинг.
+                        Педометр мавжуд эмас. Қадамларни қўлий киритинг.
                     </Text>
                 </View>
             ) : (
                 <>
-                    {/* Steps count */}
                     <View style={styles.stepsRow}>
                         <Text style={[styles.stepsNumber, { color: theme.text }]}>
                             {(steps ?? 0).toLocaleString()}
@@ -86,7 +83,6 @@ export function StepsDisplay({ steps, available, loading, permissionDenied, them
                         )}
                     </View>
 
-                    {/* Progress bar */}
                     <View style={[styles.progressBg, { backgroundColor: theme.border }]}>
                         <View style={[
                             styles.progressFill,
@@ -100,7 +96,6 @@ export function StepsDisplay({ steps, available, loading, permissionDenied, them
                         </Text>
                     </View>
 
-                    {/* Metrics */}
                     <View style={[styles.metricsRow, { borderTopColor: theme.border }]}>
                         <View style={styles.metricItem}>
                             <MaterialCommunityIcons name="map-marker-distance" size={16} color={theme.primary} />
