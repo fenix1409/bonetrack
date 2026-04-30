@@ -24,6 +24,7 @@
     "expo-insights": "~0.2.0",
     "expo-linking": "^55.0.14",
     "expo-router": "^55.0.13",
+    "expo-sensors": "~15.0.8",
     "expo-splash-screen": "^55.0.19",
     "expo-status-bar": "~3.0.9",
     "expo-symbols": "~1.0.8",

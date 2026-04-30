@@ -1,11 +1,13 @@
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { SuccessModal } from '@/components/ui/SuccessModal';
-import Colors from '@/constants/Colors';
-import { useBoneStore } from '@/store/useBoneStore';
-import { StepsInput } from '@/components/input/StepsInput';
+import { StepsDisplay } from '@/components/input/StepsDisplay';
 import { WalkingConditionPicker } from '@/components/input/WalkingConditionPicker';
 import { FoodSelector } from '@/components/input/FoodSelector';
+import Colors from '@/constants/Colors';
+import { useBoneStore } from '@/store/useBoneStore';
+import { usePedometer } from '@/hooks/usePedometer';
+import { useSTZI } from '@/hooks/useSTZI';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
@@ -13,10 +15,8 @@ import { FieldErrors, useForm } from 'react-hook-form';
 import { ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { WalkingCondition } from '@/types/bone';
-import { useSTZI } from '@/hooks/useSTZI';
 
 type InputFormData = {
-  steps: string;
   foods: string[];
   condition: WalkingCondition;
 };
@@ -35,23 +35,20 @@ export default function InputScreen() {
   const router = useRouter();
   const [showSuccess, setShowSuccess] = useState(false);
 
+  const { steps, available, loading, permissionDenied } = usePedometer();
+
   const scrollRef = useRef<ScrollView>(null);
-  const sectionYRef = useRef<Record<string, number>>({
-    steps: 0,
-    condition: 0,
-    foods: 0,
-  });
+  const sectionYRef = useRef<Record<string, number>>({ condition: 0, foods: 0 });
 
   const today = useMemo(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   }, []);
 
-  const existingLog = useMemo(() => history.find((log) => log.date === today), [history, today]);
+  const existingLog = useMemo(() => history.find(log => log.date === today), [history, today]);
 
   const { control, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm<InputFormData>({
     defaultValues: {
-      steps: existingLog?.steps.toString() ?? '',
       foods: existingLog?.selectedFoodIds ?? [],
       condition: DEFAULT_WALKING_CONDITION,
     },
@@ -62,7 +59,7 @@ export default function InputScreen() {
 
   const toggleFood = useCallback((id: string) => {
     const next = selectedFoods.includes(id)
-      ? selectedFoods.filter((foodId) => foodId !== id)
+      ? selectedFoods.filter(f => f !== id)
       : [...selectedFoods, id];
     setValue('foods', next, { shouldDirty: true });
   }, [selectedFoods, setValue]);
@@ -72,40 +69,27 @@ export default function InputScreen() {
   }, [setValue]);
 
   const scrollToFirstError = useCallback((formErrors: FieldErrors<InputFormData>) => {
-    const order: (keyof InputFormData)[] = ['steps', 'condition', 'foods'];
-
+    const order: (keyof InputFormData)[] = ['condition', 'foods'];
     for (const field of order) {
       if (formErrors[field]) {
-        scrollRef.current?.scrollTo({
-          y: Math.max(0, sectionYRef.current[field] - 20),
-          animated: true,
-        });
+        scrollRef.current?.scrollTo({ y: Math.max(0, sectionYRef.current[field] - 20), animated: true });
         return;
       }
     }
   }, []);
 
   const onSubmit = useCallback(async (data: InputFormData) => {
-    const steps = Number.parseInt(data.steps, 10);
-    const result = calculate(steps, data.foods, data.condition);
+    const currentSteps = steps ?? 0;
+    const result = calculate(currentSteps, data.foods, data.condition);
+    if (!result) return;
 
-    if (!result) {
-      return;
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    addDailyLog({
-      steps,
-      foods: data.foods,
-      walkingCondition: data.condition,
-    });
+    await new Promise(resolve => setTimeout(resolve, 600));
+    addDailyLog({ steps: currentSteps, foods: data.foods, walkingCondition: data.condition });
     setShowSuccess(true);
-  }, [addDailyLog, calculate]);
+  }, [addDailyLog, calculate, steps]);
 
   const handleSave = useCallback(() => {
-    void handleSubmit(onSubmit, (formErrors) => {
-      scrollToFirstError(formErrors);
-    })();
+    void handleSubmit(onSubmit, scrollToFirstError)();
   }, [handleSubmit, onSubmit, scrollToFirstError]);
 
   const handleModalClose = useCallback(() => {
@@ -140,15 +124,13 @@ export default function InputScreen() {
           <Text style={[styles.subTitle, { color: theme.textMuted }]}>Бугунги фаолиятингизни белгиланг</Text>
         </View>
 
-        <View onLayout={(event) => { sectionYRef.current.steps = event.nativeEvent.layout.y; }}>
-          <StepsInput control={control} name="steps" theme={theme} />
-        </View>
+        <StepsDisplay steps={steps} available={available} loading={loading} theme={theme} permissionDenied={permissionDenied} />
 
-        <View onLayout={(event) => { sectionYRef.current.condition = event.nativeEvent.layout.y; }}>
+        <View onLayout={e => { sectionYRef.current.condition = e.nativeEvent.layout.y; }}>
           <WalkingConditionPicker value={condition} onChange={handleConditionChange} theme={theme} />
         </View>
 
-        <View onLayout={(event) => { sectionYRef.current.foods = event.nativeEvent.layout.y; }}>
+        <View onLayout={e => { sectionYRef.current.foods = e.nativeEvent.layout.y; }}>
           <FoodSelector selectedFoods={selectedFoods} onToggle={toggleFood} theme={theme} />
         </View>
 
@@ -182,14 +164,5 @@ const styles = StyleSheet.create({
   subTitle: { fontSize: 16, fontWeight: '500', marginTop: 4 },
   emptyTitle: { fontSize: 22, fontWeight: '700', marginBottom: 8 },
   emptyBody: { fontSize: 16, textAlign: 'center', marginBottom: 24 },
-  saveBtn: {
-    marginTop: 12,
-    borderRadius: 20,
-    height: 64,
-    shadowColor: '#10B981',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 15,
-    elevation: 8,
-  },
+  saveBtn: { marginTop: 12, borderRadius: 20, height: 64, shadowColor: '#10B981', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.25, shadowRadius: 15, elevation: 8 },
 });

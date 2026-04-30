@@ -52,14 +52,24 @@ export default function TipsScreen() {
     }
   }, [profile]);
 
+  const todayDate = useMemo(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  }, []);
+
+  const todayLog = useMemo(() => {
+    if (!latestLog || latestLog.date !== todayDate) return null;
+    return latestLog;
+  }, [latestLog, todayDate]);
+
   const aiInput = useMemo(() => {
-    if (!profile || !latestLog || bmi == null) return null;
-    return { steps: latestLog.steps ?? 0, foodScore: latestLog.foodScore ?? 0, bmi, stzi: latestLog.stzi ?? 0 };
-  }, [bmi, latestLog, profile]);
+    if (!profile || !todayLog || bmi == null) return null;
+    return { steps: todayLog.steps ?? 0, foodScore: todayLog.foodScore ?? 0, bmi, stzi: todayLog.stzi ?? 0 };
+  }, [bmi, todayLog, profile]);
 
   useEffect(() => {
     if (aiInput) loadAdvice(aiInput);
-  }, [aiInput]); 
+  }, [aiInput]);
 
   useEffect(() => {
     Animated.timing(aiEntrance, {
