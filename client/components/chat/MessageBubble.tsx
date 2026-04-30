@@ -15,8 +15,8 @@ export const MessageBubble = memo(({ item, colors: c }: Props) => {
   return (
     <View style={[styles.wrapper, isUser ? styles.userWrapper : styles.botWrapper]}>
       {!isUser && (
-        <View style={[styles.avatar, { backgroundColor: c.primary }]}>
-          <MaterialCommunityIcons name="robot" size={20} color="#fff" />
+        <View style={[styles.avatar, { backgroundColor: c.primary + '20' }]}>
+          <MaterialCommunityIcons name="robot-excited-outline" size={18} color={c.primary} />
         </View>
       )}
       <View
@@ -25,11 +25,15 @@ export const MessageBubble = memo(({ item, colors: c }: Props) => {
           isUser
             ? [styles.userBubble, { backgroundColor: c.primary }]
             : [styles.botBubble, { backgroundColor: c.surface, borderColor: c.border, borderWidth: 1 }],
-        ]}>
+        ]}
+      >
         <Text style={[styles.text, { color: isUser ? '#fff' : c.text }]}>
           {item.text}
         </Text>
-        <Text style={[styles.timestamp, { color: isUser ? 'rgba(255,255,255,0.7)' : c.textMuted }]}>
+        <Text style={[
+          styles.timestamp,
+          { color: isUser ? 'rgba(255,255,255,0.65)' : c.textMuted },
+        ]}>
           {item.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </Text>
       </View>
@@ -40,13 +44,21 @@ export const MessageBubble = memo(({ item, colors: c }: Props) => {
 MessageBubble.displayName = 'MessageBubble';
 
 const styles = StyleSheet.create({
-  wrapper: { flexDirection: 'row', marginBottom: 20, maxWidth: '85%' },
+  wrapper:     { flexDirection: 'row', marginBottom: 16, maxWidth: '85%' },
   userWrapper: { alignSelf: 'flex-end', flexDirection: 'row-reverse' },
-  botWrapper: { alignSelf: 'flex-start' },
-  avatar: { width: 32, height: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginRight: 8, marginTop: 4 },
-  bubble: { paddingHorizontal: 16, paddingVertical: 12, borderRadius: 20 },
+  botWrapper:  { alignSelf: 'flex-start' },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+    marginTop: 2,
+  },
+  bubble:     { paddingHorizontal: 14, paddingVertical: 10, borderRadius: 18, maxWidth: '100%' },
   userBubble: { borderBottomRightRadius: 4 },
-  botBubble: { borderBottomLeftRadius: 4 },
-  text: { fontSize: 16, lineHeight: 22 },
-  timestamp: { fontSize: 10, marginTop: 4, alignSelf: 'flex-end' },
+  botBubble:  { borderBottomLeftRadius: 4 },
+  text:       { fontSize: 15, lineHeight: 22 },
+  timestamp:  { fontSize: 10, marginTop: 4, alignSelf: 'flex-end' },
 });
