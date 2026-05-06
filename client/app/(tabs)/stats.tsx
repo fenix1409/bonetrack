@@ -12,7 +12,7 @@ import { MedicalDisclaimer } from '@/components/ui/MedicalDisclaimer';
 import { useStatistics } from '@/hooks/useStatistics';
 
 export default function StatsScreen() {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const c = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const { history } = useBoneStore();

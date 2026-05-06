@@ -34,7 +34,7 @@ const FIELDS: Field[] = [
 ];
 
 export default function ProfileScreen() {
-    const colorScheme = useColorScheme() ?? 'light';
+    const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
     const c = Colors[colorScheme];
     const insets = useSafeAreaInsets();
     const { profile, setProfile } = useBoneStore();

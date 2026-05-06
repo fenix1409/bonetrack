@@ -16,7 +16,7 @@ import { MedicalDisclaimer } from '@/components/ui/MedicalDisclaimer';
 const MAX_STZI = 2.0;
 
 export default function DashboardScreen() {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const c = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const router = useRouter();

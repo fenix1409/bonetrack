@@ -17,7 +17,7 @@ export function SuccessModal({
     title = 'Сақланди',
     message = 'Маълумотлар муваффақиятли сақланди!'
 }: SuccessModalProps) {
-    const colorScheme = useColorScheme() ?? 'light';
+    const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
     const c = Colors[colorScheme];
     
     const scale = React.useRef(new Animated.Value(0)).current;

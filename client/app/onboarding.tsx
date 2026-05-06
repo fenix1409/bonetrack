@@ -48,7 +48,7 @@ export default function OnboardingScreen() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const { completeOnboarding, isFirstLaunch } = useBoneStore();
   const router = useRouter();
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const c = Colors[colorScheme];
   const insets = useSafeAreaInsets();
 

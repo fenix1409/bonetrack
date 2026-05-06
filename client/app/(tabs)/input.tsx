@@ -30,7 +30,7 @@ const DEFAULT_WALKING_CONDITION: WalkingCondition = {
 };
 
 export default function InputScreen() {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const theme = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const { addDailyLog, profile, history } = useBoneStore();

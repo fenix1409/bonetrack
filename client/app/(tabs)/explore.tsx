@@ -17,7 +17,7 @@ const VITAMIN_D_IDS = ['fatty_fish', 'egg_yolk', 'vit_d_supp', 'fish_oil'];
 const HARMFUL_IDS = ['soda', 'smoking', 'alcohol', 'high_salt'];
 
 export default function TipsScreen() {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const c = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const { profile, history } = useBoneStore();

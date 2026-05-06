@@ -7,7 +7,7 @@ import { useChat, type Message } from '@/hooks/useChat';
 import { MessageBubble } from '@/components/chat/MessageBubble';
 
 export default function ChatScreen() {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const c = Colors[colorScheme];
   const insets = useSafeAreaInsets();
 

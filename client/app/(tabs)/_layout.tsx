@@ -15,7 +15,7 @@ function TabIcon({ icon, color, focused }: { icon: React.ComponentProps<typeof M
 }
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const c = Colors[colorScheme];
   const insets = useSafeAreaInsets();
 
