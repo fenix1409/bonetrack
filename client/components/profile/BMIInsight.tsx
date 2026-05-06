@@ -22,7 +22,7 @@ export const BMIInsight = React.memo(({ bmiInfo }: BMIInsightProps) => {
       <View style={styles.bmiHeader}>
         <View>
           <Text style={[styles.bmiValue, { color: bmiInfo.label.color }]}>BMI: {bmiInfo.val}</Text>
-          <Text style={[styles.bmiScoreText, { color: bmiInfo.label.color }]}>Балл: {bmiInfo.score}</Text>
+          {/*<Text style={[styles.bmiScoreText, { color: bmiInfo.label.color }]}>Балл: {bmiInfo.score}</Text>*/}
         </View>
         <View style={[styles.bmiBadge, { backgroundColor: bmiInfo.label.bg }]}>
           <Text style={[styles.bmiStatus, { color: bmiInfo.label.color }]}>{bmiInfo.label.text}</Text>

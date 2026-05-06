@@ -63,7 +63,7 @@ export const FoodSelector = React.memo(({ selectedFoods, onToggle, theme }: Food
     return {
       good: entries.filter(([, value]) => value.category === 'good'),
       medium: entries.filter(([, value]) => value.category === 'medium'),
-      harmful: entries.filter(([, value]) => value.category === 'harmful'),
+      harmful: entries.filter(([key, value]) => value.category === 'harmful' && key !== 'smoking'),
     };
   }, []);
 

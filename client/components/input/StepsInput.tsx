@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Controller, Control, FieldValues, Path } from 'react-hook-form';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Card } from '@/components/ui/Card';
@@ -14,6 +14,7 @@ interface StepsInputProps<T extends FieldValues> {
   theme: Theme;
   autoSteps?: number | null;       
   pedometerAvailable?: boolean;    
+  onCancelManual?: () => void;
 }
 
 const STEP_HINTS = [
@@ -25,7 +26,7 @@ const STEP_HINTS = [
 ] satisfies { label: string; icon: IconName }[];
 
 function StepsInputComponent<T extends FieldValues>({
-  control, name, theme, autoSteps, pedometerAvailable,
+  control, name, theme, autoSteps, pedometerAvailable, onCancelManual
 }: StepsInputProps<T>) {
   return (
     <Card style={styles.card} padding={20}>
@@ -35,7 +36,6 @@ function StepsInputComponent<T extends FieldValues>({
         </View>
         <View style={{ flex: 1 }}>
           <Text style={[styles.cardTitle, { color: theme.text }]}>Юрилган қадамлар</Text>
-          {/* ✅ Pedometer badge */}
           {pedometerAvailable && autoSteps != null && (
             <View style={[styles.autoBadge, { backgroundColor: theme.primary + '15' }]}>
               <MaterialCommunityIcons name="cellphone" size={12} color={theme.primary} />
@@ -45,6 +45,14 @@ function StepsInputComponent<T extends FieldValues>({
             </View>
           )}
         </View>
+        {onCancelManual && (
+          <TouchableOpacity 
+            onPress={onCancelManual}
+            style={[styles.cancelBtn, { backgroundColor: theme.border + '44' }]}
+          >
+            <MaterialCommunityIcons name="close" size={16} color={theme.text} />
+          </TouchableOpacity>
+        )}
       </View>
 
       <Controller
@@ -114,6 +122,7 @@ const styles = StyleSheet.create({
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 },
   iconCircle: { width: 36, height: 36, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
   cardTitle: { fontSize: 18, fontWeight: '700' },
+  cancelBtn: { width: 32, height: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center' },
   autoBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, marginTop: 4 },
   autoText: { fontSize: 11, fontWeight: '600' },
   input: { borderWidth: 2, borderRadius: 16, padding: 16, fontSize: 20, fontWeight: '700', marginBottom: 8, height: 60 },

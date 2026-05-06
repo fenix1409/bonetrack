@@ -44,6 +44,14 @@ export async function getAIAdvice(data: AIAdviceInput, signal: AbortSignal): Pro
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
+  // Normalize data for server validation
+  const normalizedData: AIAdviceInput = {
+    steps: Math.max(0, Math.min(100_000, Math.floor(data.steps))),
+    foodScore: Math.max(-3, Math.min(10, data.foodScore)),
+    bmi: Math.max(10, Math.min(80, data.bmi)),
+    stzi: Math.max(0, Math.min(2, data.stzi)),
+  };
+
   try {
     const response = await fetch(`${apiBaseUrl}/chat`, {
       method: 'POST',
@@ -51,7 +59,7 @@ export async function getAIAdvice(data: AIAdviceInput, signal: AbortSignal): Pro
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(normalizedData),
       signal: controller.signal,
     });
 

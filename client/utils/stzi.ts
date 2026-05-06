@@ -1,6 +1,14 @@
 import type { DailyLog, UserProfile, WalkingCondition } from '@/types/bone';
-import { calculateBMI, calculateSTZI, getBMIScore, getFoodScore, getStepsScore } from '@/utils/calculations';
-import { getWalkingConditionScore } from '@/utils/walkingConditionScore';
+import {
+  calculateBMI,
+  getBMIScore,
+  getFoodScore,
+  getStepScore,
+  calculateSTZI,
+  getEnvironmentScore,
+  getAgeCoefficient,
+} from './stzi-system';
+import { getLifestyleRiskScore, FOOD_ITEMS } from './calculations';
 
 export interface DailySTZIInput {
   profile: UserProfile;
@@ -15,28 +23,35 @@ export interface DailySTZIResult {
   foodScore: number;
   stepsScore: number;
   conditionScore: number;
+  lifestyleRiskScore: number;
 }
 
 export function calculateDailySTZI(input: DailySTZIInput): DailySTZIResult {
-  const bmi = calculateBMI(input.profile.weight, input.profile.height);
+  const bmi = calculateBMI(input.profile.height, input.profile.weight);
   const bmiScore = getBMIScore(bmi);
-  const foodScore = getFoodScore(input.foods);
-  const stepsScore = getStepsScore(input.steps);
-  const conditionScore = getWalkingConditionScore(input.walkingCondition);
-  const stzi = calculateSTZI({
+
+  const selectedFoods = input.foods.map((id) => FOOD_ITEMS[id]).filter((item) => item !== undefined);
+  const foodScore = getFoodScore(selectedFoods);
+
+  const stepsScore = getStepScore(input.steps);
+  const conditionScore = getEnvironmentScore(input.walkingCondition);
+  const ageCoeff = getAgeCoefficient(input.profile.age);
+
+  const finalStzi = calculateSTZI({
     bmiScore,
     foodScore,
-    stepsScore,
-    conditionScore,
-    age: input.profile.age,
+    stepScore: stepsScore,
+    environmentScore: conditionScore,
+    ageCoeff,
   });
 
   return {
-    stzi,
+    stzi: finalStzi,
     bmiScore,
     foodScore,
     stepsScore,
     conditionScore,
+    lifestyleRiskScore: getLifestyleRiskScore(input.foods, input.profile.isSmoker),
   };
 }
 

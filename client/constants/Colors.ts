@@ -14,6 +14,8 @@ export type Theme = {
     accent: string;
     secondary: string;
     primaryBg: string;
+    secondaryBg: string;
+    accentBg: string;
     tint: string;
     tabIconDefault: string;
     tabIconSelected: string;
@@ -48,6 +50,8 @@ export default {
         accent,
         secondary,
         primaryBg: '#ECFDF5', // Emerald 50
+        secondaryBg: '#F5F3FF', // Violet 50
+        accentBg: '#EFF6FF', // Blue 50
         tint: primary,
         tabIconDefault: '#9CA3AF', // Gray 400
         tabIconSelected: primary,
@@ -80,6 +84,8 @@ export default {
         accent: '#60A5FA',
         secondary: '#A78BFA',
         primaryBg: '#064E3B',
+        secondaryBg: '#2E1065', // Dark Violet
+        accentBg: '#172554', // Dark Blue
         tint: '#34D399',
         tabIconDefault: '#4B5563',
         tabIconSelected: '#34D399',

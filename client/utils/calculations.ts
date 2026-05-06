@@ -1,8 +1,19 @@
-import { NutritionChoice, UserProfile } from '../types/bone';
+import { NutritionChoice, UserProfile, WalkingCondition } from '@/types/bone';
+import { calculateDailySTZI } from './stzi';
+import {
+  calculateBMI as _calculateBMI,
+  getBMIScore as _getBMIScore,
+  getFoodScore as _getFoodScore,
+  getStepScore as _getStepScore,
+  getEnvironmentScore as _getEnvironmentScore,
+  getAgeCoefficient as _getAgeCoefficient,
+  calculateSTZI as _calculateSTZI,
+  calculateMonthlyAverageSTZI,
+} from './stzi-system';
 
 export const FOOD_SCORE_LIMITS = {
-  MIN: -3,
-  MAX: 10,
+  MIN: -10,
+  MAX: 15,
 } as const;
 
 export const STZI_LIMITS = {
@@ -48,10 +59,11 @@ export const FOOD_SCORES = {
 export const STEPS_RANGES = [
   { max: 500, score: 0 },
   { max: 1000, score: 1 },
-  { max: 2500, score: 2 },
+  { max: 2000, score: 1.5 },
+  { max: 3000, score: 2 },
+  { max: 4000, score: 2.5 },
   { max: 5000, score: 3 },
-  { max: 7500, score: 4 },
-  { max: Infinity, score: 5 },
+  { max: Infinity, score: 4 },
 ];
 
 const NORMALIZATION_FACTOR = 10;
@@ -86,100 +98,73 @@ export const validateProfile = (data: Partial<UserProfile>): string | null => {
   return null;
 };
 
-export const calculateBMI = (weight: number, heightCm: number): number => {
-  if (!Number.isFinite(weight) || !Number.isFinite(heightCm) || weight <= 0 || heightCm <= 0) {
-    throw new Error('Invalid BMI input');
-  }
-
-  const heightM = heightCm / 100;
-  return Math.round((weight / (heightM * heightM)) * 100) / 100;
-};
-
-export const getBMIScore = (bmi: number): number => {
-  if (!Number.isFinite(bmi)) return 0;
-  if (bmi >= 18.5 && bmi <= 25) return 2;
-  if (bmi > 25 && bmi <= 30) return 1;
-  return 0;
-};
+export const calculateBMI = _calculateBMI;
+export const getBMIScore = _getBMIScore;
 
 export const getFoodScore = (foodIds: string[]): number => {
-  if (!Array.isArray(foodIds)) return 0;
+  const selectedFoods = foodIds
+      .map(id => FOOD_ITEMS[id])
+      .filter((item): item is NutritionChoice => item !== undefined);
 
-  const rawScore = foodIds.reduce((total, id) => {
-    const item = FOOD_ITEMS[id];
-    if (!item) return total;
-    return total + FOOD_SCORES[item.category];
-  }, 0);
+  return _getFoodScore(selectedFoods); // isSmoker olib tashlandi
+}
 
-  return Math.min(FOOD_SCORE_LIMITS.MAX, Math.max(FOOD_SCORE_LIMITS.MIN, rawScore));
+export const getLifestyleRiskScore = (foodIds: string[], isSmoker: boolean): number => {
+  const harmfulFoodsCount = foodIds
+    .map(id => FOOD_ITEMS[id])
+    .filter(item => item !== undefined && item.category === 'harmful')
+    .length;
+
+  let risk = harmfulFoodsCount;
+  if (isSmoker) risk += 2;
+  return risk;
 };
 
-export const getStepsScore = (steps: number): number => {
-  if (!Number.isFinite(steps) || steps < 0) return 0;
-
-  for (const range of STEPS_RANGES) {
-    if (steps < range.max) return range.score;
-  }
-
-  return 5;
-};
+export const getStepsScore = _getStepScore;
 
 export const stepsToKm = (steps: number): number => {
   if (!Number.isFinite(steps) || steps <= 0) return 0;
   return Math.round(((steps * 0.75) / 1000) * 100) / 100;
 };
 
-export const getAgeCoef = (age: number): number => {
-  if (!Number.isFinite(age)) return 1.0;
-  if (age >= 1 && age <= 19) return 1.2;
-  if (age >= 20 && age <= 39) return 1.0;
-  if (age >= 40 && age <= 59) return 0.8;
-  if (age >= 60) return 0.6;
-  return 1.0;
-};
+export const getAgeCoef = _getAgeCoefficient;
 
 export const calculateSTZI = (params: {
   bmiScore: number;
   foodScore: number;
   stepsScore: number;
-  conditionScore: number;
   age: number;
+  condition: WalkingCondition;
 }): number => {
-  const { bmiScore, foodScore, stepsScore, conditionScore, age } = params;
-  const safeBmiScore = Number.isFinite(bmiScore) ? bmiScore : 0;
-  const safeFoodScore = Number.isFinite(foodScore) ? foodScore : 0;
-  const safeStepsScore = Number.isFinite(stepsScore) ? stepsScore : 0;
-  const safeConditionScore = Number.isFinite(conditionScore) ? conditionScore : 0;
-  const totalRaw = safeBmiScore + safeFoodScore + safeStepsScore + safeConditionScore;
-  const total = Math.max(MIN_TOTAL_SCORE, totalRaw);
-  const stzi = (total * getAgeCoef(age)) / NORMALIZATION_FACTOR;
-  const clamped = Math.min(STZI_LIMITS.MAX, Math.max(STZI_LIMITS.MIN, stzi));
-
-  return Math.round(clamped * 100) / 100;
+  return _calculateSTZI({
+    bmiScore: params.bmiScore,
+    foodScore: params.foodScore,
+    stepScore: params.stepsScore,
+    environmentScore: _getEnvironmentScore(params.condition),
+    ageCoeff: _getAgeCoefficient(params.age)
+  });
 };
 
-export const getSTZIText = (stzi: number): 'Аъло' | 'Ўртача' | 'Паст' => {
+export const calculateMonthlySTZI = calculateMonthlyAverageSTZI;
+
+export const getSTZIText = (stzi: number): string => {
   if (stzi >= 1.6) return 'Аъло';
-  if (stzi >= 1.0) return 'Ўртача';
-  return 'Паст';
+  if (stzi >= 1.0) return 'Ўрта (ОВКАТЛАНИШ РАЦИОНИ ВА ҚАДАМЛАР КЎПАЙТИРИШ)';
+  return 'Паст (хавф бор ДАВОЛОВЧИ ШИФОКОРГА МУРОЖОАТ ҚИЛИШ)';
 };
 
 export const getSTZIExplanation = (stzi: number | null | undefined): string => {
   const val = stzi ?? 0;
 
   if (val >= 1.6) {
-    return 'Суяк зичлигингиз юқори. Соғлом турмуш тарзини давом эттиринг.';
+    return 'Сизнинг суяк зичлиги индексингиз жуда яхши. Шу тарзда давом эттиринг 👍';
   }
 
   if (val >= 1.0) {
-    return 'Суяк зичлиги меъёрида. Фаоллик ва овқатланишни сақланг.';
+    return 'Рационни яхшилаш ва қадамлар сонини ошириш (5000+) тавсия этилади.';
   }
 
-  if (val > 0) {
-    return 'Суяк зичлиги паст. Кальций ва қуёш нурига эътибор беринг.';
-  }
-
-  return 'Кўрсаткич жуда паст. Шифокор билан маслаҳатлашиш тавсия этилади.';
+  return 'Диққат! Сизда суяк заифлашиши хавфи мавжуд. Шифокор билан маслаҳатлашинг.';
 };
 
 export const getStatusColors = (stzi: number | null | undefined, colors: StatusColors) => {
@@ -208,11 +193,19 @@ export interface RecommendationInput {
   foodScore: number;
   bmiScore: number;
   stzi: number;
+  isSmoker?: boolean;
 }
 
 export const getRecommendations = (data: RecommendationInput): Recommendation[] => {
-  const { steps, foodScore, bmiScore, stzi } = data;
+  const { steps, foodScore, bmiScore, stzi, isSmoker } = data;
   const recommendations: Recommendation[] = [];
+
+  if (isSmoker) {
+    recommendations.push({
+      text: 'Чекишни ташлаш суяк зичлигини яхшилашга ёрдам беради.',
+      type: 'critical',
+    });
+  }
 
   if (stzi === 0) {
     recommendations.push({ text: 'Шифокор билан маслаҳатлашиш тавсия этилади.', type: 'critical' });

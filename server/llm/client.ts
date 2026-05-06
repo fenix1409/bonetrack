@@ -34,7 +34,7 @@ type GenerateTextResult = {
 
 export const llmClient = {
    async generateText({
-      model = 'gpt-4.1',
+      model = 'gpt-4o-mini',
       prompt,
       instructions,
       temperature = 0.2,
@@ -45,14 +45,15 @@ export const llmClient = {
       const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
       try {
-         const response = await getOpenAIClient().responses.create(
+         const response = await getOpenAIClient().chat.completions.create(
             {
                model,
-               input: prompt,
-               instructions,
+               messages: [
+                  ...(instructions ? [{ role: 'system' as const, content: instructions }] : []),
+                  { role: 'user' as const, content: prompt },
+               ],
                temperature,
-               max_output_tokens: maxTokens,
-               store: false,
+               max_tokens: maxTokens,
             },
             {
                signal: controller.signal,
@@ -62,7 +63,7 @@ export const llmClient = {
 
          return {
             id: response.id,
-            text: response.output_text,
+            text: response.choices[0]?.message?.content || '',
          };
       } finally {
          clearTimeout(timeout);

@@ -7,8 +7,8 @@ export type C = (typeof Colors)['light'];
 export const TAG_COLORS: Record<string, { colorKey: keyof C; bgKey: keyof C }> = {
   Кальций: { colorKey: 'primary', bgKey: 'primaryBg' },
   'D витамини': { colorKey: 'excellent', bgKey: 'excellentBg' },
-  Фаоллик: { colorKey: 'secondary', bgKey: 'card' },
-  'D + Omega-3': { colorKey: 'accent', bgKey: 'card' },
+  Фаоллик: { colorKey: 'secondary', bgKey: 'secondaryBg' },
+  'D + Omega-3': { colorKey: 'accent', bgKey: 'accentBg' },
   Хавф: { colorKey: 'low', bgKey: 'lowBg' },
   'Эҳтиёт бўлинг': { colorKey: 'medium', bgKey: 'mediumBg' },
   Муҳим: { colorKey: 'low', bgKey: 'lowBg' },

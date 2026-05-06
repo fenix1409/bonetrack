@@ -14,19 +14,21 @@ type HealthContext = {
    stzi: number;
 };
 
-const buildInstructions = ({ steps, foodScore, bmi, stzi }: HealthContext) =>
-   template
+const buildInstructions = (context?: HealthContext) => {
+   const { steps = 0, foodScore = 0, bmi = 0, stzi = 0 } = context || {};
+   return template
       .replace('{{steps}}', String(steps))
       .replace('{{foodScore}}', String(foodScore))
       .replace('{{bmi}}', String(bmi))
       .replace('{{stzi}}', String(stzi));
+};
 
 // Public interface
 export const chatService = {
    async sendMessage(
       prompt: string,
       conversationId: string,
-      healthContext: HealthContext
+      healthContext?: HealthContext
    ): Promise<ChatResponse> {
       const response = await llmClient.generateText({
          model: 'gpt-4o-mini',

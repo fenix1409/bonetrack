@@ -3,13 +3,11 @@ import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View, } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import Colors from '@/constants/Colors';
 import { Recommendation, getRecommendations, getStatusColors, stepsToKm } from '@/utils/calculations';
 import { useBoneStore } from '@/store/useBoneStore';
-
 import { DetailRow } from '@/components/dashboard/DetailRow';
 import { ProgressSection } from '@/components/dashboard/ProgressSection';
 import { RecommendationContainer } from '@/components/dashboard/RecommendationContainer';
@@ -47,7 +45,8 @@ export default function DashboardScreen() {
       steps: todayLog.steps ?? 0,
       foodScore: todayLog.foodScore ?? 0,
       bmiScore: todayLog.bmiScore ?? 0,
-      stzi: todayLog.stzi ?? 0
+      stzi: todayLog.stzi ?? 0,
+      isSmoker: profile.isSmoker,
     });
   }, [todayLog, profile]);
 

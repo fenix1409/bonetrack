@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6aa1d0a3-40b0-4498-8467-c1c2f2347be8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/chat.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/chat.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/explore.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/explore.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/input.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/profile.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/components/input/FoodSelector.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/input/FoodSelector.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/components/input/StepsDisplay.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/input/StepsDisplay.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/components/input/StepsInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/input/StepsInput.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/components/profile/BMIInsight.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/profile/BMIInsight.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/constants/Colors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/constants/Colors.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/constants/data.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/constants/data.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/constants/tipStyles.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/constants/tipStyles.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/hooks/useChat.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/hooks/useChat.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/hooks/usePedometer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/hooks/usePedometer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/types/bone.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/types/bone.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/utils/aiAdvice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/utils/aiAdvice.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/utils/calculations.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/utils/calculations.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/utils/stzi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/utils/stzi.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/utils/walkingConditionScore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/utils/walkingConditionScore.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/controllers/chat.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/controllers/chat.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/controllers/healthAdvice.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/controllers/healthAdvice.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/llm/client.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/llm/client.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/services/chat.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/services/chat.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/services/healthAdvice.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/services/healthAdvice.service.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="155" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="3DATd2glQwP3C3VR5mFoL9BWRfU" />
+  <component name="ProjectViewState">
+    <option name="autoscrollToSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showScratchesAndConsoles" value="false" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\user\\OneDrive\\Desktop\\bonetrack-main\\server\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecapSpentCounter">
+    <option name="endsOfQuotaMs" value="1780147313777" />
+    <option name="spentUsd" value="0.0743678" />
+  </component>
+  <component name="RecapUselessUpdatesCounter">
+    <option name="suspendCountdown" value="0" />
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-WS-253.31033.133" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6aa1d0a3-40b0-4498-8467-c1c2f2347be8" name="Changes" comment="" />
+      <created>1777723964685</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1777723964685</updated>
+      <workItem from="1777723969772" duration="2118000" />
+      <workItem from="1777963037393" duration="4209000" />
+      <workItem from="1777968279478" duration="5038000" />
+      <workItem from="1778000190476" duration="7798000" />
+      <workItem from="1778055942485" duration="843000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

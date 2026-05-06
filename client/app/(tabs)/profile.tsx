@@ -1,9 +1,8 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { StyleSheet, View, Text, ScrollView, useColorScheme, StatusBar, } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, useColorScheme, StatusBar, Switch } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
-
 import { useBoneStore } from '@/store/useBoneStore';
 import { UserProfile } from '@/types/bone';
 import { getBMIScore, calculateBMI, validateProfile } from '@/utils/calculations';
@@ -11,10 +10,10 @@ import Colors from '@/constants/Colors';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { SuccessModal } from '@/components/ui/SuccessModal';
-
 import { ProfileField } from '@/components/profile/ProfileField';
 import { GenderPicker } from '@/components/profile/GenderPicker';
 import { BMIInsight } from '@/components/profile/BMIInsight';
+import { Controller } from 'react-hook-form';
 
 type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -46,7 +45,8 @@ export default function ProfileScreen() {
             age: profile?.age ?? 25,
             height: profile?.height ?? 170,
             weight: profile?.weight ?? 70,
-            gender: profile?.gender ?? 'male'
+            gender: profile?.gender ?? 'male',
+            isSmoker: profile?.isSmoker ?? false,
         }
     });
 
@@ -58,7 +58,7 @@ export default function ProfileScreen() {
         const h = Number(watchedHeight);
         if (!h || !w || h <= 0) return null;
 
-        const bmi = calculateBMI(w, h);
+        const bmi = calculateBMI(h, w);
         if (bmi == null || isNaN(bmi)) return null;
         const bmiStr = (bmi ?? 0).toFixed(1);
         const score = getBMIScore(bmi);
@@ -128,6 +128,25 @@ export default function ProfileScreen() {
                             max={f.max}
                         />
                     ))}
+
+                    <View style={styles.smokerContainer}>
+                        <View style={styles.titleRow}>
+                            <MaterialCommunityIcons name="smoking" size={22} color={c.primary} />
+                            <Text style={[styles.label, { color: c.text }]}>Чекасизми?</Text>
+                        </View>
+                        <Controller
+                            control={control}
+                            name="isSmoker"
+                            render={({ field: { value, onChange } }) => (
+                                <Switch
+                                    value={value}
+                                    onValueChange={onChange}
+                                    trackColor={{ false: c.border, true: c.primary + '80' }}
+                                    thumbColor={value ? c.primary : '#f4f3f4'}
+                                />
+                            )}
+                        />
+                    </View>
                 </Card>
 
                 <BMIInsight bmiInfo={bmiInfo} />
@@ -162,5 +181,8 @@ const styles = StyleSheet.create({
     heroTitle: { fontSize: 20, fontWeight: '700', marginBottom: 4 },
     heroSub: { fontSize: 14, textAlign: 'center', paddingHorizontal: 20 },
     card: { padding: 20, marginBottom: 20 },
+    smokerContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 },
+    titleRow: { flexDirection: 'row', alignItems: 'center' },
+    label: { fontSize: 16, fontWeight: '600', marginLeft: 8 },
     saveBtn: { marginBottom: 20 },
 });

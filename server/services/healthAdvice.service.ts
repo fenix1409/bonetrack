@@ -90,16 +90,18 @@ export const healthAdviceService = {
       const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
 
       try {
-         const response = await getOpenAIClient().responses.create(
+         const response = await getOpenAIClient().chat.completions.create(
             {
                model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
-               input: buildHealthAdvicePrompt(data),
+               messages: [
+                  {
+                     role: 'user',
+                     content: buildHealthAdvicePrompt(data),
+                  },
+               ],
                temperature: 0.1,
-               max_output_tokens: 350,
-               store: false,
-               text: {
-                  format: responseFormat,
-               },
+               max_tokens: 350,
+               response_format: { type: 'json_object' },
             },
             {
                signal: controller.signal,
@@ -107,7 +109,12 @@ export const healthAdviceService = {
             }
          );
 
-         const parsed = parseJsonSafely(response.output_text);
+         const content = response.choices[0]?.message?.content;
+         if (!content) {
+            throw new Error('AI response did not match the expected schema.');
+         }
+
+         const parsed = parseJsonSafely(content);
          const validated = healthAdviceSchema.safeParse(parsed);
 
          if (!validated.success) {

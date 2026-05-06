@@ -45,7 +45,7 @@ export default function TipsScreen() {
     if (!profile) return null;
 
     try {
-      const result = calculateBMI(profile.weight, profile.height);
+      const result = calculateBMI(profile.height, profile.weight);
       return Number.isFinite(result) ? result : null;
     } catch {
       return null;

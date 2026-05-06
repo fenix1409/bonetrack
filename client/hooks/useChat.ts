@@ -58,7 +58,16 @@ export function useChat() {
     setError(null);
 
     const latestLog = history[0];
-    const bmi = profile ? calculateBMI(profile.weight, profile.height) : 0;
+    const bmi = profile ? calculateBMI(profile.height, profile.weight) : 0;
+    
+    // Normalize values to prevent validation errors on server
+    const normalizedHealthContext = {
+      steps: Math.max(0, Math.min(latestLog?.steps ?? 0, 100_000)),
+      foodScore: Math.max(-3, Math.min(latestLog?.foodScore ?? 0, 10)),
+      bmi: Math.max(0, Math.min(bmi, 100)),
+      stzi: Math.max(0, Math.min(latestLog?.stzi ?? 0, 5)),
+    };
+
     const apiBaseUrl = getApiBaseUrl();
 
     try {
@@ -75,12 +84,7 @@ export function useChat() {
         body: JSON.stringify({
           prompt: text,
           conversationId: conversationId.current,
-          healthContext: {
-            steps: latestLog?.steps ?? 0,
-            foodScore: latestLog?.foodScore ?? 0,
-            bmi,
-            stzi: latestLog?.stzi ?? 0,
-          },
+          healthContext: normalizedHealthContext,
         }),
         signal: controller.signal,
       });
@@ -91,7 +95,7 @@ export function useChat() {
         throw new Error(data?.error || `Server error: ${response.status}`);
       }
 
-      if (!data || typeof data.message !== 'string' || !data.message.trim()) {
+      if (!data || typeof data.message !== 'string') {
         throw new Error('Invalid chat response.');
       }
 
@@ -108,7 +112,7 @@ export function useChat() {
       if ((err as Error).name === 'AbortError') {
         setError('So\'rov vaqti tugadi. Qayta urinib ko\'ring.');
       } else {
-        setError('Сервер билан боғланишда хатолик юз берди.');
+        setError((err as Error).message || 'Сервер билан боғланишда хатолик юз берди.');
       }
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {

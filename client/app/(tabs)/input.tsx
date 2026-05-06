@@ -11,7 +11,7 @@ import { usePedometer } from '@/hooks/usePedometer';
 import { useSTZI } from '@/hooks/useSTZI';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -26,6 +26,7 @@ type InputFormData = {
 const DEFAULT_WALKING_CONDITION: WalkingCondition = {
   season: 'spring_summer',
   timeOfDay: 'morning',
+  frequency: 'always'
 };
 
 export default function InputScreen() {
@@ -40,7 +41,7 @@ export default function InputScreen() {
   const { steps, available, loading, permissionDenied } = usePedometer();
 
   const scrollRef = useRef<ScrollView>(null);
-  const sectionYRef = useRef<Record<string, number>>({ condition: 0, foods: 0 });
+  const sectionYRef = useRef<Record<string, number>>({ steps: 0, condition: 0, foods: 0 });
 
   const today = useMemo(() => {
     const now = new Date();
@@ -51,7 +52,7 @@ export default function InputScreen() {
 
   const { control, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm<InputFormData>({
     defaultValues: {
-      steps: existingLog?.steps?.toString() ?? (steps?.toString() ?? ''),
+      steps: existingLog?.steps?.toString() ?? '',
       foods: existingLog?.selectedFoodIds ?? [],
       condition: DEFAULT_WALKING_CONDITION,
     },
@@ -59,13 +60,13 @@ export default function InputScreen() {
 
   const selectedFoods = watch('foods');
   const condition = watch('condition');
-  const formSteps = watch('steps');
 
-  useMemo(() => {
-    if (available && steps !== null && formSteps === '') {
+  useEffect(() => {
+    // Faqat agar hali qo'lda qiymat kiritilmagan bo'lsa va pedometr ishlayotgan bo'lsa, avto-to'ldiramiz
+    if (available && steps !== null && !existingLog) {
       setValue('steps', steps.toString(), { shouldDirty: false });
     }
-  }, [available, steps, formSteps, setValue]);
+  }, [available, steps, existingLog, setValue]);
 
   const toggleFood = useCallback((id: string) => {
     const next = selectedFoods.includes(id)
@@ -79,24 +80,33 @@ export default function InputScreen() {
   }, [setValue]);
 
   const scrollToFirstError = useCallback((formErrors: FieldErrors<InputFormData>) => {
-    const order: (keyof InputFormData)[] = ['condition', 'foods'];
+    const order: (keyof InputFormData)[] = ['steps', 'condition', 'foods'];
     for (const field of order) {
       if (formErrors[field]) {
-        scrollRef.current?.scrollTo({ y: Math.max(0, sectionYRef.current[field] - 20), animated: true });
+        scrollRef.current?.scrollTo({
+          y: Math.max(0, sectionYRef.current[field] - 20),
+          animated: true,
+        });
         return;
       }
     }
   }, []);
 
   const onSubmit = useCallback(async (data: InputFormData) => {
-    const userSteps = Number.parseInt(data.steps, 10) || 0;
-    const result = calculate(userSteps, data.foods, data.condition);
+    // Agar foydalanuvchi qo'lda kiritgan bo'lsa (data.steps), o'shani ishlatamiz.
+    // Aks holda pedometr ma'lumotlarini (steps) ishlatamiz.
+    const manualSteps = Number.parseInt(data.steps, 10);
+    const currentSteps = !Number.isNaN(manualSteps) && manualSteps > 0
+      ? manualSteps
+      : (available && steps !== null ? steps : 0);
+
+    const result = calculate(currentSteps, data.foods, data.condition);
     if (!result) return;
 
     await new Promise(resolve => setTimeout(resolve, 600));
-    addDailyLog({ steps: userSteps, foods: data.foods, walkingCondition: data.condition });
+    addDailyLog({ steps: currentSteps, foods: data.foods, walkingCondition: data.condition });
     setShowSuccess(true);
-  }, [addDailyLog, calculate]);
+  }, [addDailyLog, calculate, available, steps]);
 
   const handleSave = useCallback(() => {
     void handleSubmit(onSubmit, scrollToFirstError)();
@@ -134,15 +144,23 @@ export default function InputScreen() {
           <Text style={[styles.subTitle, { color: theme.textMuted }]}>Бугунги фаолиятингизни белгиланг</Text>
         </View>
 
-        <StepsDisplay steps={steps} available={available} loading={loading} theme={theme} permissionDenied={permissionDenied} />
-
-        <StepsInput
-          control={control}
-          name="steps"
-          theme={theme}
-          autoSteps={steps}
-          pedometerAvailable={available}
-        />
+        <View onLayout={e => { sectionYRef.current.steps = e.nativeEvent.layout.y; }}>
+          <StepsDisplay
+            steps={steps}
+            available={available}
+            loading={loading}
+            permissionDenied={permissionDenied}
+            theme={theme}
+          />
+          
+          <StepsInput
+            control={control}
+            name="steps"
+            theme={theme}
+            autoSteps={steps}
+            pedometerAvailable={available}
+          />
+        </View>
 
         <View onLayout={e => { sectionYRef.current.condition = e.nativeEvent.layout.y; }}>
           <WalkingConditionPicker value={condition} onChange={handleConditionChange} theme={theme} />

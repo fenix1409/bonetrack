@@ -3,8 +3,8 @@ import { z } from 'zod';
 import { healthAdviceService } from '../services/healthAdvice.service';
 
 const healthAdviceRequestSchema = z.object({
-   steps: z.number().int().min(0).max(100_000),
-   foodScore: z.number().min(-3).max(10),
+   steps: z.number().min(0).max(100_000),
+   foodScore: z.number().min(-3).max(3),
    bmi: z.number().min(10).max(80),
    stzi: z.number().min(0).max(2),
 });

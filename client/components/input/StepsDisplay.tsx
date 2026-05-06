@@ -2,7 +2,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Card } from '@/components/ui/Card';
 import { stepsToKm } from '@/utils/calculations';
 import { Theme } from '@/constants/Colors';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface StepsDisplayProps {
     steps: number | null;
@@ -10,6 +10,7 @@ interface StepsDisplayProps {
     loading: boolean;
     permissionDenied: boolean;
     theme: Theme;
+    onEditPress?: () => void;
 }
 
 const GOAL = 10_000;
@@ -22,7 +23,7 @@ const getStepStatus = (steps: number) => {
     return { icon: 'fire', label: 'Ajoyib!' };
 };
 
-export function StepsDisplay({ steps, available, loading, permissionDenied, theme }: StepsDisplayProps) {
+export function StepsDisplay({ steps, available, loading, permissionDenied, theme, onEditPress }: StepsDisplayProps) {
     const progress = Math.min((steps ?? 0) / GOAL, 1);
     const km = steps != null ? (stepsToKm(steps) ?? 0).toFixed(2) : '0.00';
     const kcal = Math.round((steps ?? 0) * 0.04);
@@ -38,6 +39,14 @@ export function StepsDisplay({ steps, available, loading, permissionDenied, them
                     <Text style={[styles.cardTitle, { color: theme.text }]}>Юрилган қадамлар</Text>
                     <Text style={[styles.cardSubtitle, { color: theme.textMuted }]}>Телефон акселерометри орқали</Text>
                 </View>
+                {!loading && onEditPress && (
+                    <TouchableOpacity 
+                      onPress={onEditPress}
+                      style={[styles.editBtn, { backgroundColor: theme.border + '44' }]}
+                    >
+                      <MaterialCommunityIcons name="pencil" size={16} color={theme.text} />
+                    </TouchableOpacity>
+                )}
                 {available && !loading && (
                     <View style={[styles.liveBadge, { backgroundColor: theme.primary + '15' }]}>
                         <View style={[styles.liveDot, { backgroundColor: theme.primary }]} />
@@ -126,6 +135,7 @@ const styles = StyleSheet.create({
     unavailableTitle: { fontSize: 14, fontWeight: '700', marginBottom: 4 },
     titleRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 },
     iconCircle: { width: 36, height: 36, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+    editBtn: { width: 32, height: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginRight: 4 },
     cardTitle: { fontSize: 18, fontWeight: '700' },
     cardSubtitle: { fontSize: 12, fontWeight: '500', marginTop: 2 },
     liveBadge: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20 },
