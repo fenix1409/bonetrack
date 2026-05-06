@@ -1,4 +1,3 @@
-// Implementation detail
 const MAX_CONVERSATIONS = 500;
 const conversations = new Map<string, string>();
 

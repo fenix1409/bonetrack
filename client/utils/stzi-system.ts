@@ -21,6 +21,22 @@ export const calculateBMI = (heightCm: number, weightKg: number): number => {
   return clamp(round2(bmi), 10, 80);
 };
 
+export const validateProfile = (data: { age?: number; height?: number; weight?: number; gender?: string }): string | null => {
+  if (data.age == null || !Number.isFinite(data.age) || data.age < 1 || data.age > 120) {
+    return 'Ёш 1 dan 120 гача бўлиши керак';
+  }
+  if (data.height == null || !Number.isFinite(data.height) || data.height < 50 || data.height > 250) {
+    return 'Бўй 50-250 см оралиғида бўлиши керак';
+  }
+  if (data.weight == null || !Number.isFinite(data.weight) || data.weight < 10 || data.weight > 300) {
+    return 'Вазн 10-300 кг оралиғида бўлиши керак';
+  }
+  if (!data.gender) {
+    return 'Жинсингизни танланг';
+  }
+  return null;
+};
+
 /**
  * 2. Get BMI Score
  * Input: bmi (10-80)
@@ -161,6 +177,71 @@ export const calculateSTZI = (params: {
   const stzi = (Math.max(0, sum) * ageCoeff) / 10;
 
   return clamp(round2(stzi), 0, 2);
+};
+
+export type RecommendationType = 'critical' | 'warning' | 'improve';
+
+export interface Recommendation {
+  text: string;
+  type: RecommendationType;
+}
+
+export const getRecommendations = (data: {
+  steps: number;
+  foodScore: number;
+  bmiScore: number;
+  stzi: number;
+  isSmoker?: boolean;
+}): Recommendation[] => {
+  const { steps, foodScore, bmiScore, stzi, isSmoker } = data;
+  const recommendations: Recommendation[] = [];
+
+  if (isSmoker) {
+    recommendations.push({
+      text: 'Чекишни ташлаш суyak зичлигини яхшилашга ёрдам беради.',
+      type: 'critical',
+    });
+  }
+
+  if (stzi === 0) {
+    recommendations.push({ text: 'Шифокор билан маслаҳатлашиш тавсия этилади.', type: 'critical' });
+  }
+
+  if (bmiScore === 0) {
+    recommendations.push({ text: 'Вазнингизни назорат қилинг.', type: 'warning' });
+  }
+
+  if (foodScore < 0) {
+    recommendations.push({ text: 'Зарарли маҳсулотларни камайтиринг.', type: 'warning' });
+  }
+
+  if (steps < 1000) {
+    recommendations.push({ text: 'Кунига камида 5000 қадам юришга ҳаракат қилинг.', type: 'warning' });
+  } else if (steps < 5000) {
+    recommendations.push({ text: 'Қадамлар сонини аста-секин ошириб боринг.', type: 'improve' });
+  }
+
+  if (foodScore < 3) {
+    recommendations.push({ text: 'Кальций ва D витаминига бой оvқатларни кўпайтиринг.', type: 'improve' });
+  }
+
+  if (stzi > 0 && stzi < 1) {
+    recommendations.push({ text: 'Қуёш нури ва фаол ҳаракатни кўпайтиринг.', type: 'improve' });
+  }
+
+  const priorityMap: Record<RecommendationType, number> = {
+    critical: 0,
+    warning: 1,
+    improve: 2,
+  };
+
+  const uniqueRecommendations = Array.from(
+    new Map(recommendations.map((item) => [item.text, item])).values()
+  );
+
+  return uniqueRecommendations
+    .sort((a, b) => priorityMap[a.type] - priorityMap[b.type])
+    .slice(0, 5);
 };
 
 /**

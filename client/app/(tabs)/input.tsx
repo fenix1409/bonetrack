@@ -7,106 +7,37 @@ import { WalkingConditionPicker } from '@/components/input/WalkingConditionPicke
 import { FoodSelector } from '@/components/input/FoodSelector';
 import Colors from '@/constants/Colors';
 import { useBoneStore } from '@/store/useBoneStore';
-import { usePedometer } from '@/hooks/usePedometer';
-import { useSTZI } from '@/hooks/useSTZI';
+import { useInputLogic } from '@/hooks/useInputLogic';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FieldErrors, useForm } from 'react-hook-form';
+import React, { useCallback } from 'react';
 import { ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import type { WalkingCondition } from '@/types/bone';
-
-type InputFormData = {
-  steps: string;
-  foods: string[];
-  condition: WalkingCondition;
-};
-
-const DEFAULT_WALKING_CONDITION: WalkingCondition = {
-  season: 'spring_summer',
-  timeOfDay: 'morning',
-  frequency: 'always'
-};
 
 export default function InputScreen() {
   const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const theme = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const { addDailyLog, profile, history } = useBoneStore();
-  const { calculate } = useSTZI(profile);
+  const { profile, history } = useBoneStore();
   const router = useRouter();
-  const [showSuccess, setShowSuccess] = useState(false);
 
-  const { steps, available, loading, permissionDenied } = usePedometer();
-
-  const scrollRef = useRef<ScrollView>(null);
-  const sectionYRef = useRef<Record<string, number>>({ steps: 0, condition: 0, foods: 0 });
-
-  const today = useMemo(() => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-  }, []);
-
-  const existingLog = useMemo(() => history.find(log => log.date === today), [history, today]);
-
-  const { control, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm<InputFormData>({
-    defaultValues: {
-      steps: existingLog?.steps?.toString() ?? '',
-      foods: existingLog?.selectedFoodIds ?? [],
-      condition: DEFAULT_WALKING_CONDITION,
-    },
-  });
-
-  const selectedFoods = watch('foods');
-  const condition = watch('condition');
-
-  useEffect(() => {
-    // Faqat agar hali qo'lda qiymat kiritilmagan bo'lsa va pedometr ishlayotgan bo'lsa, avto-to'ldiramiz
-    if (available && steps !== null && !existingLog) {
-      setValue('steps', steps.toString(), { shouldDirty: false });
-    }
-  }, [available, steps, existingLog, setValue]);
-
-  const toggleFood = useCallback((id: string) => {
-    const next = selectedFoods.includes(id)
-      ? selectedFoods.filter(f => f !== id)
-      : [...selectedFoods, id];
-    setValue('foods', next, { shouldDirty: true });
-  }, [selectedFoods, setValue]);
-
-  const handleConditionChange = useCallback((newCondition: WalkingCondition) => {
-    setValue('condition', newCondition, { shouldDirty: true });
-  }, [setValue]);
-
-  const scrollToFirstError = useCallback((formErrors: FieldErrors<InputFormData>) => {
-    const order: (keyof InputFormData)[] = ['steps', 'condition', 'foods'];
-    for (const field of order) {
-      if (formErrors[field]) {
-        scrollRef.current?.scrollTo({
-          y: Math.max(0, sectionYRef.current[field] - 20),
-          animated: true,
-        });
-        return;
-      }
-    }
-  }, []);
-
-  const onSubmit = useCallback(async (data: InputFormData) => {
-    // Agar foydalanuvchi qo'lda kiritgan bo'lsa (data.steps), o'shani ishlatamiz.
-    // Aks holda pedometr ma'lumotlarini (steps) ishlatamiz.
-    const manualSteps = Number.parseInt(data.steps, 10);
-    const currentSteps = !Number.isNaN(manualSteps) && manualSteps > 0
-      ? manualSteps
-      : (available && steps !== null ? steps : 0);
-
-    const result = calculate(currentSteps, data.foods, data.condition);
-    if (!result) return;
-
-    await new Promise(resolve => setTimeout(resolve, 600));
-    addDailyLog({ steps: currentSteps, foods: data.foods, walkingCondition: data.condition });
-    setShowSuccess(true);
-  }, [addDailyLog, calculate, available, steps]);
+  const {
+    control,
+    handleSubmit,
+    onSubmit,
+    selectedFoods,
+    toggleFood,
+    condition,
+    handleConditionChange,
+    showSuccess,
+    setShowSuccess,
+    isSubmitting,
+    available,
+    pedoSteps,
+    scrollRef,
+    sectionYRef,
+    scrollToFirstError
+  } = useInputLogic(profile, history);
 
   const handleSave = useCallback(() => {
     void handleSubmit(onSubmit, scrollToFirstError)();
@@ -115,7 +46,7 @@ export default function InputScreen() {
   const handleModalClose = useCallback(() => {
     setShowSuccess(false);
     router.replace('/');
-  }, [router]);
+  }, [router, setShowSuccess]);
 
   if (!profile) {
     return (
@@ -146,24 +77,28 @@ export default function InputScreen() {
 
         <View onLayout={e => { sectionYRef.current.steps = e.nativeEvent.layout.y; }}>
           <StepsDisplay
-            steps={steps}
+            steps={pedoSteps}
             available={available}
-            loading={loading}
-            permissionDenied={permissionDenied}
             theme={theme}
+            loading={!available && pedoSteps === null}
+            permissionDenied={available === false && pedoSteps === null}
           />
           
           <StepsInput
             control={control}
             name="steps"
             theme={theme}
-            autoSteps={steps}
+            autoSteps={pedoSteps}
             pedometerAvailable={available}
           />
         </View>
 
         <View onLayout={e => { sectionYRef.current.condition = e.nativeEvent.layout.y; }}>
-          <WalkingConditionPicker value={condition} onChange={handleConditionChange} theme={theme} />
+          <WalkingConditionPicker 
+            value={condition} 
+            onChange={handleConditionChange} 
+            theme={theme} 
+          />
         </View>
 
         <View onLayout={e => { sectionYRef.current.foods = e.nativeEvent.layout.y; }}>
@@ -185,7 +120,7 @@ export default function InputScreen() {
         visible={showSuccess}
         onClose={handleModalClose}
         title="Сақланди"
-        message="Бугунги маълумотлар муваффақиятли қабул қилинди."
+        message="Бугунги маълумотлар муваффақиятli қабул қилинди."
       />
     </View>
   );

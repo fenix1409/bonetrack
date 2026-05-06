@@ -5,31 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6aa1d0a3-40b0-4498-8467-c1c2f2347be8" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/chat.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/chat.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/explore.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/explore.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/app/(tabs)/input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/input.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/app/(tabs)/profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/profile.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/components/input/FoodSelector.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/input/FoodSelector.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/components/input/StepsDisplay.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/input/StepsDisplay.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/components/input/StepsInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/input/StepsInput.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/components/profile/BMIInsight.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/profile/BMIInsight.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/constants/Colors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/constants/Colors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/constants/data.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/constants/data.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/constants/tipStyles.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/constants/tipStyles.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/hooks/useChat.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/hooks/useChat.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/hooks/usePedometer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/hooks/usePedometer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/types/bone.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/types/bone.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/utils/aiAdvice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/utils/aiAdvice.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/utils/calculations.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/utils/calculations.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/utils/stzi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/utils/stzi.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/utils/walkingConditionScore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/utils/walkingConditionScore.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/controllers/chat.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/controllers/chat.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/controllers/healthAdvice.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/controllers/healthAdvice.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/llm/client.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/llm/client.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/services/chat.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/services/chat.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/services/healthAdvice.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/services/healthAdvice.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/utils/stzi-system.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/utils/stzi-system.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,7 +85,7 @@
       <workItem from="1777963037393" duration="4209000" />
       <workItem from="1777968279478" duration="5038000" />
       <workItem from="1778000190476" duration="7798000" />
-      <workItem from="1778055942485" duration="843000" />
+      <workItem from="1778055942485" duration="2389000" />
     </task>
     <servers />
   </component>

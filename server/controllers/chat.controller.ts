@@ -2,7 +2,6 @@ import type { Request, Response } from 'express';
 import { chatService } from '../services/chat.service';
 import z from 'zod';
 
-// Implementation detail
 const chatSchema = z.object({
    prompt: z
       .string()
@@ -18,7 +17,6 @@ const chatSchema = z.object({
    }).optional(),
 });
 
-// Public interface
 export const chatController = {
    async sendMessage(req: Request, res: Response) {
       const parseResult = chatSchema.safeParse(req.body);

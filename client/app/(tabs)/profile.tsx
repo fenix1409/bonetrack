@@ -2,7 +2,7 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { StyleSheet, View, Text, ScrollView, useColorScheme, StatusBar, Switch } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useBoneStore } from '@/store/useBoneStore';
 import { UserProfile } from '@/types/bone';
 import { getBMIScore, calculateBMI, validateProfile } from '@/utils/calculations';
@@ -13,21 +13,10 @@ import { SuccessModal } from '@/components/ui/SuccessModal';
 import { ProfileField } from '@/components/profile/ProfileField';
 import { GenderPicker } from '@/components/profile/GenderPicker';
 import { BMIInsight } from '@/components/profile/BMIInsight';
-import { Controller } from 'react-hook-form';
 
 type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
-interface Field {
-    key: keyof Omit<UserProfile, 'gender'>;
-    label: string;
-    placeholder: string;
-    unit: string;
-    icon: IconName;
-    min: number;
-    max: number;
-}
-
-const FIELDS: Field[] = [
+const FIELDS: { key: keyof Omit<UserProfile, 'gender'>; label: string; placeholder: string; unit: string; icon: IconName; min: number; max: number }[] = [
     { key: 'age', label: 'Ёш', unit: 'йил', placeholder: '25', icon: 'calendar-range', min: 1, max: 120 },
     { key: 'height', label: 'Бўй', unit: 'см', placeholder: '175', icon: 'ruler', min: 50, max: 250 },
     { key: 'weight', label: 'Вазн', unit: 'кг', placeholder: '70', icon: 'scale-bathroom', min: 10, max: 300 },
@@ -60,7 +49,6 @@ export default function ProfileScreen() {
 
         const bmi = calculateBMI(h, w);
         if (bmi == null || isNaN(bmi)) return null;
-        const bmiStr = (bmi ?? 0).toFixed(1);
         const score = getBMIScore(bmi);
 
         let label = { text: 'Нормал (меъёрий вазн)', color: c.excellent, bg: c.excellentBg };
@@ -69,7 +57,7 @@ export default function ProfileScreen() {
         else if (bmi <= 30) label = { text: 'Ортиқча вазн', color: c.medium, bg: c.mediumBg };
         else label = { text: 'Семизлик', color: c.low, bg: c.lowBg };
 
-        return { val: bmiStr, label, score };
+        return { val: bmi.toFixed(1), label, score };
     }, [watchedWeight, watchedHeight, c]);
 
     const onSubmit = useCallback((data: UserProfile) => {

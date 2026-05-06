@@ -23,7 +23,6 @@ const buildInstructions = (context?: HealthContext) => {
       .replace('{{stzi}}', String(stzi));
 };
 
-// Public interface
 export const chatService = {
    async sendMessage(
       prompt: string,
@@ -34,8 +33,8 @@ export const chatService = {
          model: 'gpt-4o-mini',
          instructions: buildInstructions(healthContext),
          prompt,
-         temperature: 0.1, // Kechikishni kamaytirish va aniqlikni oshirish uchun
-         maxTokens: 160, // Qisqaroq javob tezroq keladi
+         temperature: 0.1, 
+         maxTokens: 160, 
       });
 
       conversationRepository.setLastResponseId(conversationId, response.id);

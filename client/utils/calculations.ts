@@ -1,5 +1,4 @@
 import { NutritionChoice, UserProfile, WalkingCondition } from '@/types/bone';
-import { calculateDailySTZI } from './stzi';
 import {
   calculateBMI as _calculateBMI,
   getBMIScore as _getBMIScore,
@@ -9,12 +8,11 @@ import {
   getAgeCoefficient as _getAgeCoefficient,
   calculateSTZI as _calculateSTZI,
   calculateMonthlyAverageSTZI,
+  getRecommendations as _getRecommendations,
+  validateProfile as _validateProfile,
+  Recommendation,
+  RecommendationType
 } from './stzi-system';
-
-export const FOOD_SCORE_LIMITS = {
-  MIN: -10,
-  MAX: 15,
-} as const;
 
 export const STZI_LIMITS = {
   MIN: 0.0,
@@ -50,25 +48,6 @@ export const FOOD_ITEMS: Record<string, NutritionChoice> = {
 
 export type FoodItemId = keyof typeof FOOD_ITEMS;
 
-export const FOOD_SCORES = {
-  good: 1,
-  medium: 0.5,
-  harmful: -1,
-} as const;
-
-export const STEPS_RANGES = [
-  { max: 500, score: 0 },
-  { max: 1000, score: 1 },
-  { max: 2000, score: 1.5 },
-  { max: 3000, score: 2 },
-  { max: 4000, score: 2.5 },
-  { max: 5000, score: 3 },
-  { max: Infinity, score: 4 },
-];
-
-const NORMALIZATION_FACTOR = 10;
-const MIN_TOTAL_SCORE = 0;
-
 type StatusColors = {
   excellent: string;
   excellentBg: string;
@@ -78,26 +57,7 @@ type StatusColors = {
   lowBg: string;
 };
 
-export const validateProfile = (data: Partial<UserProfile>): string | null => {
-  if (data.age == null || !Number.isFinite(data.age) || data.age < 1 || data.age > 120) {
-    return 'Ёш 1 дан 120 гача бўлиши керак';
-  }
-
-  if (data.height == null || !Number.isFinite(data.height) || data.height < 50 || data.height > 250) {
-    return 'Бўй 50-250 см оралиғида бўлиши керак';
-  }
-
-  if (data.weight == null || !Number.isFinite(data.weight) || data.weight < 10 || data.weight > 300) {
-    return 'Вазн 10-300 кг оралиғида бўлиши керак';
-  }
-
-  if (!data.gender) {
-    return 'Жинсингизни танланг';
-  }
-
-  return null;
-};
-
+export const validateProfile = _validateProfile;
 export const calculateBMI = _calculateBMI;
 export const getBMIScore = _getBMIScore;
 
@@ -106,7 +66,7 @@ export const getFoodScore = (foodIds: string[]): number => {
       .map(id => FOOD_ITEMS[id])
       .filter((item): item is NutritionChoice => item !== undefined);
 
-  return _getFoodScore(selectedFoods); // isSmoker olib tashlandi
+  return _getFoodScore(selectedFoods);
 }
 
 export const getLifestyleRiskScore = (foodIds: string[], isSmoker: boolean): number => {
@@ -155,95 +115,26 @@ export const getSTZIText = (stzi: number): string => {
 
 export const getSTZIExplanation = (stzi: number | null | undefined): string => {
   const val = stzi ?? 0;
-
-  if (val >= 1.6) {
-    return 'Сизнинг суяк зичлиги индексингиз жуда яхши. Шу тарзда давом эттиринг 👍';
-  }
-
-  if (val >= 1.0) {
-    return 'Рационни яхшилаш ва қадамлар сонини ошириш (5000+) тавсия этилади.';
-  }
-
+  if (val >= 1.6) return 'Сизнинг суяк зичлиги индексингиз жуда яхши. Шу тарзда давом эттиринг 👍';
+  if (val >= 1.0) return 'Рационни яхшилаш va қадамлар сонини ошириш (5000+) тавсия etiladi.';
   return 'Диққат! Сизда суяк заифлашиши хавфи мавжуд. Шифокор билан маслаҳатлашинг.';
 };
 
 export const getStatusColors = (stzi: number | null | undefined, colors: StatusColors) => {
   const val = stzi ?? 0;
-
-  if (val >= 1.6) {
-    return { label: 'Аъло', color: colors.excellent, bg: colors.excellentBg };
-  }
-
-  if (val >= 1.0) {
-    return { label: 'Ўртача', color: colors.medium, bg: colors.mediumBg };
-  }
-
+  if (val >= 1.6) return { label: 'Аъло', color: colors.excellent, bg: colors.excellentBg };
+  if (val >= 1.0) return { label: 'Ўртача', color: colors.medium, bg: colors.mediumBg };
   return { label: 'Паст', color: colors.low, bg: colors.lowBg };
 };
 
-export type RecommendationType = 'critical' | 'warning' | 'improve';
+export { Recommendation, RecommendationType };
 
-export interface Recommendation {
-  text: string;
-  type: RecommendationType;
-}
-
-export interface RecommendationInput {
+export const getRecommendations = (data: {
   steps: number;
   foodScore: number;
   bmiScore: number;
   stzi: number;
   isSmoker?: boolean;
-}
-
-export const getRecommendations = (data: RecommendationInput): Recommendation[] => {
-  const { steps, foodScore, bmiScore, stzi, isSmoker } = data;
-  const recommendations: Recommendation[] = [];
-
-  if (isSmoker) {
-    recommendations.push({
-      text: 'Чекишни ташлаш суяк зичлигини яхшилашга ёрдам беради.',
-      type: 'critical',
-    });
-  }
-
-  if (stzi === 0) {
-    recommendations.push({ text: 'Шифокор билан маслаҳатлашиш тавсия этилади.', type: 'critical' });
-  }
-
-  if (bmiScore === 0) {
-    recommendations.push({ text: 'Вазнингизни назорат қилинг.', type: 'warning' });
-  }
-
-  if (foodScore < 0) {
-    recommendations.push({ text: 'Зарарли маҳсулотларни камайтиринг.', type: 'warning' });
-  }
-
-  if (steps < 1000) {
-    recommendations.push({ text: 'Кунига камида 5000 қадам юришга ҳаракат қилинг.', type: 'warning' });
-  } else if (steps < 5000) {
-    recommendations.push({ text: 'Қадамлар сонини аста-секин ошириб боринг.', type: 'improve' });
-  }
-
-  if (foodScore < 3) {
-    recommendations.push({ text: 'Кальций ва D витаминига бой овқатларни кўпайтиринг.', type: 'improve' });
-  }
-
-  if (stzi > 0 && stzi < 1) {
-    recommendations.push({ text: 'Қуёш нури ва фаол ҳаракатни кўпайтиринг.', type: 'improve' });
-  }
-
-  const priorityMap: Record<RecommendationType, number> = {
-    critical: 0,
-    warning: 1,
-    improve: 2,
-  };
-
-  const uniqueRecommendations = Array.from(
-    new Map(recommendations.map((item) => [item.text, item])).values()
-  );
-
-  return uniqueRecommendations
-    .sort((a, b) => priorityMap[a.type] - priorityMap[b.type])
-    .slice(0, 5);
+}): Recommendation[] => {
+  return _getRecommendations(data);
 };
