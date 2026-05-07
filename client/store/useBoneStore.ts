@@ -15,6 +15,7 @@ interface BoneState {
   completeOnboarding: () => void;
   setHasHydrated: (state: boolean) => void;
   addDailyLog: (data: { steps: number; foods: string[]; walkingCondition: WalkingCondition }) => void;
+  updateStepsOnly: (steps: number) => void;
   resetStore: () => void;
 }
 
@@ -79,6 +80,46 @@ export const useBoneStore = create<BoneState>()(
           newHistory[existingIndex] = newLog;
           set({ history: sortLogsByDateDesc(newHistory) });
         } else {
+          set({ history: sortLogsByDateDesc([newLog, ...history]) });
+        }
+      },
+
+      updateStepsOnly: (steps) => {
+        const { profile, history } = get();
+        if (!profile || !Number.isFinite(steps) || steps < 0) return;
+
+        const today = getTodayDate();
+        const existingIndex = history.findIndex((l) => l.date === today);
+
+        if (existingIndex >= 0) {
+          const existingLog = history[existingIndex];
+          // Agar qadamlar o'zgarmagan bo'lsa, store'ni yangilash shart emas
+          if (existingLog.steps === steps) return;
+
+          const updatedLog = buildDailyLog({
+            date: today,
+            profile,
+            steps,
+            foods: existingLog.selectedFoodIds,
+            walkingCondition: existingLog.walkingCondition,
+          });
+
+          const newHistory = [...history];
+          newHistory[existingIndex] = updatedLog;
+          set({ history: newHistory });
+        } else {
+          // Bugungi kun uchun hali log yo'q bo'lsa, default qiymatlar bilan yaratamiz
+          const newLog = buildDailyLog({
+            date: today,
+            profile,
+            steps,
+            foods: [],
+            walkingCondition: {
+              season: 'spring_summer',
+              timeOfDay: 'morning',
+              frequency: 'always'
+            },
+          });
           set({ history: sortLogsByDateDesc([newLog, ...history]) });
         }
       },

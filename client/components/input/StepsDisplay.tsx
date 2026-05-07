@@ -74,7 +74,7 @@ export function StepsDisplay({ steps, available, loading, permissionDenied, them
                 <View style={[styles.unavailableBox, { backgroundColor: theme.inputBg, borderColor: theme.border }]}>
                     <MaterialCommunityIcons name="alert-circle-outline" size={20} color={theme.textMuted} />
                     <Text style={[styles.unavailableText, { color: theme.textMuted }]}>
-                        Педометр мавжуд эмас. Қадамларни қўлий киритинг.
+                        Педометр мавжуд эмас.
                     </Text>
                 </View>
             ) : (

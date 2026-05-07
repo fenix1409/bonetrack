@@ -20,7 +20,7 @@ const DEFAULT_WALKING_CONDITION: WalkingCondition = {
 
 export function useInputLogic(profile: UserProfile | null, history: any[]) {
   const [showSuccess, setShowSuccess] = useState(false);
-  const { addDailyLog } = useBoneStore();
+  const { addDailyLog, updateStepsOnly } = useBoneStore();
   const { calculate } = useSTZI(profile);
   
   const { steps: pedoSteps, available, loading, permissionDenied } = usePedometer();
@@ -50,10 +50,11 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
   const condition = watch('condition') || DEFAULT_WALKING_CONDITION;
 
   useEffect(() => {
-    if (available && pedoSteps !== null && !existingLog) {
+    if (available && pedoSteps !== null) {
       setValue('steps', pedoSteps.toString(), { shouldDirty: false });
+      updateStepsOnly(pedoSteps);
     }
-  }, [available, pedoSteps, existingLog, setValue]);
+  }, [available, pedoSteps, setValue, updateStepsOnly]);
 
   const toggleFood = useCallback((id: string) => {
     const next = selectedFoods.includes(id)
@@ -67,7 +68,7 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
   }, [setValue]);
 
   const scrollToFirstError = useCallback((formErrors: FieldErrors<InputFormData>) => {
-    const order: (keyof InputFormData)[] = ['steps', 'condition', 'foods'];
+    const order: (keyof InputFormData)[] = ['condition', 'foods'];
     for (const field of order) {
       if (formErrors[field]) {
         scrollRef.current?.scrollTo({
@@ -80,10 +81,8 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
   }, []);
 
   const onSubmit = useCallback(async (data: InputFormData) => {
-    const manualSteps = Number.parseInt(data.steps, 10);
-    const currentSteps = !Number.isNaN(manualSteps) && manualSteps > 0
-      ? manualSteps
-      : (available && pedoSteps !== null ? pedoSteps : 0);
+    // Endi qadamlarni faqat pedometrdan olamiz
+    const currentSteps = available && pedoSteps !== null ? pedoSteps : 0;
 
     const result = calculate(currentSteps, data.foods, data.condition);
     if (!result) return;

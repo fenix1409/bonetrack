@@ -5,10 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6aa1d0a3-40b0-4498-8467-c1c2f2347be8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/app.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/app/(tabs)/input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/input.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/profile.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/utils/calculations.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/utils/calculations.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/utils/stzi-system.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/utils/stzi-system.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/components/input/StepsDisplay.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/input/StepsDisplay.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/hooks/useInputLogic.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/hooks/useInputLogic.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/hooks/usePedometer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/hooks/usePedometer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/store/useBoneStore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/store/useBoneStore.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,7 +19,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="155" />
+    <option name="cachedIndexableFilesCount" value="156" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -86,6 +89,10 @@
       <workItem from="1777968279478" duration="5038000" />
       <workItem from="1778000190476" duration="7798000" />
       <workItem from="1778055942485" duration="2389000" />
+      <workItem from="1778070665070" duration="475000" />
+      <workItem from="1778071588390" duration="4289000" />
+      <workItem from="1778093555984" duration="3631000" />
+      <workItem from="1778133657240" duration="704000" />
     </task>
     <servers />
   </component>

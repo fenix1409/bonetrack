@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { SuccessModal } from '@/components/ui/SuccessModal';
 import { StepsDisplay } from '@/components/input/StepsDisplay';
-import { StepsInput } from '@/components/input/StepsInput';
 import { WalkingConditionPicker } from '@/components/input/WalkingConditionPicker';
 import { FoodSelector } from '@/components/input/FoodSelector';
 import Colors from '@/constants/Colors';
@@ -21,23 +20,7 @@ export default function InputScreen() {
   const { profile, history } = useBoneStore();
   const router = useRouter();
 
-  const {
-    control,
-    handleSubmit,
-    onSubmit,
-    selectedFoods,
-    toggleFood,
-    condition,
-    handleConditionChange,
-    showSuccess,
-    setShowSuccess,
-    isSubmitting,
-    available,
-    pedoSteps,
-    scrollRef,
-    sectionYRef,
-    scrollToFirstError
-  } = useInputLogic(profile, history);
+  const { control, handleSubmit, onSubmit, selectedFoods, toggleFood, condition, handleConditionChange, showSuccess, setShowSuccess, isSubmitting, available, pedoSteps, scrollRef, sectionYRef, scrollToFirstError } = useInputLogic(profile, history);
 
   const handleSave = useCallback(() => {
     void handleSubmit(onSubmit, scrollToFirstError)();
@@ -83,21 +66,13 @@ export default function InputScreen() {
             loading={!available && pedoSteps === null}
             permissionDenied={available === false && pedoSteps === null}
           />
-          
-          <StepsInput
-            control={control}
-            name="steps"
-            theme={theme}
-            autoSteps={pedoSteps}
-            pedometerAvailable={available}
-          />
         </View>
 
         <View onLayout={e => { sectionYRef.current.condition = e.nativeEvent.layout.y; }}>
-          <WalkingConditionPicker 
-            value={condition} 
-            onChange={handleConditionChange} 
-            theme={theme} 
+          <WalkingConditionPicker
+            value={condition}
+            onChange={handleConditionChange}
+            theme={theme}
           />
         </View>
 

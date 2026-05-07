@@ -18,26 +18,16 @@ export function usePedometer(): PedometerState {
 
   useEffect(() => {
     let subscription: ReturnType<typeof Pedometer.watchStepCount> | null = null;
-    let isMounted = true; // ✅ Unmount bo'lgandan keyin state update oldini oladi
+    let isMounted = true;
+    let pastSteps = 0; 
 
     const getStartOfDay = () => {
       const now = new Date();
       return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
     };
 
-    const fetchSteps = async (): Promise<number | null> => {
-      try {
-        const now = new Date();
-        const result = await Pedometer.getStepCountAsync(getStartOfDay(), now);
-        return result.steps;
-      } catch {
-        return null;
-      }
-    };
-
     const init = async () => {
       try {
-        // 1. Permission
         const { status } = await Pedometer.requestPermissionsAsync();
         if (!isMounted) return;
 
@@ -46,7 +36,6 @@ export function usePedometer(): PedometerState {
           return;
         }
 
-        // 2. Availability
         const isAvailable = await Pedometer.isAvailableAsync();
         if (!isMounted) return;
 
@@ -55,24 +44,27 @@ export function usePedometer(): PedometerState {
           return;
         }
 
-        // 3. Bugungi qadamlar
-        const steps = await fetchSteps();
+        try {
+          const now = new Date();
+          const result = await Pedometer.getStepCountAsync(getStartOfDay(), now);
+          pastSteps = result.steps || 0;
+        } catch (error) {
+          pastSteps = 0;
+        }
+
         if (!isMounted) return;
+        setState({ steps: pastSteps, available: true, loading: false, permissionDenied: false });
 
-        setState({ steps, available: true, loading: false, permissionDenied: false });
-
-        // 4. Real-time yangilanish
-        // ✅ watchStepCount delta qaytaradi — shuning uchun getStepCountAsync qayta chaqiramiz
-        // Toza total qiymat olish uchun, ikki marta qo'shib yubormaslik uchun
-        subscription = Pedometer.watchStepCount(async () => {
+        subscription = Pedometer.watchStepCount((result) => {
           if (!isMounted) return;
-          const fresh = await fetchSteps();
-          if (!isMounted) return;
-          if (fresh !== null) {
-            setState(prev => ({ ...prev, steps: fresh }));
-          }
+          
+          setState(prev => ({ 
+            ...prev, 
+            steps: pastSteps + result.steps 
+          }));
         });
-      } catch {
+
+      } catch (error) {
         if (!isMounted) return;
         setState({ steps: null, available: false, loading: false, permissionDenied: false });
       }
