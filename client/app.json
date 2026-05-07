@@ -4,9 +4,7 @@
       "image": "./assets/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#009d6b",
-      "dark": {
-        "backgroundColor": "#006142"
-      }
+      "dark": { "backgroundColor": "#006142" }
     },
     "name": "BoneTrack",
     "slug": "bonetrack",
@@ -38,30 +36,21 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/logo.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#009d6b",
-          "dark": {
-            "backgroundColor": "#006142"
-          }
-        }
-      ],
+      ["expo-splash-screen", {
+        "image": "./assets/logo.png",
+        "imageWidth": 200,
+        "resizeMode": "contain",
+        "backgroundColor": "#009d6b",
+        "dark": { "backgroundColor": "#006142" }
+      }],
       "expo-font",
       "expo-web-browser",
       "expo-image"
     ],
-    "experiments": {
-      "typedRoutes": true
-    },
+    "experiments": { "typedRoutes": true },
     "extra": {
       "router": {},
-      "eas": {
-        "projectId": "bf434711-ebc1-4075-8ed8-90ea28f5811f"
-      }
+      "eas": { "projectId": "bf434711-ebc1-4075-8ed8-90ea28f5811f" }
     }
   }
 }

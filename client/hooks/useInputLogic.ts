@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { usePedometer } from '@/hooks/usePedometer';
@@ -22,7 +23,7 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
   const [showSuccess, setShowSuccess] = useState(false);
   const { addDailyLog, updateStepsOnly } = useBoneStore();
   const { calculate } = useSTZI(profile);
-  
+
   const { steps: pedoSteps, available, loading, permissionDenied } = usePedometer();
   const scrollRef = useRef<ScrollView>(null);
   const sectionYRef = useRef<Record<string, number>>({ steps: 0, condition: 0, foods: 0 });
@@ -52,11 +53,11 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
   useEffect(() => {
     if (available && pedoSteps !== null) {
       setValue('steps', pedoSteps.toString(), { shouldDirty: false });
-      updateStepsOnly(pedoSteps);
     }
-  }, [available, pedoSteps, setValue, updateStepsOnly]);
+  }, [available, pedoSteps, setValue]);
 
   const toggleFood = useCallback((id: string) => {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const next = selectedFoods.includes(id)
       ? selectedFoods.filter(f => f !== id)
       : [...selectedFoods, id];
@@ -64,6 +65,7 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
   }, [selectedFoods, setValue]);
 
   const handleConditionChange = useCallback((newCondition: WalkingCondition) => {
+    void Haptics.selectionAsync();
     setValue('condition', newCondition, { shouldDirty: true });
   }, [setValue]);
 
@@ -82,13 +84,16 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
 
   const onSubmit = useCallback(async (data: InputFormData) => {
     // Endi qadamlarni faqat pedometrdan olamiz
-    const currentSteps = available && pedoSteps !== null ? pedoSteps : 0;
+    const currentSteps = available && pedoSteps !== null
+      ? pedoSteps
+      : existingLog?.steps ?? 0
 
     const result = calculate(currentSteps, data.foods, data.condition);
     if (!result) return;
 
     await new Promise(resolve => setTimeout(resolve, 600));
     addDailyLog({ steps: currentSteps, foods: data.foods, walkingCondition: data.condition });
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setShowSuccess(true);
   }, [addDailyLog, calculate, available, pedoSteps]);
 
@@ -107,6 +112,8 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
     scrollRef,
     sectionYRef,
     scrollToFirstError,
-    condition
+    condition,
+    loading,
+    permissionDenied
   };
 }

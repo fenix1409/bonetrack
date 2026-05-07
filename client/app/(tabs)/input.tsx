@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import React, { useCallback } from 'react';
 import { ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { usePedometer } from '@/hooks/usePedometer';
 
 export default function InputScreen() {
   const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
@@ -20,7 +21,8 @@ export default function InputScreen() {
   const { profile, history } = useBoneStore();
   const router = useRouter();
 
-  const { control, handleSubmit, onSubmit, selectedFoods, toggleFood, condition, handleConditionChange, showSuccess, setShowSuccess, isSubmitting, available, pedoSteps, scrollRef, sectionYRef, scrollToFirstError } = useInputLogic(profile, history);
+  const { loading, permissionDenied, control, handleSubmit, onSubmit, selectedFoods, toggleFood, condition, handleConditionChange, showSuccess, setShowSuccess, isSubmitting, available, pedoSteps, scrollRef, sectionYRef, scrollToFirstError } = useInputLogic(profile, history);
+  // const { steps: pedoSteps, available, loading, permissionDenied } = usePedometer()
 
   const handleSave = useCallback(() => {
     void handleSubmit(onSubmit, scrollToFirstError)();
@@ -63,8 +65,8 @@ export default function InputScreen() {
             steps={pedoSteps}
             available={available}
             theme={theme}
-            loading={!available && pedoSteps === null}
-            permissionDenied={available === false && pedoSteps === null}
+            loading={loading}            
+            permissionDenied={permissionDenied}  
           />
         </View>
 

@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/Card';
 import { stepsToKm } from '@/utils/calculations';
 import { Theme } from '@/constants/Colors';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect } from 'react';
 
 interface StepsDisplayProps {
     steps: number | null;
@@ -11,23 +12,28 @@ interface StepsDisplayProps {
     permissionDenied: boolean;
     theme: Theme;
     onEditPress?: () => void;
+    onGoalReached?: () => void;
 }
 
 const GOAL = 10_000;
 
 const getStepStatus = (steps: number) => {
-    if (steps < 3_000) return { icon: 'emoticon-sad-outline', label: 'Kam harakat' };
-    if (steps < 5_000) return { icon: 'emoticon-happy-outline', label: 'Qoniqarli' };
-    if (steps < 7_500) return { icon: 'emoticon-excited-outline', label: 'Yaxshi' };
-    if (steps < 10_000) return { icon: 'arm-flex-outline', label: "Zo'r" };
-    return { icon: 'fire', label: 'Ajoyib!' };
+    if (steps < 3_000) return { icon: 'emoticon-sad-outline', label: 'Kam harakat', color: '#94A3B8' };
+    if (steps < 5_000) return { icon: 'emoticon-happy-outline', label: 'Qoniqarli', color: '#F59E0B' };
+    if (steps < 7_500) return { icon: 'emoticon-excited-outline', label: 'Yaxshi', color: '#10B981' };
+    if (steps < 10_000) return { icon: 'arm-flex-outline', label: "Zo'r", color: '#3B82F6' };
+    return { icon: 'fire', label: 'Ajoyib!', color: '#EF4444' };
 };
 
-export function StepsDisplay({ steps, available, loading, permissionDenied, theme, onEditPress }: StepsDisplayProps) {
+export function StepsDisplay({ steps, available, loading, permissionDenied, theme, onEditPress, onGoalReached }: StepsDisplayProps) {
     const progress = Math.min((steps ?? 0) / GOAL, 1);
     const km = steps != null ? (stepsToKm(steps) ?? 0).toFixed(2) : '0.00';
     const kcal = Math.round((steps ?? 0) * 0.04);
     const status = steps != null ? getStepStatus(steps) : null;
+
+    useEffect(() => {
+        if (progress >= 1) onGoalReached?.();
+    }, [progress]);
 
     return (
         <Card style={styles.card} padding={20}>
@@ -40,11 +46,11 @@ export function StepsDisplay({ steps, available, loading, permissionDenied, them
                     <Text style={[styles.cardSubtitle, { color: theme.textMuted }]}>Телефон акселерометри орқали</Text>
                 </View>
                 {!loading && onEditPress && (
-                    <TouchableOpacity 
-                      onPress={onEditPress}
-                      style={[styles.editBtn, { backgroundColor: theme.border + '44' }]}
+                    <TouchableOpacity
+                        onPress={onEditPress}
+                        style={[styles.editBtn, { backgroundColor: theme.border + '44' }]}
                     >
-                      <MaterialCommunityIcons name="pencil" size={16} color={theme.text} />
+                        <MaterialCommunityIcons name="pencil" size={16} color={theme.text} />
                     </TouchableOpacity>
                 )}
                 {available && !loading && (
@@ -80,32 +86,45 @@ export function StepsDisplay({ steps, available, loading, permissionDenied, them
             ) : (
                 <>
                     <View style={styles.stepsRow}>
-                        <Text style={[styles.stepsNumber, { color: theme.text }]}>
-                            {(steps ?? 0).toLocaleString()}
-                        </Text>
-                        <Text style={[styles.stepsLabel, { color: theme.textMuted }]}>qadam</Text>
+                        <View style={{ flex: 1 }}>
+                            <Text style={[styles.stepsNumber, { color: theme.text }]}>
+                                {(steps ?? 0).toLocaleString()}
+                            </Text>
+                            <Text style={[styles.stepsLabel, { color: theme.textMuted }]}>bugungi qadamlar</Text>
+                        </View>
                         {status && (
-                            <View style={[styles.statusBadge, { backgroundColor: theme.primary + '15' }]}>
-                                <MaterialCommunityIcons name={status.icon as any} size={16} color={theme.primary} />
-                                <Text style={[styles.statusText, { color: theme.primary }]}>{status.label}</Text>
+                            <View style={[styles.statusBadge, { backgroundColor: status.color + '15' }]}>
+                                <MaterialCommunityIcons name={status.icon as any} size={18} color={status.color} />
+                                <Text style={[styles.statusText, { color: status.color }]}>{status.label}</Text>
                             </View>
                         )}
                     </View>
 
-                    <View style={[styles.progressBg, { backgroundColor: theme.border }]}>
-                        <View style={[
-                            styles.progressFill,
-                            { backgroundColor: progress >= 1 ? theme.excellent : theme.primary, width: `${progress * 100}%` },
-                        ]} />
-                    </View>
-                    <View style={styles.progressLabels}>
-                        <Text style={[styles.progressLabel, { color: theme.textMuted }]}>0</Text>
-                        <Text style={[styles.progressLabel, { color: theme.textMuted }]}>
-                            Maqsad: {GOAL.toLocaleString()} qadam
-                        </Text>
+                    <View style={styles.progressContainer}>
+                        <View style={[styles.progressBg, { backgroundColor: theme.border + '33' }]}>
+                            <View style={[
+                                styles.progressFill,
+                                {
+                                    backgroundColor: progress >= 1 ? theme.excellent : theme.primary,
+                                    width: `${progress * 100}%`,
+                                    shadowColor: progress >= 1 ? theme.excellent : theme.primary,
+                                    shadowOffset: { width: 0, height: 0 },
+                                    shadowOpacity: 0.5,
+                                    shadowRadius: 10,
+                                },
+                            ]} />
+                        </View>
                     </View>
 
-                    <View style={[styles.metricsRow, { borderTopColor: theme.border }]}>
+                    <View style={styles.progressLabels}>
+                        <Text style={[styles.progressLabel, { color: theme.textMuted }]}>0%</Text>
+                        <Text style={[styles.progressLabel, { color: theme.text, fontWeight: '700' }]}>
+                            Maqsad: {GOAL.toLocaleString()}
+                        </Text>
+                        <Text style={[styles.progressLabel, { color: theme.textMuted }]}>100%</Text>
+                    </View>
+
+                    <View style={[styles.metricsRow, { borderTopColor: theme.border + '33' }]}>
                         <View style={styles.metricItem}>
                             <MaterialCommunityIcons name="map-marker-distance" size={16} color={theme.primary} />
                             <Text style={[styles.metricValue, { color: theme.text }]}>{km} km</Text>
@@ -145,18 +164,19 @@ const styles = StyleSheet.create({
     stateText: { fontSize: 14, fontWeight: '500' },
     unavailableBox: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, borderRadius: 12, borderWidth: 1 },
     unavailableText: { flex: 1, fontSize: 13, fontWeight: '500', lineHeight: 18 },
-    stepsRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16 },
-    stepsNumber: { fontSize: 48, fontWeight: '800', letterSpacing: -1 },
-    stepsLabel: { fontSize: 16, fontWeight: '600', marginTop: 8 },
-    statusBadge: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20, marginLeft: 'auto' },
-    statusText: { fontSize: 13, fontWeight: '700' },
-    progressBg: { height: 8, borderRadius: 4, overflow: 'hidden', marginBottom: 8 },
-    progressFill: { height: '100%', borderRadius: 4 },
-    progressLabels: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
-    progressLabel: { fontSize: 11, fontWeight: '600' },
-    metricsRow: { flexDirection: 'row', justifyContent: 'space-around', paddingTop: 16, borderTopWidth: 1 },
-    metricItem: { alignItems: 'center', gap: 4, flex: 1 },
-    metricValue: { fontSize: 16, fontWeight: '800' },
-    metricLabel: { fontSize: 11, fontWeight: '500' },
-    metricDivider: { width: 1, height: '100%' },
+    stepsRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
+    stepsNumber: { fontSize: 56, fontWeight: '900', letterSpacing: -2, lineHeight: 60 },
+    stepsLabel: { fontSize: 14, fontWeight: '600', marginTop: -4, textTransform: 'uppercase', letterSpacing: 0.5 },
+    statusBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16 },
+    statusText: { fontSize: 14, fontWeight: '800' },
+    progressContainer: { marginBottom: 8 },
+    progressBg: { height: 12, borderRadius: 6, overflow: 'hidden' },
+    progressFill: { height: '100%', borderRadius: 6 },
+    progressLabels: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 24, paddingHorizontal: 2 },
+    progressLabel: { fontSize: 12, fontWeight: '600' },
+    metricsRow: { flexDirection: 'row', justifyContent: 'space-around', paddingTop: 20, borderTopWidth: 1 },
+    metricItem: { alignItems: 'center', gap: 6, flex: 1 },
+    metricValue: { fontSize: 18, fontWeight: '800' },
+    metricLabel: { fontSize: 12, fontWeight: '500' },
+    metricDivider: { width: 1, height: 24, alignSelf: 'center' },
 });

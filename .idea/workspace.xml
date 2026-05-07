@@ -7,11 +7,10 @@
     <list default="true" id="6aa1d0a3-40b0-4498-8467-c1c2f2347be8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/input.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/components/input/StepsDisplay.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/input/StepsDisplay.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/components/ui/Card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/ui/Card.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/hooks/useInputLogic.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/hooks/useInputLogic.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/hooks/usePedometer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/hooks/usePedometer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/store/useBoneStore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/store/useBoneStore.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,6 +92,8 @@
       <workItem from="1778071588390" duration="4289000" />
       <workItem from="1778093555984" duration="3631000" />
       <workItem from="1778133657240" duration="704000" />
+      <workItem from="1778134723877" duration="2002000" />
+      <workItem from="1778138966306" duration="734000" />
     </task>
     <servers />
   </component>
