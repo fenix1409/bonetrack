@@ -8,7 +8,6 @@ import { WalkingCondition, UserProfile } from '@/types/bone';
 import { ScrollView } from 'react-native';
 
 export type InputFormData = {
-  steps: string;
   foods: string[];
   condition: WalkingCondition;
 };
@@ -37,7 +36,6 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
 
   const { control, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm<InputFormData>({
     defaultValues: {
-      steps: existingLog?.steps?.toString() ?? '',
       foods: existingLog?.selectedFoodIds ?? [],
       condition: {
         season: existingLog?.walkingCondition?.season ?? DEFAULT_WALKING_CONDITION.season,
@@ -49,12 +47,6 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
 
   const selectedFoods = watch('foods') || [];
   const condition = watch('condition') || DEFAULT_WALKING_CONDITION;
-
-  useEffect(() => {
-    if (available && pedoSteps !== null) {
-      setValue('steps', pedoSteps.toString(), { shouldDirty: false });
-    }
-  }, [available, pedoSteps, setValue]);
 
   const toggleFood = useCallback((id: string) => {
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -83,10 +75,8 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
   }, []);
 
   const onSubmit = useCallback(async (data: InputFormData) => {
-    // Endi qadamlarni faqat pedometrdan olamiz
-    const currentSteps = available && pedoSteps !== null
-      ? pedoSteps
-      : existingLog?.steps ?? 0
+    // Qadamlar faqat pedometrdan olinadi (automatic)
+    const currentSteps = pedoSteps ?? (existingLog?.steps ?? 0);
 
     const result = calculate(currentSteps, data.foods, data.condition);
     if (!result) return;
@@ -95,7 +85,7 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
     addDailyLog({ steps: currentSteps, foods: data.foods, walkingCondition: data.condition });
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setShowSuccess(true);
-  }, [addDailyLog, calculate, available, pedoSteps]);
+  }, [addDailyLog, calculate, pedoSteps, existingLog]);
 
   return {
     control,

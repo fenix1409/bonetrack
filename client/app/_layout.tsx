@@ -1,6 +1,7 @@
 import { Loading } from '@/components/ui/Loading';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useBoneStore } from "@/store/useBoneStore";
+import { usePedometer } from '@/hooks/usePedometer';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -12,18 +13,22 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
+  const { steps } = usePedometer(); 
   const colorScheme = useColorScheme();
-  const { isFirstLaunch, profile, _hasHydrated } = useBoneStore();
+  const { isFirstLaunch, profile, _hasHydrated, updateStepsOnly } = useBoneStore();
+
+  useEffect(() => {
+    if (steps !== null && _hasHydrated) {
+      updateStepsOnly(steps);
+    }
+  }, [steps, _hasHydrated, updateStepsOnly]);
   const segments = useSegments();
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     if (_hasHydrated) {
-      const timer = setTimeout(() => {
-        setIsReady(true);
-      }, 1000);
-      return () => clearTimeout(timer);
+      setIsReady(true);
     }
   }, [_hasHydrated]);
 

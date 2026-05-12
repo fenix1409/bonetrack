@@ -9,7 +9,7 @@ import { useBoneStore } from '@/store/useBoneStore';
 import { useInputLogic } from '@/hooks/useInputLogic';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePedometer } from '@/hooks/usePedometer';
@@ -66,7 +66,7 @@ export default function InputScreen() {
             available={available}
             theme={theme}
             loading={loading}            
-            permissionDenied={permissionDenied}  
+            permissionDenied={permissionDenied}
           />
         </View>
 

@@ -15,13 +15,13 @@ interface StepsDisplayProps {
     onGoalReached?: () => void;
 }
 
-const GOAL = 10_000;
+const GOAL = 5_000;
 
 const getStepStatus = (steps: number) => {
-    if (steps < 3_000) return { icon: 'emoticon-sad-outline', label: 'Kam harakat', color: '#94A3B8' };
-    if (steps < 5_000) return { icon: 'emoticon-happy-outline', label: 'Qoniqarli', color: '#F59E0B' };
-    if (steps < 7_500) return { icon: 'emoticon-excited-outline', label: 'Yaxshi', color: '#10B981' };
-    if (steps < 10_000) return { icon: 'arm-flex-outline', label: "Zo'r", color: '#3B82F6' };
+    if (steps < 1_500) return { icon: 'emoticon-sad-outline', label: 'Kam harakat', color: '#94A3B8' };
+    if (steps < 3_000) return { icon: 'emoticon-happy-outline', label: 'Qoniqarli', color: '#F59E0B' };
+    if (steps < 4_000) return { icon: 'emoticon-excited-outline', label: 'Yaxshi', color: '#10B981' };
+    if (steps < 5_000) return { icon: 'arm-flex-outline', label: "Zo'r", color: '#3B82F6' };
     return { icon: 'fire', label: 'Ajoyib!', color: '#EF4444' };
 };
 
@@ -45,14 +45,6 @@ export function StepsDisplay({ steps, available, loading, permissionDenied, them
                     <Text style={[styles.cardTitle, { color: theme.text }]}>Юрилган қадамлар</Text>
                     <Text style={[styles.cardSubtitle, { color: theme.textMuted }]}>Телефон акселерометри орқали</Text>
                 </View>
-                {!loading && onEditPress && (
-                    <TouchableOpacity
-                        onPress={onEditPress}
-                        style={[styles.editBtn, { backgroundColor: theme.border + '44' }]}
-                    >
-                        <MaterialCommunityIcons name="pencil" size={16} color={theme.text} />
-                    </TouchableOpacity>
-                )}
                 {available && !loading && (
                     <View style={[styles.liveBadge, { backgroundColor: theme.primary + '15' }]}>
                         <View style={[styles.liveDot, { backgroundColor: theme.primary }]} />
