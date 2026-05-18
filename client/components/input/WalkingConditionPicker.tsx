@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Card } from '@/components/ui/Card';
 import type { Theme } from '@/constants/Colors';
-import type { WalkingCondition, WalkingSeason, WalkingTimeOfDay } from '@/types/bone';
+import type { WalkingCondition, WalkingSeason, WalkingTimeOfDay, WalkingFrequency } from '@/types/bone';
 
 interface WalkingConditionPickerProps {
   value: WalkingCondition;
@@ -17,9 +17,16 @@ const SEASON_OPTIONS: { value: WalkingSeason; label: string }[] = [
 ];
 
 const TIME_OPTIONS: { value: WalkingTimeOfDay; label: string }[] = [
-  { value: 'morning', label: 'Эрталаб (05:00-09:00)' },
-  { value: 'day', label: 'Кундузи (10:00-15:00)' },
+  { value: 'morning', label: 'Эрталаб (05:00–09:00)' },
+  { value: 'day', label: 'Кундузи (10:00–15:00)' },
   { value: 'evening', label: 'Кечқурун' },
+];
+
+const FREQUENCY_OPTIONS: { value: WalkingFrequency; label: string; icon: string }[] = [
+  { value: 'always', label: 'Ҳар доим', icon: 'check-circle-outline' },
+  { value: 'sometimes', label: 'Баъзан', icon: 'circle-half-full' },
+  { value: 'rare', label: 'Ора-орада', icon: 'circle-outline' },
+  { value: 'sedentary', label: 'Кам ҳаракат', icon: 'sofa-outline' },
 ];
 
 export const WalkingConditionPicker = React.memo(
@@ -32,15 +39,15 @@ export const WalkingConditionPicker = React.memo(
           </View>
           <View>
             <Text style={[styles.cardTitle, { color: theme.text }]}>Юриш шароити</Text>
-            <Text style={[styles.cardSubTitle, { color: theme.textMuted }]}>Мавсум ва вақтни танланг</Text>
+            <Text style={[styles.cardSubTitle, { color: theme.textMuted }]}>Мавсум, вақт ва частотани танланг</Text>
           </View>
         </View>
 
+        {/* Мавсум */}
         <Text style={[styles.sectionLabel, { color: theme.text }]}>Мавсум</Text>
         <View style={styles.optionsRow}>
           {SEASON_OPTIONS.map((option) => {
             const isSelected = value.season === option.value;
-
             return (
               <Pressable
                 key={option.value}
@@ -54,15 +61,13 @@ export const WalkingConditionPicker = React.memo(
                   },
                 ]}
               >
-                <Text
-                  style={[
-                    styles.optionLabel,
-                    {
-                      color: isSelected ? theme.secondary : theme.textMuted,
-                      fontWeight: isSelected ? '700' : '500',
-                    },
-                  ]}
-                >
+                <Text style={[
+                  styles.optionLabel,
+                  {
+                    color: isSelected ? theme.secondary : theme.textMuted,
+                    fontWeight: isSelected ? '700' : '500'
+                  },
+                ]}>
                   {option.label}
                 </Text>
               </Pressable>
@@ -70,17 +75,17 @@ export const WalkingConditionPicker = React.memo(
           })}
         </View>
 
+        {/* Вақт */}
         <Text style={[styles.sectionLabel, { color: theme.text, marginTop: 20 }]}>Вақт</Text>
         <View style={styles.optionsColumn}>
           {TIME_OPTIONS.map((option) => {
             const isSelected = value.timeOfDay === option.value;
-
             return (
               <Pressable
                 key={option.value}
                 onPress={() => onChange({ ...value, timeOfDay: option.value })}
                 style={({ pressed }) => [
-                  styles.timeOption,
+                  styles.radioOption,
                   {
                     backgroundColor: isSelected ? theme.secondary + '15' : 'transparent',
                     borderColor: isSelected ? theme.secondary : theme.textMuted + '20',
@@ -91,15 +96,57 @@ export const WalkingConditionPicker = React.memo(
                 <View style={[styles.radioCircle, { borderColor: isSelected ? theme.secondary : theme.textMuted + '60' }]}>
                   {isSelected && <View style={[styles.radioDot, { backgroundColor: theme.secondary }]} />}
                 </View>
-                <Text
-                  style={[
-                    styles.optionLabel,
-                    {
-                      color: isSelected ? theme.text : theme.textMuted,
-                      fontWeight: isSelected ? '600' : '500',
-                    },
-                  ]}
-                >
+                <Text style={[
+                  styles.optionLabel,
+                  {
+                    color: isSelected ? theme.text : theme.textMuted,
+                    fontWeight: isSelected ? '600' : '500'
+                  },
+                ]}>
+                  {option.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        {/* Частота — getEnvironmentScore uchun muhim */}
+        <Text style={[styles.sectionLabel, { color: theme.text, marginTop: 20 }]}>Частота</Text>
+        <View style={styles.optionsColumn}>
+          {FREQUENCY_OPTIONS.map((option) => {
+            const isSelected = value.frequency === option.value;
+            const isSedentary = option.value === 'sedentary';
+            const selectedColor = isSedentary ? theme.low : theme.secondary;
+
+            return (
+              <Pressable
+                key={option.value}
+                onPress={() => onChange({ ...value, frequency: option.value })}
+                style={({ pressed }) => [
+                  styles.radioOption,
+                  {
+                    backgroundColor: isSelected
+                      ? (isSedentary ? theme.lowBg : theme.secondary + '15')
+                      : 'transparent',
+                    borderColor: isSelected
+                      ? selectedColor
+                      : theme.textMuted + '20',
+                    transform: [{ scale: pressed ? 0.98 : 1 }],
+                  },
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name={option.icon as any}
+                  size={20}
+                  color={isSelected ? selectedColor : theme.textMuted}
+                />
+                <Text style={[
+                  styles.optionLabel,
+                  {
+                    color: isSelected ? (isSedentary ? theme.low : theme.text) : theme.textMuted,
+                    fontWeight: isSelected ? '600' : '500'
+                  },
+                ]}>
                   {option.label}
                 </Text>
               </Pressable>
@@ -122,36 +169,17 @@ const styles = StyleSheet.create({
   sectionLabel: { fontSize: 14, fontWeight: '600', marginBottom: 12 },
   optionsRow: { flexDirection: 'row', gap: 10 },
   optionButton: {
-    flex: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 16,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    flex: 1, paddingHorizontal: 12, paddingVertical: 10,
+    borderRadius: 16, borderWidth: 2,
+    justifyContent: 'center', alignItems: 'center',
   },
   optionLabel: { fontSize: 14 },
   optionsColumn: { gap: 10 },
-  timeOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderRadius: 16,
-    borderWidth: 2,
-    gap: 10,
+  radioOption: {
+    flexDirection: 'row', alignItems: 'center',
+    paddingHorizontal: 12, paddingVertical: 12,
+    borderRadius: 16, borderWidth: 2, gap: 10,
   },
-  radioCircle: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  radioDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
+  radioCircle: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, justifyContent: 'center', alignItems: 'center' },
+  radioDot: { width: 10, height: 10, borderRadius: 5 },
 });

@@ -24,7 +24,6 @@ const getTodayDate = (): string => {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 };
 
-// Use appropriate storage based on platform
 const getStorage = () => {
   if (Platform.OS === 'web') {
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
@@ -34,14 +33,12 @@ const getStorage = () => {
         removeItem: (key: string) => localStorage.removeItem(key),
       }));
     }
-    // Fallback for SSR/build time
     return createJSONStorage(() => ({
       getItem: () => null,
       setItem: () => { },
       removeItem: () => { },
     }));
   }
-  // Native platforms use AsyncStorage
   return createJSONStorage(() => AsyncStorage);
 };
 
@@ -93,22 +90,24 @@ export const useBoneStore = create<BoneState>()(
 
         if (existingIndex >= 0) {
           const existingLog = history[existingIndex];
-          // Agar qadamlar o'zgarmagan bo'lsa, store'ni yangilash shart emas
           if (existingLog.steps === steps) return;
 
           const updatedLog = buildDailyLog({
             date: today,
             profile,
             steps,
-            foods: existingLog.selectedFoodIds,
-            walkingCondition: existingLog.walkingCondition,
+            foods: existingLog.selectedFoodIds ?? [],                    
+            walkingCondition: existingLog.walkingCondition ?? {          
+              season: 'spring_summer',
+              timeOfDay: 'morning',
+              frequency: 'always',
+            },
           });
 
           const newHistory = [...history];
           newHistory[existingIndex] = updatedLog;
           set({ history: newHistory });
         } else {
-          // Bugungi kun uchun hali log yo'q bo'lsa, default qiymatlar bilan yaratamiz
           const newLog = buildDailyLog({
             date: today,
             profile,

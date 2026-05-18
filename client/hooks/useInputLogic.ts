@@ -20,7 +20,7 @@ const DEFAULT_WALKING_CONDITION: WalkingCondition = {
 
 export function useInputLogic(profile: UserProfile | null, history: any[]) {
   const [showSuccess, setShowSuccess] = useState(false);
-  const { addDailyLog, updateStepsOnly } = useBoneStore();
+  const { addDailyLog } = useBoneStore();
   const { calculate } = useSTZI(profile);
 
   const { steps: pedoSteps, available, loading, permissionDenied } = usePedometer();

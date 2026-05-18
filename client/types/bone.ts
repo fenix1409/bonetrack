@@ -1,18 +1,19 @@
 export interface UserProfile {
   age: number;
-  height: number; // in cm
-  weight: number; // in kg
+  height: number; 
+  weight: number; 
   gender: 'male' | 'female';
   isSmoker: boolean;
 }
 
 export type WalkingSeason = 'spring_summer' | 'autumn_winter' | 'always';
 export type WalkingTimeOfDay = 'morning' | 'day' | 'evening' | 'ideal' | 'sometimes' | 'sedentary';
+export type WalkingFrequency = 'always' | 'sometimes' | 'rare' | 'sedentary';
 
 export interface WalkingCondition {
   season: WalkingSeason;
   timeOfDay: WalkingTimeOfDay;
-  frequency: 'always' | 'sometimes' | 'rare' | 'sedentary';
+  frequency: WalkingFrequency;
 }
 
 export interface NutritionChoice {
@@ -21,7 +22,7 @@ export interface NutritionChoice {
 }
 
 export interface DailyLog {
-  date: string; // Year-Month-Day
+  date: string; 
   stzi: number;
   bmiScore: number;
   foodScore: number;
