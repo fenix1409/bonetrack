@@ -2,7 +2,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Card } from '@/components/ui/Card';
 import { stepsToKm } from '@/utils/calculations';
 import { Theme } from '@/constants/Colors';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { useEffect } from 'react';
 
 interface StepsDisplayProps {
@@ -32,8 +32,8 @@ export function StepsDisplay({ steps, available, loading, permissionDenied, them
     const status = steps != null ? getStepStatus(steps) : null;
 
     useEffect(() => {
-        if (progress >= 1) onGoalReached?.();
-    }, [progress]);
+        if (progress >= 1 && onGoalReached) onGoalReached();
+    }, [progress, onGoalReached]);
 
     return (
         <Card style={styles.card} padding={20}>

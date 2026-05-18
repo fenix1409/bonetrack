@@ -9,10 +9,9 @@ import { useBoneStore } from '@/store/useBoneStore';
 import { useInputLogic } from '@/hooks/useInputLogic';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { usePedometer } from '@/hooks/usePedometer';
 
 export default function InputScreen() {
   const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
@@ -21,8 +20,7 @@ export default function InputScreen() {
   const { profile, history } = useBoneStore();
   const router = useRouter();
 
-  const { loading, permissionDenied, control, handleSubmit, onSubmit, selectedFoods, toggleFood, condition, handleConditionChange, showSuccess, setShowSuccess, isSubmitting, available, pedoSteps, scrollRef, sectionYRef, scrollToFirstError } = useInputLogic(profile, history);
-  // const { steps: pedoSteps, available, loading, permissionDenied } = usePedometer()
+  const { loading, permissionDenied, handleSubmit, onSubmit, selectedFoods, toggleFood, condition, handleConditionChange, showSuccess, setShowSuccess, isSubmitting, available, pedoSteps, scrollRef, sectionYRef, scrollToFirstError } = useInputLogic(profile, history);
 
   const handleSave = useCallback(() => {
     void handleSubmit(onSubmit, scrollToFirstError)();

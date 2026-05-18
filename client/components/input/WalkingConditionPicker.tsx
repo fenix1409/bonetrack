@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Card } from '@/components/ui/Card';
 import type { Theme } from '@/constants/Colors';
-import type { WalkingCondition, WalkingSeason, WalkingTimeOfDay, WalkingFrequency } from '@/types/bone';
+import type { WalkingCondition, WalkingSeason, WalkingTimeOfDay } from '@/types/bone';
 
 interface WalkingConditionPickerProps {
   value: WalkingCondition;

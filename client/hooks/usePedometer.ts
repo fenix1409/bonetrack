@@ -18,7 +18,12 @@ const getTodayString = (): string => {
 
 const getStartOfDay = (): Date => {
   const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+};
+
+const getEndOfDay = (): Date => {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
 };
 
 const loadCachedSteps = async (): Promise<number | null> => {
@@ -26,6 +31,7 @@ const loadCachedSteps = async (): Promise<number | null> => {
     const raw = await AsyncStorage.getItem(STEPS_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
+    // Bug fix: Sana tekshiruvi qat'iyroq bo'lishi kerak
     if (parsed.date !== getTodayString()) return null;
     return typeof parsed.steps === 'number' ? parsed.steps : null;
   } catch {
@@ -34,10 +40,10 @@ const loadCachedSteps = async (): Promise<number | null> => {
 };
 
 const saveSteps = async (steps: number): Promise<void> => {
-  if (!Number.isFinite(steps) || steps < 0) return;
+  if (typeof steps !== 'number' || !Number.isFinite(steps) || steps < 0) return;
   try {
     await AsyncStorage.setItem(STEPS_KEY, JSON.stringify({
-      steps,
+      steps: Math.floor(steps),
       date: getTodayString(),
     }));
   } catch {}
@@ -45,10 +51,15 @@ const saveSteps = async (steps: number): Promise<void> => {
 
 const fetchCurrentSteps = async (): Promise<number> => {
   try {
-    const now = new Date();
-    const result = await Pedometer.getStepCountAsync(getStartOfDay(), now);
-    return result.steps ?? 0;
-  } catch {
+    const isAvailable = await Pedometer.isAvailableAsync();
+    if (!isAvailable) return 0;
+    
+    const start = getStartOfDay();
+    const end = new Date(); // Hozirgi vaqt
+    const result = await Pedometer.getStepCountAsync(start, end);
+    return result?.steps ?? 0;
+  } catch (error) {
+    console.error('[usePedometer] Error fetching steps:', error);
     return 0;
   }
 };
@@ -62,69 +73,97 @@ export function usePedometer(): PedometerState {
   });
 
   const isMountedRef = useRef(true);
-  const intervalRef  = useRef<ReturnType<typeof setInterval> | null>(null);
+  const subscriptionRef = useRef<Pedometer.PedometerSubscription | null>(null);
 
   useEffect(() => {
     isMountedRef.current = true;
 
     const init = async () => {
+      let cleanup: (() => void) | null = null;
       try {
-        // 1. Permission
-        const { status } = await Pedometer.requestPermissionsAsync();
+        // 1. Availability & Permission check
+        const isAvailable = await Pedometer.isAvailableAsync();
+        console.log('[usePedometer] Pedometer availability:', isAvailable);
+        
+        // Androidda ACTIVITY_RECOGNITION so'rash kerak bo'lishi mumkin
+        const { status } = await Pedometer.getPermissionsAsync();
+        console.log('[usePedometer] Initial permission status:', status);
+
+        let finalStatus = status;
+        if (status !== 'granted') {
+          const request = await Pedometer.requestPermissionsAsync();
+          finalStatus = request.status;
+          console.log('[usePedometer] Permission requested. New status:', finalStatus);
+        }
+        
         if (!isMountedRef.current) return;
 
-        if (status !== 'granted') {
-          setState({ steps: null, available: false, loading: false, permissionDenied: true });
+        if (finalStatus !== 'granted') {
+          console.warn('[usePedometer] Permission not granted:', finalStatus);
+          setState(prev => ({ ...prev, available: isAvailable, loading: false, permissionDenied: true }));
           return;
         }
 
-        // 2. Availability
-        const isAvailable = await Pedometer.isAvailableAsync();
-        if (!isMountedRef.current) return;
-
         if (!isAvailable) {
-          // Sensor yo'q — cache dan ko'rsatamiz
+          console.warn('[usePedometer] Pedometer not available on this device');
           const cached = await loadCachedSteps();
           setState({ steps: cached, available: false, loading: false, permissionDenied: false });
           return;
         }
 
-        // 3. Cache — tez ko'rinsin
+        // 2. Initial Fetch
         const cached = await loadCachedSteps();
-        if (!isMountedRef.current) return;
-
-        if (cached !== null) {
-          setState({ steps: cached, available: true, loading: false, permissionDenied: false });
-        }
-
-        // 4. Sensor dan haqiqiy qiymat
         const current = await fetchCurrentSteps();
-        if (!isMountedRef.current) return;
+        console.log('[usePedometer] Data fetched - Cached:', cached, 'Current:', current);
 
-        // Cache > sensor bo'lsa cache ishlatiladi (sensor "isib" ulgurmagan holat)
-        const finalSteps = Math.max(current, cached ?? 0);
+        const initialSteps = Math.max(current, cached ?? 0);
+        setState({ steps: initialSteps, available: true, loading: false, permissionDenied: false });
+        if (initialSteps > 0) await saveSteps(initialSteps);
 
-        setState({ steps: finalSteps, available: true, loading: false, permissionDenied: false });
-        await saveSteps(finalSteps);
-
-        // 5. Har 30 soniyada yangilash — watchStepCount emas, getStepCountAsync
-        // Bu delta qo'shilib ketish muammosini hal qiladi
-        intervalRef.current = setInterval(async () => {
-          if (!isMountedRef.current) return;
-          try {
-            const fresh = await fetchCurrentSteps();
+        // 3. Real-time tracking using watchStepCount
+        // Bu foydalanuvchi yurganda darhol yangilanishini ta'minlaydi
+        let isFetching = false;
+        subscriptionRef.current = Pedometer.watchStepCount((result) => {
+          if (!isMountedRef.current || isFetching) return;
+          console.log('[usePedometer] watchStepCount event:', result);
+          
+          isFetching = true;
+          fetchCurrentSteps().then(freshSteps => {
             if (!isMountedRef.current) return;
+            console.log('[usePedometer] freshSteps from watch event:', freshSteps);
             setState(prev => {
-              const next = Math.max(fresh, prev.steps ?? 0);
+              const next = Math.max(freshSteps, prev.steps ?? 0);
               if (next !== prev.steps) saveSteps(next);
               return { ...prev, steps: next };
             });
-          } catch {}
-        }, 30_000);
+          }).finally(() => {
+            isFetching = false;
+          });
+        });
 
-      } catch {
+        // 4. Backup interval (watchStepCount ba'zi Androidlarda backgroundda yoki to'xtab qolsa ishlaydi)
+        const backupInterval = setInterval(async () => {
+          if (!isMountedRef.current || isFetching) return;
+          const freshSteps = await fetchCurrentSteps();
+          if (!isMountedRef.current) return;
+          setState(prev => {
+            const next = Math.max(freshSteps, prev.steps ?? 0);
+            if (next !== prev.steps) saveSteps(next);
+            return { ...prev, steps: next };
+          });
+        }, 60000); // Har bir daqiqada bir marta tekshirish
+
+        cleanup = () => {
+          clearInterval(backupInterval);
+          if (subscriptionRef.current) {
+            subscriptionRef.current.remove();
+          }
+        };
+
+      } catch (error) {
+        console.error('[usePedometer] Init error:', error);
         if (!isMountedRef.current) return;
-        setState({ steps: null, available: false, loading: false, permissionDenied: false });
+        setState(prev => ({ ...prev, loading: false }));
       }
     };
 
@@ -132,7 +171,7 @@ export function usePedometer(): PedometerState {
 
     return () => {
       isMountedRef.current = false;
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (cleanup) cleanup();
     };
   }, []);
 

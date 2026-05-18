@@ -16,6 +16,7 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
+        "NSMotionUsageDescription": "Allow BoneTrack to access your steps count.",
         "UIBackgroundModes": [
           "fetch",
           "processing"
@@ -34,7 +35,8 @@
       "permissions": [
         "android.permission.ACTIVITY_RECOGNITION",
         "android.permission.health.READ_STEPS",
-        "android.permission.RECEIVE_BOOT_COMPLETED"
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.FOREGROUND_SERVICE"
       ]
     },
     "web": {
@@ -52,7 +54,10 @@
       }],
       "expo-font",
       "expo-web-browser",
-      "expo-image"
+      "expo-image",
+      ["expo-sensors", {
+        "motionPermission": "Allow BoneTrack to access your steps count."
+      }]
     ],
     "experiments": { "typedRoutes": true },
     "extra": {
