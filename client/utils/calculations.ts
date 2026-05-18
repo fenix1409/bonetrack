@@ -1,4 +1,4 @@
-import { NutritionChoice, UserProfile, WalkingCondition } from '@/types/bone';
+import { NutritionChoice, UserProfile, WalkingCondition, WalkingFrequency } from '@/types/bone';
 import {
   calculateBMI as _calculateBMI,
   getBMIScore as _getBMIScore,
@@ -137,4 +137,11 @@ export const getRecommendations = (data: {
   isSmoker?: boolean;
 }): Recommendation[] => {
   return _getRecommendations(data);
+};
+
+export const getFrequencyFromSteps = (steps: number): WalkingFrequency => {
+  if (steps >= 7_500) return 'always';
+  if (steps >= 4_000) return 'sometimes';
+  if (steps >= 1_000) return 'rare';
+  return 'sedentary';
 };

@@ -6,6 +6,7 @@ import { useSTZI } from '@/hooks/useSTZI';
 import { useBoneStore } from '@/store/useBoneStore';
 import { WalkingCondition, UserProfile } from '@/types/bone';
 import { ScrollView } from 'react-native';
+import { getFrequencyFromSteps } from '@/utils/calculations';
 
 export type InputFormData = {
   foods: string[];
@@ -73,6 +74,16 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (pedoSteps !== null) {
+      const frequency = getFrequencyFromSteps(pedoSteps);
+      setValue('condition', {
+        ...condition,
+        frequency,
+      }, { shouldDirty: false });
+    }
+  }, [pedoSteps]);
 
   const onSubmit = useCallback(async (data: InputFormData) => {
     // Qadamlar faqat pedometrdan olinadi (automatic)

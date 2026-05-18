@@ -22,13 +22,6 @@ const TIME_OPTIONS: { value: WalkingTimeOfDay; label: string }[] = [
   { value: 'evening', label: 'Кечқурун' },
 ];
 
-const FREQUENCY_OPTIONS: { value: WalkingFrequency; label: string; icon: string }[] = [
-  { value: 'always', label: 'Ҳар доим', icon: 'check-circle-outline' },
-  { value: 'sometimes', label: 'Баъзан', icon: 'circle-half-full' },
-  { value: 'rare', label: 'Ора-орада', icon: 'circle-outline' },
-  { value: 'sedentary', label: 'Кам ҳаракат', icon: 'sofa-outline' },
-];
-
 export const WalkingConditionPicker = React.memo(
   ({ value, onChange, theme }: WalkingConditionPickerProps) => {
     return (
@@ -100,50 +93,6 @@ export const WalkingConditionPicker = React.memo(
                   styles.optionLabel,
                   {
                     color: isSelected ? theme.text : theme.textMuted,
-                    fontWeight: isSelected ? '600' : '500'
-                  },
-                ]}>
-                  {option.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-
-        {/* Частота — getEnvironmentScore uchun muhim */}
-        <Text style={[styles.sectionLabel, { color: theme.text, marginTop: 20 }]}>Частота</Text>
-        <View style={styles.optionsColumn}>
-          {FREQUENCY_OPTIONS.map((option) => {
-            const isSelected = value.frequency === option.value;
-            const isSedentary = option.value === 'sedentary';
-            const selectedColor = isSedentary ? theme.low : theme.secondary;
-
-            return (
-              <Pressable
-                key={option.value}
-                onPress={() => onChange({ ...value, frequency: option.value })}
-                style={({ pressed }) => [
-                  styles.radioOption,
-                  {
-                    backgroundColor: isSelected
-                      ? (isSedentary ? theme.lowBg : theme.secondary + '15')
-                      : 'transparent',
-                    borderColor: isSelected
-                      ? selectedColor
-                      : theme.textMuted + '20',
-                    transform: [{ scale: pressed ? 0.98 : 1 }],
-                  },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name={option.icon as any}
-                  size={20}
-                  color={isSelected ? selectedColor : theme.textMuted}
-                />
-                <Text style={[
-                  styles.optionLabel,
-                  {
-                    color: isSelected ? (isSedentary ? theme.low : theme.text) : theme.textMuted,
                     fontWeight: isSelected ? '600' : '500'
                   },
                 ]}>
