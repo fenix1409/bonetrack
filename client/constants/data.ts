@@ -18,12 +18,12 @@ export const TAB_BAR_CONFIG = {
 };
 
 export const TABS = [
-  { name: 'index', title: 'Home', icon: 'home-variant' },
-  { name: 'stats', title: 'Stats', icon: 'chart-box' },
-  { name: 'input', title: 'Add', icon: 'plus-circle' },
-  { name: 'explore', title: 'Tips', icon: 'lightbulb' },
-  { name: 'chat', title: 'Chat', icon: 'robot' },
-  { name: 'profile', title: 'Profile', icon: 'account' },
+  { name: 'index', title: 'Асосий', icon: 'home-variant' },
+  { name: 'stats', title: 'Статистика', icon: 'chart-box' },
+  { name: 'input', title: 'Киритиш', icon: 'plus-circle' },
+  { name: 'explore', title: 'Тавсиялар', icon: 'lightbulb' },
+  { name: 'chat', title: 'Сухбат', icon: 'robot' },
+  { name: 'profile', title: 'Профиль', icon: 'account' },
 ] as const;
 
 export const TIPS: Tip[] = [

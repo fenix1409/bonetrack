@@ -88,7 +88,7 @@ export default function ChatScreen() {
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity onPress={retry} style={styles.retryButton}>
             <MaterialCommunityIcons name="refresh" size={13} color="#fff" />
-            <Text style={styles.retryText}>Retry</Text>
+            <Text style={styles.retryText}>Қайта уриниш</Text>
           </TouchableOpacity>
         </View>
       )}

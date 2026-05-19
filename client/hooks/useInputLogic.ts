@@ -1,14 +1,15 @@
 import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
-import { usePedometer } from '@/hooks/usePedometer';
 import { useSTZI } from '@/hooks/useSTZI';
+import { useHealthConnect } from '@/hooks/useHealthConnect';
 import { useBoneStore } from '@/store/useBoneStore';
 import { WalkingCondition, UserProfile } from '@/types/bone';
 import { ScrollView } from 'react-native';
 import { getFrequencyFromSteps } from '@/utils/calculations';
 
 export type InputFormData = {
+  steps: string;
   foods: string[];
   condition: WalkingCondition;
 };
@@ -21,10 +22,10 @@ const DEFAULT_WALKING_CONDITION: WalkingCondition = {
 
 export function useInputLogic(profile: UserProfile | null, history: any[]) {
   const [showSuccess, setShowSuccess] = useState(false);
-  const { addDailyLog } = useBoneStore();
+  const { addDailyLog, updateStepsOnly } = useBoneStore();
   const { calculate } = useSTZI(profile);
+  const healthConnect = useHealthConnect(Boolean(profile));
 
-  const { steps: pedoSteps, available, loading, permissionDenied } = usePedometer();
   const scrollRef = useRef<ScrollView>(null);
   const sectionYRef = useRef<Record<string, number>>({ steps: 0, condition: 0, foods: 0 });
 
@@ -37,6 +38,7 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
 
   const { control, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm<InputFormData>({
     defaultValues: {
+      steps: existingLog?.steps ? String(existingLog.steps) : '',
       foods: existingLog?.selectedFoodIds ?? [],
       condition: {
         season: existingLog?.walkingCondition?.season ?? DEFAULT_WALKING_CONDITION.season,
@@ -48,6 +50,7 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
 
   const selectedFoods = watch('foods') || [];
   const condition = watch('condition') || DEFAULT_WALKING_CONDITION;
+  const watchedSteps = watch('steps');
 
   const toggleFood = useCallback((id: string) => {
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -63,7 +66,7 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
   }, [setValue]);
 
   const scrollToFirstError = useCallback((formErrors: FieldErrors<InputFormData>) => {
-    const order: (keyof InputFormData)[] = ['condition', 'foods'];
+    const order: (keyof InputFormData)[] = ['steps', 'condition', 'foods'];
     for (const field of order) {
       if (formErrors[field]) {
         scrollRef.current?.scrollTo({
@@ -76,18 +79,27 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
   }, []);
 
   useEffect(() => {
-    if (pedoSteps !== null) {
-      const frequency = getFrequencyFromSteps(pedoSteps);
-      setValue('condition', {
-        ...condition,
-        frequency,
-      }, { shouldDirty: false });
+    const stepsNum = parseInt(watchedSteps, 10);
+    if (!isNaN(stepsNum)) {
+      const frequency = getFrequencyFromSteps(stepsNum);
+      if (condition.frequency !== frequency) {
+        setValue('condition', {
+          ...condition,
+          frequency,
+        }, { shouldDirty: false });
+      }
     }
-  }, [pedoSteps]);
+  }, [condition, setValue, watchedSteps]);
+
+  useEffect(() => {
+    if (healthConnect.status !== 'synced' || healthConnect.steps === null) return;
+    const nextSteps = String(healthConnect.steps);
+    setValue('steps', nextSteps, { shouldDirty: false, shouldValidate: true });
+    updateStepsOnly(healthConnect.steps);
+  }, [healthConnect.status, healthConnect.steps, setValue, updateStepsOnly]);
 
   const onSubmit = useCallback(async (data: InputFormData) => {
-    // Qadamlar faqat pedometrdan olinadi (automatic)
-    const currentSteps = pedoSteps ?? (existingLog?.steps ?? 0);
+    const currentSteps = parseInt(data.steps, 10) || 0;
 
     const result = calculate(currentSteps, data.foods, data.condition);
     if (!result) return;
@@ -96,7 +108,7 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
     addDailyLog({ steps: currentSteps, foods: data.foods, walkingCondition: data.condition });
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setShowSuccess(true);
-  }, [addDailyLog, calculate, pedoSteps, existingLog]);
+  }, [addDailyLog, calculate]);
 
   return {
     control,
@@ -108,13 +120,10 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
     showSuccess,
     setShowSuccess,
     isSubmitting,
-    available,
-    pedoSteps,
     scrollRef,
     sectionYRef,
     scrollToFirstError,
     condition,
-    loading,
-    permissionDenied
+    healthConnect,
   };
 }

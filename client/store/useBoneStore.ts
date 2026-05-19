@@ -92,35 +92,38 @@ export const useBoneStore = create<BoneState>()(
           const existingLog = history[existingIndex];
           if (existingLog.steps === steps) return;
 
-          const updatedLog = buildDailyLog({
+          const newHistory = [...history];
+          newHistory[existingIndex] = buildDailyLog({
             date: today,
             profile,
             steps,
-            foods: existingLog.selectedFoodIds ?? [],                    
-            walkingCondition: existingLog.walkingCondition ?? {          
+            foods: existingLog.selectedFoodIds ?? [],
+            walkingCondition: existingLog.walkingCondition ?? {
               season: 'spring_summer',
               timeOfDay: 'morning',
               frequency: 'always',
             },
           });
-
-          const newHistory = [...history];
-          newHistory[existingIndex] = updatedLog;
-          set({ history: newHistory });
-        } else {
-          const newLog = buildDailyLog({
-            date: today,
-            profile,
-            steps,
-            foods: [],
-            walkingCondition: {
-              season: 'spring_summer',
-              timeOfDay: 'morning',
-              frequency: 'always'
-            },
-          });
-          set({ history: sortLogsByDateDesc([newLog, ...history]) });
+          set({ history: sortLogsByDateDesc(newHistory) });
+          return;
         }
+
+        set({
+          history: sortLogsByDateDesc([
+            buildDailyLog({
+              date: today,
+              profile,
+              steps,
+              foods: [],
+              walkingCondition: {
+                season: 'spring_summer',
+                timeOfDay: 'morning',
+                frequency: 'always',
+              },
+            }),
+            ...history,
+          ]),
+        });
       },
 
       resetStore: () => set({ profile: null, history: [], isFirstLaunch: true }),

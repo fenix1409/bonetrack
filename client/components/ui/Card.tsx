@@ -14,7 +14,7 @@ export function Card({
   padding = 16,
   ...props 
 }: CardProps) {
-  const theme = useColorScheme() ?? 'light';
+  const theme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const c = Colors[theme];
 
   const variantStyles = {

@@ -14,32 +14,32 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const SLIDES = [
   {
     id: 1,
-    title: 'Xush kelibsiz!',
-    description: 'Suyaklaringiz salomatligini kuzatish va mustahkamlash uchun moʻljallangan ilovaga xush kelibsiz.',
+    title: 'Хуш келибсиз!',
+    description: 'Суяклариңиз саломатлигини кузатиш ва мустахкамлаш учун мўлжаллаган илова-га хуш келибсиз.',
     icon: 'bone',
     supportIcons: ['shield-check', 'chart-line', 'heart-pulse'],
     metric: 'STZI',
-    caption: 'Bone health',
+    caption: 'Суяк саломатлиги',
     color: '#10B981',
   },
   {
     id: 2,
-    title: 'Faollikni oʻlchang',
-    description: 'Kunlik qadamlaringizni kiriting va ular suyaklaringizga qanday taʼsir qilishini bilib oling.',
+    title: 'Фаоллик ўлчанг',
+    description: 'Кунлик қадамларингизни киритинг ва улар суяклариңизга қандай та\'сир қилишини билиб олинг.',
     icon: 'walk',
     supportIcons: ['map-marker-distance', 'speedometer', 'calendar-check'],
     metric: '5K+',
-    caption: 'Daily steps',
+    caption: 'Кунлик қадамлар',
     color: '#3B82F6',
   },
   {
     id: 3,
-    title: 'Toʻgʻri ovqatlaning',
-    description: 'Sogʻlom suyaklar uchun foydali mahsulotlarni tanlashda sizga yordam beramiz.',
+    title: 'Тўғри озиқ-овқатланинг',
+    description: 'Сўғлом суяклар учун фойдали маҳсулотларни танлашда сизга ёрдам берамиз.',
     icon: 'food-apple',
     supportIcons: ['pill', 'fish', 'white-balance-sunny'],
     metric: 'Ca + D',
-    caption: 'Nutrition',
+    caption: 'Озиқ-овқат',
     color: '#8B5CF6',
   },
 ] as const;
@@ -76,7 +76,7 @@ export default function OnboardingScreen() {
     <View style={[styles.container, { backgroundColor: c.background }]}>
       <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
         <Button
-          title="Oʻtkazib yuborish"
+          title="Ўтказиб юбориш"
           variant="ghost"
           onPress={handleSkip}
           textStyle={{ color: c.textMuted }}
@@ -144,7 +144,7 @@ export default function OnboardingScreen() {
         </View>
 
         <Button
-          title={currentSlide === SLIDES.length - 1 ? 'Boshlash' : 'Keyingisi'}
+          title={currentSlide === SLIDES.length - 1 ? 'Бошлаш' : 'Кейингиси'}
           onPress={handleNext}
           size="large"
           style={styles.nextBtn}

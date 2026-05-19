@@ -33,7 +33,7 @@ export function Button({
   textStyle,
   ...props 
 }: ButtonProps) {
-  const theme = useColorScheme() ?? 'light';
+  const theme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const c = Colors[theme];
 
   const getVariantStyles = () => {

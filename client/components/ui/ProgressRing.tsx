@@ -22,7 +22,7 @@ export function ProgressRing({
   label,
   subLabel,
 }: ProgressRingProps) {
-  const theme = useColorScheme() ?? 'light';
+  const theme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const c = Colors[theme];
 
   const R = (size - strokeWidth) / 2;

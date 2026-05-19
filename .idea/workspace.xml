@@ -7,11 +7,27 @@
     <list default="true" id="6aa1d0a3-40b0-4498-8467-c1c2f2347be8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/chat.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/chat.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/app/(tabs)/input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/input.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/components/input/StepsDisplay.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/input/StepsDisplay.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/components/input/WalkingConditionPicker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/input/WalkingConditionPicker.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/hooks/usePedometer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/hooks/usePedometer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/_layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/app/modal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/modal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/app/onboarding.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/onboarding.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/components/input/StepsDisplay.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/components/input/StepsInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/input/StepsInput.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/components/parallax-scroll-view.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/parallax-scroll-view.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/components/ui/Button.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/ui/Button.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/components/ui/Card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/ui/Card.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/components/ui/Loading.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/ui/Loading.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/components/ui/ProgressRing.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/ui/ProgressRing.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/components/ui/icon-symbol.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/ui/icon-symbol.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/constants/data.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/constants/data.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/hooks/use-theme-color.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/hooks/use-theme-color.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/hooks/useInputLogic.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/hooks/useInputLogic.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/hooks/usePedometer.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/store/useBoneStore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/store/useBoneStore.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/routes.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,7 +35,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="156" />
+    <option name="cachedIndexableFilesCount" value="254" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -102,6 +118,9 @@
       <workItem from="1779093794381" duration="3297000" />
       <workItem from="1779100418134" duration="390000" />
       <workItem from="1779102585148" duration="139000" />
+      <workItem from="1779129905945" duration="677000" />
+      <workItem from="1779170334898" duration="2043000" />
+      <workItem from="1779173232620" duration="2914000" />
     </task>
     <servers />
   </component>

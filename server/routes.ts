@@ -8,11 +8,11 @@ import { aiRateLimit } from './middleware/rateLimit';
 const router = express.Router();
 
 router.get('/', (req: Request, res: Response) => {
-   res.send('Hello World!');
+   res.send('Салом Жахон!');
 });
 
 router.get('/api/hello', (req: Request, res: Response) => {
-   res.json({ message: 'Hello World!' });
+   res.json({ message: 'Салом Жахон!' });
 });
 
 router.post('/api/chat', aiRateLimit, chatController.sendMessage);

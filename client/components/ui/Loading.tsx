@@ -10,30 +10,30 @@ interface Props {
 export function Loading({ onFinish }: Props) {
   const colorScheme = useColorScheme() ?? 'light';
   const isDark = colorScheme === 'dark';
-  const BG   = isDark ? '#006142' : '#009d6b';
+  const BG = isDark ? '#006142' : '#009d6b';
   const RING = isDark ? '#00aa6d' : '#00c47e';
 
-  const logoScale   = useRef(new Animated.Value(0.3)).current;
+  const logoScale = useRef(new Animated.Value(0.3)).current;
   const logoOpacity = useRef(new Animated.Value(0)).current;
-  const ring1Scale  = useRef(new Animated.Value(0)).current;
-  const ring2Scale  = useRef(new Animated.Value(0)).current;
-  const ring1Opacity= useRef(new Animated.Value(0.5)).current;
-  const ring2Opacity= useRef(new Animated.Value(0.3)).current;
+  const ring1Scale = useRef(new Animated.Value(0)).current;
+  const ring2Scale = useRef(new Animated.Value(0)).current;
+  const ring1Opacity = useRef(new Animated.Value(0.5)).current;
+  const ring2Opacity = useRef(new Animated.Value(0.3)).current;
   const textOpacity = useRef(new Animated.Value(0)).current;
-  const textY       = useRef(new Animated.Value(12)).current;
+  const textY = useRef(new Animated.Value(12)).current;
 
   useEffect(() => {
-    // Ring loop — logo paydo bo'lishi bilan parallel
+    // Ҳалқа айланиши — логотип пайдо бўлиши билан параллел
     const ringLoop = Animated.loop(
       Animated.parallel([
         Animated.sequence([
           Animated.timing(ring1Scale, { toValue: 2.2, duration: 1100, easing: Easing.out(Easing.ease), useNativeDriver: true }),
-          Animated.timing(ring1Scale, { toValue: 0,   duration: 0, useNativeDriver: true }),
+          Animated.timing(ring1Scale, { toValue: 0, duration: 0, useNativeDriver: true }),
         ]),
         Animated.sequence([
           Animated.delay(350),
           Animated.timing(ring2Scale, { toValue: 2.8, duration: 1300, easing: Easing.out(Easing.ease), useNativeDriver: true }),
-          Animated.timing(ring2Scale, { toValue: 0,   duration: 0, useNativeDriver: true }),
+          Animated.timing(ring2Scale, { toValue: 0, duration: 0, useNativeDriver: true }),
         ]),
       ]),
       { iterations: 4 }
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 28,
   },
-  logo:    { width: 80, height: 80 },
+  logo: { width: 80, height: 80 },
   appName: { fontSize: 36, fontWeight: '800', color: '#fff', letterSpacing: -0.5, marginBottom: 8 },
   tagline: { fontSize: 14, fontWeight: '500', color: 'rgba(255,255,255,0.75)' },
 });

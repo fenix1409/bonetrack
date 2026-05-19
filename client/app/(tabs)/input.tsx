@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { SuccessModal } from '@/components/ui/SuccessModal';
-import { StepsDisplay } from '@/components/input/StepsDisplay';
+import { StepsInput } from '@/components/input/StepsInput';
 import { WalkingConditionPicker } from '@/components/input/WalkingConditionPicker';
 import { FoodSelector } from '@/components/input/FoodSelector';
 import Colors from '@/constants/Colors';
@@ -20,7 +20,7 @@ export default function InputScreen() {
   const { profile, history } = useBoneStore();
   const router = useRouter();
 
-  const { loading, permissionDenied, handleSubmit, onSubmit, selectedFoods, toggleFood, condition, handleConditionChange, showSuccess, setShowSuccess, isSubmitting, available, pedoSteps, scrollRef, sectionYRef, scrollToFirstError } = useInputLogic(profile, history);
+  const { control, handleSubmit, onSubmit, selectedFoods, toggleFood, condition, handleConditionChange, showSuccess, setShowSuccess, isSubmitting, scrollRef, sectionYRef, scrollToFirstError, healthConnect } = useInputLogic(profile, history);
 
   const handleSave = useCallback(() => {
     void handleSubmit(onSubmit, scrollToFirstError)();
@@ -59,12 +59,11 @@ export default function InputScreen() {
         </View>
 
         <View onLayout={e => { sectionYRef.current.steps = e.nativeEvent.layout.y; }}>
-          <StepsDisplay
-            steps={pedoSteps}
-            available={available}
+          <StepsInput
+            control={control}
+            name="steps"
             theme={theme}
-            loading={loading}            
-            permissionDenied={permissionDenied}
+            healthConnect={healthConnect}
           />
         </View>
 
@@ -95,7 +94,7 @@ export default function InputScreen() {
         visible={showSuccess}
         onClose={handleModalClose}
         title="Сақланди"
-        message="Бугунги маълумотлар муваффақиятli қабул қилинди."
+        message="Бугунги маълумотлар муваффақиятли қабул қилинди."
       />
     </View>
   );

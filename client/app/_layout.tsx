@@ -1,7 +1,6 @@
 import { Loading } from '@/components/ui/Loading';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useBoneStore } from "@/store/useBoneStore";
-import { usePedometer } from '@/hooks/usePedometer';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -13,15 +12,9 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
-  const { steps } = usePedometer(); 
   const colorScheme = useColorScheme();
-  const { isFirstLaunch, profile, _hasHydrated, updateStepsOnly } = useBoneStore();
+  const { isFirstLaunch, profile, _hasHydrated } = useBoneStore();
 
-  useEffect(() => {
-    if (steps !== null && _hasHydrated) {
-      updateStepsOnly(steps);
-    }
-  }, [steps, _hasHydrated, updateStepsOnly]);
   const segments = useSegments();
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
@@ -47,7 +40,7 @@ export default function RootLayout() {
   }, [_hasHydrated, isFirstLaunch, profile, router, segments, isReady]);
 
   if (!isReady || !_hasHydrated) {
-    return <Loading onFinish={() => {}} />;
+    return <Loading onFinish={() => { }} />;
   }
 
   const initialRouteName = isFirstLaunch ? "onboarding" : "(tabs)";
@@ -57,7 +50,7 @@ export default function RootLayout() {
       <Stack initialRouteName={initialRouteName}>
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Модал' }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
