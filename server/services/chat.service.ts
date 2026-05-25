@@ -1,6 +1,13 @@
+import fs from 'fs';
+import path from 'path';
 import { conversationRepository } from '../repositories/conversation.repository';
 import template from '../llm/prompts/chatbot.txt';
 import { llmClient } from '../llm/client';
+
+const boneTrackInfo = fs.readFileSync(
+   path.join(__dirname, '..', 'llm', 'prompts', 'BoneTrack.md'),
+   'utf-8'
+);
 
 type ChatResponse = {
    id: string;
@@ -16,11 +23,15 @@ type HealthContext = {
 
 const buildInstructions = (context?: HealthContext) => {
    const { steps = 0, foodScore = 0, bmi = 0, stzi = 0 } = context || {};
-   return template
+
+   const instructions = template
+      .replace('{{boneTrackInfo}}', boneTrackInfo)
       .replace('{{steps}}', String(steps))
       .replace('{{foodScore}}', String(foodScore))
       .replace('{{bmi}}', String(bmi))
       .replace('{{stzi}}', String(stzi));
+
+   return instructions;
 };
 
 export const chatService = {
@@ -33,8 +44,8 @@ export const chatService = {
          model: 'gpt-4o-mini',
          instructions: buildInstructions(healthContext),
          prompt,
-         temperature: 0.1, 
-         maxTokens: 160, 
+         temperature: 0.05,
+         maxTokens: 140,
       });
 
       conversationRepository.setLastResponseId(conversationId, response.id);

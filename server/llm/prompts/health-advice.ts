@@ -1,13 +1,23 @@
+import fs from 'fs';
+import path from 'path';
 import type { HealthAdviceInput } from '../../services/healthAdvice.service';
 
-export const HEALTH_ADVICE_PROMPT = `
+// Load BoneTrack documentation
+const boneTrackInfo = fs.readFileSync(
+  path.join(__dirname, 'BoneTrack.md'),
+  'utf-8'
+);
+
+export const buildHealthAdvicePrompt = (data: HealthAdviceInput) => `
+${boneTrackInfo}
+
 You are an AI assistant inside a lifestyle tracking app.
 
 INPUT:
-- steps
-- foodScore
-- bmi
-- stzi
+- steps: ${data.steps}
+- foodScore: ${data.foodScore}
+- bmi: ${data.bmi}
+- stzi: ${data.stzi}
 
 TASK:
 Analyze the user lifestyle score and generate SHORT practical feedback.
@@ -87,16 +97,4 @@ CRITICAL:
 - Return VALID JSON only
 - No markdown
 - No extra text
-`;
-
-export const buildHealthAdvicePrompt = (data: HealthAdviceInput) => `
-${HEALTH_ADVICE_PROMPT}
-
-User data:
-{
-  "steps": ${data.steps},
-  "foodScore": ${data.foodScore},
-  "bmi": ${data.bmi},
-  "stzi": ${data.stzi}
-}
 `;
