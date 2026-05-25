@@ -125,17 +125,17 @@ export const getEnvironmentScore = (condition: WalkingCondition | null | undefin
 
   // Ideal vaqt: yoz/bahor ertalab YOKI qish/kuz kunduz
   const isIdealTime =
-      (season === 'spring_summer' && timeOfDay === 'morning') ||
-      (season === 'autumn_winter' && timeOfDay === 'day');
+    (season === 'spring_summer' && timeOfDay === 'morning') ||
+    (season === 'autumn_winter' && timeOfDay === 'day');
 
   if (frequency === 'always') {
-    if (isIdealTime)           return 2;
+    if (isIdealTime) return 2;
     if (timeOfDay === 'evening') return 1;
     return 0;
   }
 
   if (frequency === 'sometimes') {
-    if (isIdealTime)           return 0.5;
+    if (isIdealTime) return 0.5;
     if (timeOfDay === 'evening') return 0.25;
     return 0;
   }
@@ -172,7 +172,7 @@ export const calculateSTZI = (params: {
   ageCoeff: number;
 }): number => {
   const { bmiScore, foodScore, stepScore, environmentScore, ageCoeff } = params;
-  
+
   const sum = bmiScore + foodScore + stepScore + environmentScore;
   const stzi = (Math.max(0, sum) * ageCoeff) / 10;
 
@@ -226,7 +226,7 @@ export const getRecommendations = (data: {
   }
 
   if (stzi > 0 && stzi < 1) {
-    recommendations.push({ text: 'Қуёш нури ва фаол ҳаракатни кўпайтиринг.', type: 'improve' });
+    recommendations.push({ text: 'Қуёш нурида бўлиш ва D витамини қўшимчасини қўллаш суяклар учун фойдали.', type: 'improve' });
   }
 
   const priorityMap: Record<RecommendationType, number> = {

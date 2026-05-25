@@ -20,8 +20,8 @@ const RecommendationGroup = ({ type, items, theme, index }: RecommendationGroupP
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 500,
-      delay: index * 150, 
+      duration: 5000,
+      delay: index * 150,
       useNativeDriver: true,
     }).start();
   }, [fadeAnim, index]);
@@ -58,7 +58,7 @@ const RecommendationGroup = ({ type, items, theme, index }: RecommendationGroupP
 
   return (
     <Animated.View style={[
-      styles.groupContainer, 
+      styles.groupContainer,
       { backgroundColor: config.bg, opacity: fadeAnim }
     ]}>
       <View style={styles.groupHeader}>
@@ -98,11 +98,11 @@ export const RecommendationContainer = React.memo(({ recommendations, theme }: R
   return (
     <Card variant="elevated" style={[styles.mainCard, isSmallScreen && styles.smallMainCard]}>
       {activeTypes.map((type, index) => (
-        <RecommendationGroup 
-          key={type} 
-          type={type} 
-          items={grouped[type] || []} 
-          theme={theme} 
+        <RecommendationGroup
+          key={type}
+          type={type}
+          items={grouped[type] || []}
+          theme={theme}
           index={index}
         />
       ))}
@@ -125,10 +125,10 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 24,
     marginBottom: 24,
-    gap: 16, 
+    gap: 16,
   },
   smallMainCard: {
-    padding: 12, 
+    padding: 12,
   },
   groupContainer: {
     borderRadius: 16,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   itemText: {
-    fontSize: 14, 
+    fontSize: 14,
     lineHeight: 20,
     fontWeight: '500',
     flex: 1,

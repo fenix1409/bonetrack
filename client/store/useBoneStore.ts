@@ -16,6 +16,7 @@ interface BoneState {
   setHasHydrated: (state: boolean) => void;
   addDailyLog: (data: { steps: number; foods: string[]; walkingCondition: WalkingCondition }) => void;
   updateStepsOnly: (steps: number) => void;
+  recalculateTodayLog: (newProfile: UserProfile) => void;
   resetStore: () => void;
 }
 
@@ -124,6 +125,29 @@ export const useBoneStore = create<BoneState>()(
             ...history,
           ]),
         });
+      },
+
+      recalculateTodayLog: (newProfile) => {
+        const { history } = get();
+        const today = getTodayDate();
+        const existingIndex = history.findIndex((l) => l.date === today);
+
+        if (existingIndex >= 0) {
+          const existingLog = history[existingIndex];
+          const newHistory = [...history];
+          newHistory[existingIndex] = buildDailyLog({
+            date: today,
+            profile: newProfile,
+            steps: existingLog.steps,
+            foods: existingLog.selectedFoodIds ?? [],
+            walkingCondition: existingLog.walkingCondition ?? {
+              season: 'spring_summer',
+              timeOfDay: 'morning',
+              frequency: 'always',
+            },
+          });
+          set({ history: sortLogsByDateDesc(newHistory) });
+        }
       },
 
       resetStore: () => set({ profile: null, history: [], isFirstLaunch: true }),

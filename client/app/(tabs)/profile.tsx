@@ -26,7 +26,7 @@ export default function ProfileScreen() {
     const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
     const c = Colors[colorScheme];
     const insets = useSafeAreaInsets();
-    const { profile, setProfile } = useBoneStore();
+    const { profile, setProfile, recalculateTodayLog } = useBoneStore();
     const [showSuccess, setShowSuccess] = useState(false);
 
     const { control, handleSubmit, watch, formState: { errors } } = useForm<UserProfile>({
@@ -72,8 +72,9 @@ export default function ProfileScreen() {
         if (errorMsg) return;
 
         setProfile(validatedData);
+        recalculateTodayLog(validatedData);
         setShowSuccess(true);
-    }, [setProfile]);
+    }, [setProfile, recalculateTodayLog]);
 
     return (
         <View style={[styles.fill, { backgroundColor: c.background }, { paddingTop: Math.max(insets.top, 48) }]}>

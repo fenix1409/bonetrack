@@ -37,13 +37,17 @@ export function calculateDailySTZI(input: DailySTZIInput): DailySTZIResult {
   const conditionScore = getEnvironmentScore(input.walkingCondition);
   const ageCoeff = getAgeCoefficient(input.profile.age);
 
-  const finalStzi = calculateSTZI({
+  let finalStzi = calculateSTZI({
     bmiScore,
     foodScore,
     stepScore: stepsScore,
     environmentScore: conditionScore,
     ageCoeff,
   });
+
+  if (input.profile.isSmoker) {
+    finalStzi = Math.max(0, finalStzi - 0.1);
+  }
 
   return {
     stzi: finalStzi,

@@ -1,6 +1,6 @@
 import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FieldErrors, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useSTZI } from '@/hooks/useSTZI';
 import { useHealthConnect } from '@/hooks/useHealthConnect';
 import { useBoneStore } from '@/store/useBoneStore';
@@ -9,7 +9,6 @@ import { ScrollView } from 'react-native';
 import { getFrequencyFromSteps } from '@/utils/calculations';
 
 export type InputFormData = {
-  steps: string;
   foods: string[];
   condition: WalkingCondition;
 };
@@ -38,7 +37,6 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
 
   const { control, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm<InputFormData>({
     defaultValues: {
-      steps: existingLog?.steps ? String(existingLog.steps) : '',
       foods: existingLog?.selectedFoodIds ?? [],
       condition: {
         season: existingLog?.walkingCondition?.season ?? DEFAULT_WALKING_CONDITION.season,
@@ -50,7 +48,8 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
 
   const selectedFoods = watch('foods') || [];
   const condition = watch('condition') || DEFAULT_WALKING_CONDITION;
-  const watchedSteps = watch('steps');
+
+  const currentSteps = healthConnect.steps ?? existingLog?.steps ?? 0;
 
   const toggleFood = useCallback((id: string) => {
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -65,42 +64,26 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
     setValue('condition', newCondition, { shouldDirty: true });
   }, [setValue]);
 
-  const scrollToFirstError = useCallback((formErrors: FieldErrors<InputFormData>) => {
-    const order: (keyof InputFormData)[] = ['steps', 'condition', 'foods'];
-    for (const field of order) {
-      if (formErrors[field]) {
-        scrollRef.current?.scrollTo({
-          y: Math.max(0, sectionYRef.current[field] - 20),
-          animated: true,
-        });
-        return;
-      }
-    }
-  }, []);
-
   useEffect(() => {
-    const stepsNum = parseInt(watchedSteps, 10);
-    if (!isNaN(stepsNum)) {
-      const frequency = getFrequencyFromSteps(stepsNum);
-      if (condition.frequency !== frequency) {
-        setValue('condition', {
-          ...condition,
-          frequency,
-        }, { shouldDirty: false });
-      }
+    const frequency = getFrequencyFromSteps(currentSteps);
+    if (condition.frequency !== frequency) {
+      setValue('condition', {
+        ...condition,
+        frequency,
+      }, { shouldDirty: false });
     }
-  }, [condition, setValue, watchedSteps]);
+  }, [condition, setValue, currentSteps]);
 
   useEffect(() => {
     if (healthConnect.status !== 'synced' || healthConnect.steps === null) return;
-    const nextSteps = String(healthConnect.steps);
-    setValue('steps', nextSteps, { shouldDirty: false, shouldValidate: true });
-    updateStepsOnly(healthConnect.steps);
-  }, [healthConnect.status, healthConnect.steps, setValue, updateStepsOnly]);
+
+    const currentStepsInLog = existingLog?.steps || 0;
+    if (healthConnect.steps !== currentStepsInLog) {
+      updateStepsOnly(healthConnect.steps);
+    }
+  }, [healthConnect.status, healthConnect.steps, updateStepsOnly, existingLog]);
 
   const onSubmit = useCallback(async (data: InputFormData) => {
-    const currentSteps = parseInt(data.steps, 10) || 0;
-
     const result = calculate(currentSteps, data.foods, data.condition);
     if (!result) return;
 
@@ -108,7 +91,7 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
     addDailyLog({ steps: currentSteps, foods: data.foods, walkingCondition: data.condition });
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setShowSuccess(true);
-  }, [addDailyLog, calculate]);
+  }, [addDailyLog, calculate, currentSteps]);
 
   return {
     control,
@@ -122,8 +105,8 @@ export function useInputLogic(profile: UserProfile | null, history: any[]) {
     isSubmitting,
     scrollRef,
     sectionYRef,
-    scrollToFirstError,
     condition,
     healthConnect,
+    currentSteps,
   };
 }

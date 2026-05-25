@@ -6,28 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="6aa1d0a3-40b0-4498-8467-c1c2f2347be8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/app.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/app/(tabs)/chat.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/chat.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/app/(tabs)/input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/input.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/app/modal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/modal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/app/onboarding.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/onboarding.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/components/input/StepsDisplay.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/components/input/HealthConnectStatus.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/input/HealthConnectStatus.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/components/input/StepsInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/input/StepsInput.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/components/parallax-scroll-view.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/parallax-scroll-view.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/components/ui/Button.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/ui/Button.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/components/ui/Card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/ui/Card.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/components/ui/Loading.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/ui/Loading.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/components/ui/ProgressRing.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/ui/ProgressRing.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/components/ui/icon-symbol.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/ui/icon-symbol.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/constants/data.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/constants/data.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/hooks/use-theme-color.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/hooks/use-theme-color.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/hooks/useInputLogic.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/hooks/useInputLogic.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/hooks/usePedometer.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/store/useBoneStore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/store/useBoneStore.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/server/routes.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,6 +105,8 @@
       <workItem from="1779129905945" duration="677000" />
       <workItem from="1779170334898" duration="2043000" />
       <workItem from="1779173232620" duration="2914000" />
+      <workItem from="1779264930668" duration="1801000" />
+      <workItem from="1779267045633" duration="51000" />
     </task>
     <servers />
   </component>

@@ -19,10 +19,10 @@ type StatusConfig = {
 
 const getStatusConfig = (controller?: HealthConnectController): StatusConfig => {
   if (!controller) return {
-    title: 'Қўлда киритиш',
-    detail: 'Бугунги қадамларни қўлда киритинг.',
+    title: 'Тизим мавжуд эмас',
+    detail: 'Саломатлик маълумотлари тизими топилмади.',
     action: null,
-    icon: 'pencil-outline',
+    icon: 'heart-broken-outline',
     variant: 'neutral',
   };
 
@@ -71,10 +71,10 @@ const getStatusConfig = (controller?: HealthConnectController): StatusConfig => 
       variant: 'error',
     };
     default: return {
-      title: 'Қўлда киритиш',
-      detail: 'Саломатлик тизими мавжуд эмас.',
+      title: 'Тизим мавжуд эмас',
+      detail: 'Саломатлик тизими фаол эмас.',
       action: null,
-      icon: 'pencil-outline',
+      icon: 'heart-broken-outline',
       variant: 'neutral',
     };
   }
@@ -95,10 +95,11 @@ export function HealthConnectStatus({ controller, theme }: HealthConnectStatusPr
 
   const onActionPress = () => {
     if (!controller || !config.action) return;
-    if (config.action === 'Уланиш')   void controller.connect();
-    if (config.action === 'Янгилаш')  void controller.sync();
-    if (config.action === 'Ўрнатиш') void controller.openInstallPage();
-    if (config.action === 'Созламалар') controller.openSettings();
+    const { action } = config;
+    if (action === 'Уланиш')   void controller.connect();
+    if (action === 'Янгилаш')  void controller.sync();
+    if (action === 'Ўрнатиш') void controller.openInstallPage();
+    if (action === 'Созламалар') controller.openSettings();
   };
 
   return (
@@ -109,10 +110,8 @@ export function HealthConnectStatus({ controller, theme }: HealthConnectStatusPr
           borderColor: colors.icon + '30',
         }
       ]}>
-        {/* Left accent bar */}
         <View style={[styles.accentBar, { backgroundColor: colors.icon }]} />
 
-        {/* Icon */}
         <View style={[styles.iconWrap, { backgroundColor: colors.bg }]}>
           {busy ? (
               <ActivityIndicator size="small" color={colors.icon} />
@@ -121,7 +120,6 @@ export function HealthConnectStatus({ controller, theme }: HealthConnectStatusPr
           )}
         </View>
 
-        {/* Text */}
         <View style={styles.content}>
           <Text style={[styles.title, { color: theme.text }]} numberOfLines={1}>
             {config.title}
@@ -131,7 +129,6 @@ export function HealthConnectStatus({ controller, theme }: HealthConnectStatusPr
           </Text>
         </View>
 
-        {/* Action button */}
         {config.action && !busy && (
             <TouchableOpacity
                 activeOpacity={0.8}
@@ -154,7 +151,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     paddingVertical: 14,
     paddingRight: 14,
-    paddingLeft: 0,        // accent bar ichkaridan boshlanadi
+    paddingLeft: 0,        
     marginBottom: 16,
     overflow: 'hidden',
     elevation: 2,
@@ -165,7 +162,7 @@ const styles = StyleSheet.create({
   },
   accentBar: {
     width: 4,
-    height: '100%',          // to'liq balandlik
+    height: '100%',         
     borderRadius: 0,
     marginRight: 2,
     alignSelf: 'stretch',

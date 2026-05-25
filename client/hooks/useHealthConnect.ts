@@ -45,7 +45,7 @@ const getUnavailableStatus = (availability: HealthConnectAvailability): HealthCo
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof HealthConnectServiceError) return error.message;
   if (error instanceof Error) return error.message;
-  return 'Health Connect sync failed.';
+  return 'Health Connect синхронизацияси бажарилмади.';
 };
 
 export function useHealthConnect(autoSync = true) {

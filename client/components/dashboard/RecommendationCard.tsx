@@ -40,9 +40,9 @@ export const RecommendationCard = React.memo(({
 
   const getColors = () => {
     switch (type) {
-      case 'critical': return { main: '#EF4444', bg: '#FEE2E2' }; // Red
-      case 'warning': return { main: '#F59E0B', bg: '#FEF3C7' }; // Amber
-      default: return { main: statusColor, bg: statusBg + '20' }; // Standard
+      case 'critical': return { main: '#EF4444', bg: '#FEE2E2' }; 
+      case 'warning': return { main: '#F59E0B', bg: '#FEF3C7' }; 
+      default: return { main: statusColor, bg: statusBg + '20' }; 
     }
   };
 

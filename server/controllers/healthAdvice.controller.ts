@@ -29,7 +29,7 @@ export const healthAdviceController = {
 
       if (!parseResult.success) {
          res.status(400).json({
-            error: 'Invalid health data.',
+            error: 'Салмат маълумотлари новажа.',
             details: parseResult.error.flatten().fieldErrors,
          });
          return;
@@ -42,7 +42,7 @@ export const healthAdviceController = {
          console.error('Health advice error:', error);
 
          if (isTimeoutError(error)) {
-            res.status(504).json({ error: 'AI request timed out.' });
+            res.status(504).json({ error: 'AI сўрови вақти кончади.' });
             return;
          }
 
@@ -50,11 +50,11 @@ export const healthAdviceController = {
             error instanceof Error &&
             error.message === 'AI response did not match the expected schema.'
          ) {
-            res.status(502).json({ error: 'Invalid AI response.' });
+            res.status(502).json({ error: 'AI жавоби новажа.' });
             return;
          }
 
-         res.status(500).json({ error: 'Failed to generate health advice.' });
+         res.status(500).json({ error: 'Салмат маслаҳатини яратишда муаммо.' });
       }
    },
 };

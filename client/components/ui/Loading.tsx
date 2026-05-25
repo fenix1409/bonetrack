@@ -1,5 +1,3 @@
-// components/ui/AnimatedSplash.tsx
-
 import { useEffect, useRef } from 'react';
 import { Animated, Easing, Image, StyleSheet, View, useColorScheme } from 'react-native';
 
@@ -23,7 +21,6 @@ export function Loading({ onFinish }: Props) {
   const textY = useRef(new Animated.Value(12)).current;
 
   useEffect(() => {
-    // Ҳалқа айланиши — логотип пайдо бўлиши билан параллел
     const ringLoop = Animated.loop(
       Animated.parallel([
         Animated.sequence([
@@ -40,34 +37,28 @@ export function Loading({ onFinish }: Props) {
     );
 
     Animated.sequence([
-      // 1. Logo spring bilan paydo bo'ladi
       Animated.parallel([
         Animated.spring(logoScale, { toValue: 1, tension: 55, friction: 6, useNativeDriver: true }),
         Animated.timing(logoOpacity, { toValue: 1, duration: 300, useNativeDriver: true }),
         ringLoop,
       ]),
-      // 2. Text paydo bo'ladi
       Animated.parallel([
         Animated.timing(textOpacity, { toValue: 1, duration: 380, useNativeDriver: true }),
         Animated.timing(textY, { toValue: 0, duration: 380, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
       ]),
-      // 3. Kutish
       Animated.delay(600),
     ]).start(() => onFinish?.());
   }, []);
 
   return (
     <View style={[styles.container, { backgroundColor: BG }]}>
-      {/* Pulse rings */}
       <Animated.View style={[styles.ring, { backgroundColor: RING, opacity: ring1Opacity, transform: [{ scale: ring1Scale }] }]} />
       <Animated.View style={[styles.ring, { backgroundColor: RING, opacity: ring2Opacity, transform: [{ scale: ring2Scale }] }]} />
 
-      {/* Logo */}
       <Animated.View style={[styles.logoWrap, { opacity: logoOpacity, transform: [{ scale: logoScale }] }]}>
         <Image source={require('@/assets/logo.png')} style={styles.logo} resizeMode="contain" />
       </Animated.View>
 
-      {/* Text */}
       <Animated.Text style={[styles.appName, { opacity: textOpacity, transform: [{ translateY: textY }] }]}>
         BoneTrack
       </Animated.Text>

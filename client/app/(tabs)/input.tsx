@@ -20,11 +20,11 @@ export default function InputScreen() {
   const { profile, history } = useBoneStore();
   const router = useRouter();
 
-  const { control, handleSubmit, onSubmit, selectedFoods, toggleFood, condition, handleConditionChange, showSuccess, setShowSuccess, isSubmitting, scrollRef, sectionYRef, scrollToFirstError, healthConnect } = useInputLogic(profile, history);
+  const { handleSubmit, onSubmit, selectedFoods, toggleFood, condition, handleConditionChange, showSuccess, setShowSuccess, isSubmitting, scrollRef, sectionYRef, healthConnect, currentSteps } = useInputLogic(profile, history);
 
   const handleSave = useCallback(() => {
-    void handleSubmit(onSubmit, scrollToFirstError)();
-  }, [handleSubmit, onSubmit, scrollToFirstError]);
+    void handleSubmit(onSubmit)();
+  }, [handleSubmit, onSubmit]);
 
   const handleModalClose = useCallback(() => {
     setShowSuccess(false);
@@ -60,10 +60,10 @@ export default function InputScreen() {
 
         <View onLayout={e => { sectionYRef.current.steps = e.nativeEvent.layout.y; }}>
           <StepsInput
-            control={control}
-            name="steps"
+            steps={currentSteps}
             theme={theme}
             healthConnect={healthConnect}
+            isAutoSynced={healthConnect.status === 'synced'}
           />
         </View>
 
@@ -80,7 +80,7 @@ export default function InputScreen() {
         </View>
 
         <Button
-          title="Сақлаш ва натижани кўриш"
+          title={healthConnect.status === 'synced' ? "Натижани кўриш" : "Сақлаш ва натижани кўриш"}
           onPress={handleSave}
           size="large"
           loading={isSubmitting}

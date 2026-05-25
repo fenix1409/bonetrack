@@ -37,7 +37,7 @@ const toServiceError = (
 
 const ensureAndroid = (): void => {
   if (!isAndroid()) {
-    throw new HealthConnectServiceError('unsupported', 'Health Connect is available only on Android.');
+    throw new HealthConnectServiceError('unsupported', 'Health Connect фақат Android-да мавжуд.');
   }
 };
 
@@ -58,19 +58,19 @@ export const healthConnectService = {
     ensureAndroid();
     const available = await checkAvailability();
     if (available === 'installRequired') {
-      throw new HealthConnectServiceError('installRequired', 'Health Connect must be installed or updated.');
+      throw new HealthConnectServiceError('installRequired', 'Health Connect ўрнатилган ёки янгиланган бўлиши керак.');
     }
     if (available !== 'available') {
-      throw new HealthConnectServiceError('nativeUnavailable', 'Health Connect native module is unavailable.');
+      throw new HealthConnectServiceError('nativeUnavailable', 'Health Connect ички модули мавжуд эмас.');
     }
 
     try {
       const initialized = await initialize();
       if (!initialized) {
-        throw new HealthConnectServiceError('initializationFailed', 'Health Connect initialization failed.');
+        throw new HealthConnectServiceError('initializationFailed', 'Health Connect инициализация бажарилмади.');
       }
     } catch (error) {
-      throw toServiceError('initializationFailed', 'Health Connect initialization failed.', error);
+      throw toServiceError('initializationFailed', 'Health Connect инициализация бажарилмади.', error);
     }
   },
 
@@ -79,7 +79,7 @@ export const healthConnectService = {
     try {
       return hasStepReadPermission(await getGrantedPermissions());
     } catch (error) {
-      throw toServiceError('permissionDenied', 'Unable to read Health Connect permissions.', error);
+      throw toServiceError('permissionDenied', 'Health Connect рухсатларини ўқиб бўлмади.', error);
     }
   },
 
@@ -88,7 +88,7 @@ export const healthConnectService = {
     try {
       return hasStepReadPermission(await requestPermission([STEP_READ_PERMISSION]));
     } catch (error) {
-      throw toServiceError('permissionDenied', 'Health Connect permission request failed.', error);
+      throw toServiceError('permissionDenied', 'Health Connect рухсат сўрови бажарилмади.', error);
     }
   },
 
@@ -109,7 +109,7 @@ export const healthConnectService = {
         dataOrigins: result.dataOrigins ?? [],
       };
     } catch (error) {
-      throw toServiceError('readFailed', 'Unable to read today steps from Health Connect.', error);
+      throw toServiceError('readFailed', 'Health Connect дан бугунги қадамларни ўқиб бўлмади.', error);
     }
   },
 
