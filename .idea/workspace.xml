@@ -4,22 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6aa1d0a3-40b0-4498-8467-c1c2f2347be8" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/chat.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/chat.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/app/(tabs)/input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/app/(tabs)/input.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/components/input/HealthConnectStatus.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/input/HealthConnectStatus.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/components/input/StepsInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/components/input/StepsInput.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/hooks/useInputLogic.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/hooks/useInputLogic.ts" afterDir="false" />
-    </list>
+    <list default="true" id="6aa1d0a3-40b0-4498-8467-c1c2f2347be8" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="254" />
+    <option name="cachedIndexableFilesCount" value="257" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -107,6 +99,7 @@
       <workItem from="1779173232620" duration="2914000" />
       <workItem from="1779264930668" duration="1801000" />
       <workItem from="1779267045633" duration="51000" />
+      <workItem from="1779782025465" duration="1003000" />
     </task>
     <servers />
   </component>
