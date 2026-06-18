@@ -198,7 +198,7 @@ export const getRecommendations = (data: {
 
   if (isSmoker) {
     recommendations.push({
-      text: 'Чекишни ташлаш суyak зичлигини яхшилашга ёрдам беради.',
+      text: 'Чекишни ташлаш суяк зичлигини яхшилашга ёрдам беради.',
       type: 'critical',
     });
   }
@@ -222,7 +222,7 @@ export const getRecommendations = (data: {
   }
 
   if (foodScore < 3) {
-    recommendations.push({ text: 'Кальций ва D витаминига бой оvқатларни кўпайтиринг.', type: 'improve' });
+    recommendations.push({ text: 'Кальций ва D витаминига бой озиқ-овқатларни кўпайтиринг.', type: 'improve' });
   }
 
   if (stzi > 0 && stzi < 1) {

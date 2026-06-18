@@ -5,6 +5,7 @@ import { StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList, Keyboard
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useChat, type Message } from '@/hooks/useChat';
 import { MessageBubble } from '@/components/chat/MessageBubble';
+import { LoadingIndicator } from '@/components/chat/LoadingIndicator';
 
 export default function ChatScreen() {
   const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
@@ -70,16 +71,11 @@ export default function ChatScreen() {
       />
 
       {loading && (
-        <View style={[styles.loadingContainer, { backgroundColor: c.surface }]}>
-          <View style={styles.typingDots}>
-            <View style={[styles.dot, { backgroundColor: c.primary }]} />
-            <View style={[styles.dot, { backgroundColor: c.primary, opacity: 0.6 }]} />
-            <View style={[styles.dot, { backgroundColor: c.primary, opacity: 0.3 }]} />
-          </View>
-          <Text style={[styles.loadingText, { color: c.textMuted }]}>
-            AI жавоб тайёрламоқда...
-          </Text>
-        </View>
+        <LoadingIndicator
+          surfaceBg={c.surface}
+          primaryColor={c.primary}
+          textMutedColor={c.textMuted}
+        />
       )}
 
       {error && !loading && (
@@ -157,21 +153,6 @@ const styles = StyleSheet.create({
   divider: { height: 1, opacity: 0.6 },
 
   listContent: { paddingHorizontal: 16, paddingVertical: 20 },
-
-  loadingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginHorizontal: 16,
-    marginBottom: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 20,
-    alignSelf: 'flex-start',
-  },
-  typingDots: { flexDirection: 'row', gap: 4, alignItems: 'center' },
-  dot: { width: 6, height: 6, borderRadius: 3 },
-  loadingText: { fontSize: 13, fontWeight: '500' },
 
   errorWrapper: {
     flexDirection: 'row',

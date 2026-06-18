@@ -54,7 +54,7 @@ export const healthAdviceController = {
             return;
          }
 
-         res.status(500).json({ error: 'Салмат маслаҳатини яратишда муаммо.' });
+         res.status(500).json({ error: 'AI маслаҳатини яратишда муаммо.' });
       }
    },
 };

@@ -41,7 +41,7 @@ export const chatService = {
       healthContext?: HealthContext
    ): Promise<ChatResponse> {
       const response = await llmClient.generateText({
-         model: 'gpt-4o-mini',
+         model: 'gpt-4.1-mini',
          instructions: buildInstructions(healthContext),
          prompt,
          temperature: 0.05,

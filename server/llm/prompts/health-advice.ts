@@ -57,7 +57,7 @@ IMPORTANT ACTION RULES:
 - Keep actions short
 
 GOOD examples:
-- "Кунига 5000 қадам юринг"
+- "Кунига 5000 қадам юринг" agar qadamlar soni 5000 dan kam bo'lsa
 - "Ҳар куни 2 порция сабзавот истеъмол қилинг"
 - "Ширин ичимликларни камайтиринг"
 

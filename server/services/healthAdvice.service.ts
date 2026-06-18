@@ -34,43 +34,6 @@ const getOpenAIClient = () => {
    return openai;
 };
 
-const responseFormat = {
-   type: 'json_schema' as const,
-   name: 'health_advice',
-   strict: true,
-   schema: {
-      type: 'object',
-      additionalProperties: false,
-      required: ['status', 'summary', 'issues', 'actions'],
-      properties: {
-         status: {
-            type: 'string',
-            enum: ['low', 'medium', 'good'],
-         },
-         summary: {
-            type: 'string',
-            maxLength: 240,
-         },
-         issues: {
-            type: 'array',
-            maxItems: 3,
-            items: {
-               type: 'string',
-               maxLength: 120,
-            },
-         },
-         actions: {
-            type: 'array',
-            maxItems: 4,
-            items: {
-               type: 'string',
-               maxLength: 120,
-            },
-         },
-      },
-   },
-};
-
 const parseJsonSafely = (value: string): unknown => {
    try {
       return JSON.parse(value);
@@ -92,7 +55,7 @@ export const healthAdviceService = {
       try {
          const response = await getOpenAIClient().chat.completions.create(
             {
-               model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+               model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
                messages: [
                   {
                      role: 'user',
@@ -100,7 +63,7 @@ export const healthAdviceService = {
                   },
                ],
                temperature: 0.1,
-               max_tokens: 350,
+               max_tokens: 500,
                response_format: { type: 'json_object' },
             },
             {

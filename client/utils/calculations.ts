@@ -63,8 +63,8 @@ export const getBMIScore = _getBMIScore;
 
 export const getFoodScore = (foodIds: string[]): number => {
   const selectedFoods = foodIds
-      .map(id => FOOD_ITEMS[id])
-      .filter((item): item is NutritionChoice => item !== undefined);
+    .map(id => FOOD_ITEMS[id])
+    .filter((item): item is NutritionChoice => item !== undefined);
 
   return _getFoodScore(selectedFoods);
 }
@@ -116,7 +116,7 @@ export const getSTZIText = (stzi: number): string => {
 export const getSTZIExplanation = (stzi: number | null | undefined): string => {
   const val = stzi ?? 0;
   if (val >= 1.6) return 'Сизнинг суяк зичлиги индексингиз жуда яхши. Шу тарзда давом эттиринг 👍';
-  if (val >= 1.0) return 'Рационни яхшилаш va қадамлар сонини ошириш (5000+) тавсия etiladi.';
+  if (val >= 1.0) return 'Рационни яхшилаш ва қадамлар сонини ошириш (5000+) тавсия этилади.';
   return 'Диққат! Сизда суяк заифлашиши хавфи мавжуд. Шифокор билан маслаҳатлашинг.';
 };
 
