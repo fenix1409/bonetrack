@@ -33,6 +33,7 @@ yarn-error.*
 # local env files
 .env*.local
 .env
+
 # typescript
 *.tsbuildinfo
 
@@ -41,3 +42,30 @@ app-example
 # generated native folders
 /ios
 /android
+
+# ✅ Security - API Keys & Credentials
+google-service-account.json
+api-*.json
+*.credentials.json
+*.service-account.json
+
+# ✅ Build artifacts
+*.aab
+*.apk
+eas-build-logs/
+.eas/
+
+# ✅ Cache
+.cache/
+*.cache
+
+# ✅ IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ✅ OS
+Thumbs.db
+.DS_Store
