@@ -15,8 +15,9 @@ const clamp = (num: number, min: number, max: number): number => Math.min(Math.m
  * Returns actual BMI clamped to 10-80.
  */
 export const calculateBMI = (heightCm: number, weightKg: number): number => {
-  if (heightCm <= 0 || weightKg <= 0) return 10; // Minimum clamped value
+  if (heightCm <= 0 || weightKg <= 0) return 10;
   const heightM = heightCm / 100;
+  if (heightM === 0) return 10; // ✅ Division by zero protection
   const bmi = weightKg / (heightM * heightM);
   return clamp(round2(bmi), 10, 80);
 };
@@ -56,8 +57,7 @@ export const getBMIScore = (bmi: number): number => {
 /**
  * 3. Get Food Score
  * Range: -7 to +11 (based on document)
- * Smoking is NOT included here, handled via subtract logic if needed or separately.
- * In this app, smoking is usually in NutritionChoice but we filter it.
+ * ✅ Clamped to valid range
  */
 export const getFoodScore = (selectedFoods: NutritionChoice[]): number => {
   let score = 0;
@@ -75,23 +75,25 @@ export const getFoodScore = (selectedFoods: NutritionChoice[]): number => {
     }
   });
 
-  return round2(score);
+  // ✅ Clamp to valid range (-7 to +11)
+  const clamped = clamp(score, -7, 11);
+  return round2(clamped);
 };
 
 /**
  * 4. Get Step Score
- * Ranges (from Word doc):
+ * ✅ Corrected ranges from document:
  * <500 = 0
- * 500–1000 = 1
- * 1500–2000 = 1.5
- * 2500–3000 = 2
- * 3500–4000 = 2.5
- * 4500–5000 = 3
- * >5500 = 4
+ * 500–1499 = 1
+ * 1500–2499 = 1.5
+ * 2500–3499 = 2
+ * 3500–4499 = 2.5
+ * 4500–5499 = 3
+ * ≥5500 = 4
  */
 export const getStepScore = (steps: number): number => {
   const s = Math.max(0, steps);
-  if (s > 5500) return 4;
+  if (s >= 5500) return 4;
   if (s >= 4500) return 3;
   if (s >= 3500) return 2.5;
   if (s >= 2500) return 2;
@@ -145,18 +147,20 @@ export const getEnvironmentScore = (condition: WalkingCondition | null | undefin
 
 /**
  * 6. Get Age Coefficient (ЁK)
+ * ✅ Fixed: 20 yoshdan past bo'lsa 0.5 default
  * 20–35 ёш → 1.0
  * 36–50 ёш → 0.75
  * 51–60 ёш → 0.5
- * 61–75 → 0.25
+ * 61+ → 0.25
+ * <20 → 0.5 (default)
  */
 export const getAgeCoefficient = (age: number): number => {
-  const a = clamp(age, 0, 120);
+  const a = clamp(age, 1, 120);
   if (a >= 20 && a <= 35) return 1.0;
   if (a >= 36 && a <= 50) return 0.75;
   if (a >= 51 && a <= 60) return 0.5;
   if (a >= 61) return 0.25;
-  return 1.0;
+  return 0.5; // ✅ Default for age < 20
 };
 
 /**
@@ -196,6 +200,7 @@ export const getRecommendations = (data: {
   const { steps, foodScore, bmiScore, stzi, isSmoker } = data;
   const recommendations: Recommendation[] = [];
 
+  // ✅ Smoking recommendation (if applicable)
   if (isSmoker) {
     recommendations.push({
       text: 'Чекишни ташлаш суяк зичлигини яхшилашга ёрдам беради.',
@@ -203,32 +208,57 @@ export const getRecommendations = (data: {
     });
   }
 
+  // Critical issues
   if (stzi === 0) {
-    recommendations.push({ text: 'Шифокор билан маслаҳатлашиш тавсия этилади.', type: 'critical' });
+    recommendations.push({ 
+      text: 'Шифокор билан маслаҳатлашиш тавсия этилади.', 
+      type: 'critical' 
+    });
   }
 
+  // Warnings
   if (bmiScore === 0) {
-    recommendations.push({ text: 'Вазнингизни назорат қилинг.', type: 'warning' });
+    recommendations.push({ 
+      text: 'Вазнингизни назорат қилинг.', 
+      type: 'warning' 
+    });
   }
 
   if (foodScore < 0) {
-    recommendations.push({ text: 'Зарарли маҳсулотларни камайтиринг.', type: 'warning' });
+    recommendations.push({ 
+      text: 'Зарарли маҳсулотларни камайтиринг.', 
+      type: 'warning' 
+    });
   }
 
   if (steps < 1000) {
-    recommendations.push({ text: 'Кунига камида 5000 қадам юришга ҳаракат қилинг.', type: 'warning' });
+    recommendations.push({ 
+      text: 'Кунига камида 5000 қадам юришга ҳаракат қилинг.', 
+      type: 'warning' 
+    });
   } else if (steps < 5000) {
-    recommendations.push({ text: 'Қадамлар сонини аста-секин ошириб боринг.', type: 'improve' });
+    recommendations.push({ 
+      text: 'Қадамлар сонини аста-секин ошириб боринг.', 
+      type: 'improve' 
+    });
   }
 
+  // Improvements
   if (foodScore < 3) {
-    recommendations.push({ text: 'Кальций ва D витаминига бой озиқ-овқатларни кўпайтиринг.', type: 'improve' });
+    recommendations.push({ 
+      text: 'Кальций ва D витаминига бой озиқ-овқатларни кўпайтиринг.', 
+      type: 'improve' 
+    });
   }
 
   if (stzi > 0 && stzi < 1) {
-    recommendations.push({ text: 'Қуёш нурида бўлиш ва D витамини қўшимчасини қўллаш суяклар учун фойдали.', type: 'improve' });
+    recommendations.push({ 
+      text: 'Қуёш нурида бўлиш ва D витамини қўшимчасини қўллаш суяклар учун фойдали.', 
+      type: 'improve' 
+    });
   }
 
+  // Sort by priority and deduplicate
   const priorityMap: Record<RecommendationType, number> = {
     critical: 0,
     warning: 1,

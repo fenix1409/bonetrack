@@ -1,4 +1,4 @@
-import type { WalkingCondition, WalkingSeason, WalkingTimeOfDay } from '@/types/bone';
+import type { WalkingCondition } from '@/types/bone';
 
 import { getEnvironmentScore } from './stzi-system';
 

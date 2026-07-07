@@ -16,7 +16,7 @@ export type AIAdviceResponse = {
   actions: string[];
 };
 
-const REQUEST_TIMEOUT_MS = 12_000;
+const REQUEST_TIMEOUT_MS = 15_000;
 
 const isAdviceResponse = (value: unknown): value is AIAdviceResponse => {
   if (!value || typeof value !== 'object') return false;
@@ -35,18 +35,26 @@ const isAdviceResponse = (value: unknown): value is AIAdviceResponse => {
   );
 };
 
-export async function getAIAdvice(data: AIAdviceInput, signal: AbortSignal): Promise<AIAdviceResponse> {
+export async function getAIAdvice(
+  data: AIAdviceInput,
+  signal?: AbortSignal
+): Promise<AIAdviceResponse> {
   const apiBaseUrl = getApiBaseUrl();
   if (!apiBaseUrl) {
     throw new Error(getMissingApiUrlError());
   }
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timeoutController = new AbortController();
+  const timeoutId = setTimeout(() => timeoutController.abort(), REQUEST_TIMEOUT_MS);
+
+  const combinedSignal = AbortSignal.any([
+    timeoutController.signal,
+    ...(signal ? [signal] : []),
+  ]);
 
   const normalizedData: AIAdviceInput = {
     steps: Math.max(0, Math.min(100_000, Math.floor(data.steps))),
-    foodScore: Math.max(-3, Math.min(10, data.foodScore)),
+    foodScore: Math.max(-7, Math.min(11, data.foodScore)), 
     bmi: Math.max(10, Math.min(80, data.bmi)),
     stzi: Math.max(0, Math.min(2, data.stzi)),
   };
@@ -59,29 +67,49 @@ export async function getAIAdvice(data: AIAdviceInput, signal: AbortSignal): Pro
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(normalizedData),
-      signal: controller.signal,
+      signal: combinedSignal, 
     });
 
-    const json = await response.json().catch(() => null);
+    let json: unknown;
+    try {
+      json = await response.json();
+    } catch {
+      throw new Error('Сервер жавоби JSON ўлчамида эмас.');
+    }
 
     if (!response.ok) {
-      throw new Error(json?.error || `Сервер хатолиги: ${response.status}`);
+      const errorMsg =
+        typeof json === 'object' && json !== null && 'error' in json
+          ? (json as { error?: string }).error
+          : `Сервер хатолиги: ${response.status}`;
+      throw new Error(errorMsg);
     }
 
     if (!isAdviceResponse(json)) {
-      throw new Error('Нотўғри AI маслаҳати жавоби.');
+      console.warn('Invalid AI response structure:', json);
+      throw new Error('Нотўғри AI маслаҳати жавоби. Қайта уриннг.');
     }
 
     return json;
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('AI маслаҳати сўрови жуда узоқ вақт олди. Қайта уриннг.');
+      const isTimeout =
+        timeoutController.signal.aborted &&
+        !signal?.aborted;
+
+      throw new Error(
+        isTimeout
+          ? 'AI маслаҳати сўрови жуда узоқ вақт олди. Қайта уриннг.'
+          : 'AI маслаҳати сўрови бекор қилинди.'
+      );
     }
 
-    throw error instanceof Error
-      ? error
-      : new Error('AI маслаҳатини юклаб бўлмади. Қайта уриннг.');
+    if (error instanceof Error) {
+      throw error;
+    }
+
+    throw new Error('AI маслаҳатини юклаб бўлмади. Қайта уриннг.');
   } finally {
-    clearTimeout(timeout);
+    clearTimeout(timeoutId);
   }
 }
