@@ -3,12 +3,14 @@
 # dependencies
 node_modules/
 
+echo "google-service-account*.json"
+echo "agencydashboard*.json"
+
 # Expo
 .expo/
 dist/
 web-build/
 expo-env.d.ts
-
 # Native
 .kotlin/
 *.orig.*
