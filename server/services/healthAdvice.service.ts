@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 import { z } from 'zod';
 import { buildHealthAdvicePrompt } from '../llm/prompts/health-advice';
 
-const AI_TIMEOUT_MS = 11_000;
+const AI_TIMEOUT_MS = 25_000;
 
 export type HealthAdviceInput = {
    steps: number;
@@ -29,6 +29,8 @@ const getOpenAIClient = () => {
 
    openai ??= new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
+      maxRetries: 0,
+      timeout: AI_TIMEOUT_MS,
    });
 
    return openai;

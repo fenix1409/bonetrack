@@ -16,7 +16,24 @@ export type AIAdviceResponse = {
   actions: string[];
 };
 
-const REQUEST_TIMEOUT_MS = 15_000;
+const REQUEST_TIMEOUT_MS = 40_000;
+
+const combineAbortSignals = (signals: AbortSignal[]) => {
+  const controller = new AbortController();
+
+  const abort = () => controller.abort();
+
+  for (const signal of signals) {
+    if (signal.aborted) {
+      controller.abort();
+      break;
+    }
+
+    signal.addEventListener('abort', abort, { once: true });
+  }
+
+  return controller.signal;
+};
 
 const isAdviceResponse = (value: unknown): value is AIAdviceResponse => {
   if (!value || typeof value !== 'object') return false;
@@ -47,14 +64,14 @@ export async function getAIAdvice(
   const timeoutController = new AbortController();
   const timeoutId = setTimeout(() => timeoutController.abort(), REQUEST_TIMEOUT_MS);
 
-  const combinedSignal = AbortSignal.any([
+  const combinedSignal = combineAbortSignals([
     timeoutController.signal,
     ...(signal ? [signal] : []),
   ]);
 
   const normalizedData: AIAdviceInput = {
     steps: Math.max(0, Math.min(100_000, Math.floor(data.steps))),
-    foodScore: Math.max(-7, Math.min(11, data.foodScore)), 
+    foodScore: Math.max(-3, Math.min(3, data.foodScore)),
     bmi: Math.max(10, Math.min(80, data.bmi)),
     stzi: Math.max(0, Math.min(2, data.stzi)),
   };
@@ -67,7 +84,7 @@ export async function getAIAdvice(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(normalizedData),
-      signal: combinedSignal, 
+      signal: combinedSignal,
     });
 
     let json: unknown;

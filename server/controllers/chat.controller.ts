@@ -2,6 +2,20 @@ import type { Request, Response } from 'express';
 import { chatService } from '../services/chat.service';
 import z from 'zod';
 
+const isTimeoutError = (error: unknown) => {
+   if (!(error instanceof Error)) return false;
+
+   const name = error.name.toLowerCase();
+   const message = error.message.toLowerCase();
+
+   return (
+      name.includes('abort') ||
+      name.includes('timeout') ||
+      message.includes('timed out') ||
+      message.includes('timeout')
+   );
+};
+
 const chatSchema = z.object({
    prompt: z
       .string()
@@ -40,7 +54,7 @@ export const chatController = {
          res.json({ message: response.message });
       } catch (error) {
          console.error('Chat error details:', error);
-         if (error instanceof Error && error.name === 'AbortError') {
+         if (isTimeoutError(error)) {
             res.status(504).json({ error: 'AI request timed out.' });
             return;
          }

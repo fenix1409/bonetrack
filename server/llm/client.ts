@@ -9,17 +9,18 @@ type GenerateTextOptions = {
   temperature?: number;
   maxTokens?: number;
   timeoutMs?: number;
-  cacheKey?: string;        
+  maxRetries?: number;
+  cacheKey?: string;
 };
 
 type GenerateTextResult = {
   id: string;
   text: string;
-  cached?: boolean;            
+  cached?: boolean;
 };
 
 const cache = new Map<string, { text: string; createdAt: number }>();
-const CACHE_TTL_MS = 60 * 60 * 1000; 
+const CACHE_TTL_MS = 60 * 60 * 1000;
 
 function getCacheKey(prompt: string, instructions?: string): string {
   const combined = `${prompt}|${instructions || ''}`;
@@ -42,6 +43,12 @@ function setInCache(key: string, text: string): void {
   cache.set(key, { text, createdAt: Date.now() });
 }
 
+function createTimeoutError(timeoutMs: number): Error {
+  const error = new Error(`Request timeout after ${timeoutMs}ms`);
+  error.name = 'TimeoutError';
+  return error;
+}
+
 const getOpenAIClient = (() => {
   let client: OpenAI | null = null;
   return () => {
@@ -50,8 +57,8 @@ const getOpenAIClient = (() => {
     }
     client ??= new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
-      maxRetries: 2,                    
-      timeout: 30_000,                  
+      maxRetries: 0,
+      timeout: 30_000,
     });
     return client;
   };
@@ -93,7 +100,7 @@ function withTimeout<T>(
     .finally(() => clearTimeout(timer))
     .catch((err) => {
       if (err.name === 'AbortError') {
-        throw new Error(`Request timeout after ${timeoutMs}ms`);
+        throw createTimeoutError(timeoutMs);
       }
       throw err;
     });
@@ -106,7 +113,8 @@ export const llmClient = {
     instructions,
     temperature = 0.2,
     maxTokens = 500,
-    timeoutMs = 15_000,
+    timeoutMs = 30_000,
+    maxRetries = 1,
     cacheKey: userCacheKey,
   }: GenerateTextOptions): Promise<GenerateTextResult> {
     const cacheKey = userCacheKey || getCacheKey(prompt, instructions);
@@ -146,8 +154,8 @@ export const llmClient = {
 
           return content;
         }, timeoutMs),
-      3,          
-      1000        
+      maxRetries,
+      1000
     );
 
     setInCache(cacheKey, text);
@@ -175,7 +183,7 @@ export const llmClient = {
             ],
             options: {
               num_predict: 300,
-              temperature: 0.3,          
+              temperature: 0.3,
             },
             stream: false,
           });

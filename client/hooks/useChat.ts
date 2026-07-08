@@ -28,7 +28,7 @@ const generateUuid = () => {
   });
 };
 
-const TIMEOUT_MS = 15_000;
+const TIMEOUT_MS = 40_000;
 
 export function useChat() {
   const { profile, history } = useBoneStore();
@@ -59,7 +59,7 @@ export function useChat() {
 
     const latestLog = history[0];
     const bmi = profile ? calculateBMI(profile.height, profile.weight) : 0;
-    
+
     const normalizedHealthContext = {
       steps: Math.max(0, Math.min(latestLog?.steps ?? 0, 100_000)),
       foodScore: Math.max(-3, Math.min(latestLog?.foodScore ?? 0, 10)),

@@ -46,6 +46,8 @@ export const chatService = {
          prompt,
          temperature: 0.05,
          maxTokens: 140,
+         timeoutMs: 25_000,
+         maxRetries: 1,
       });
 
       conversationRepository.setLastResponseId(conversationId, response.id);
