@@ -10,7 +10,7 @@
     },
     "name": "BoneTrack",
     "slug": "bonetrack",
-    "version": "1.0.0",
+    "version": "1.0.1",  
     "orientation": "portrait",
     "icon": "./assets/logo.png",
     "scheme": [
@@ -27,7 +27,7 @@
       }
     },
     "android": {
-      "versionCode": 1,
+      "versionCode": 8, 
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/logo.png",
