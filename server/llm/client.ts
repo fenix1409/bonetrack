@@ -19,8 +19,10 @@ type GenerateTextResult = {
   cached?: boolean;
 };
 
-const cache = new Map<string, { text: string; createdAt: number }>();
 const CACHE_TTL_MS = 60 * 60 * 1000;
+const CACHE_MAX_SIZE = 500;
+
+const cache = new Map<string, { text: string; createdAt: number }>();
 
 function getCacheKey(prompt: string, instructions?: string): string {
   const combined = `${prompt}|${instructions || ''}`;
@@ -40,6 +42,10 @@ function getFromCache(key: string): string | null {
 }
 
 function setInCache(key: string, text: string): void {
+  if (cache.size >= CACHE_MAX_SIZE) {
+    const oldestKey = cache.keys().next().value;
+    if (oldestKey) cache.delete(oldestKey);
+  }
   cache.set(key, { text, createdAt: Date.now() });
 }
 
@@ -68,25 +74,28 @@ const ollamaClient = new Ollama({
   host: process.env.OLLAMA_HOST || 'http://localhost:11434',
 });
 
-
 async function retryWithBackoff<T>(
   fn: () => Promise<T>,
   maxRetries: number = 3,
   baseDelayMs: number = 1000
 ): Promise<T> {
+  let lastError: unknown;
+
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await fn();
     } catch (err) {
+      lastError = err;
       const isLastRetry = i === maxRetries - 1;
-      if (isLastRetry) throw err;
+      if (isLastRetry) break;
 
       const delayMs = baseDelayMs * Math.pow(2, i);
       console.warn(`[LLM] Retry ${i + 1}/${maxRetries} after ${delayMs}ms`, err);
       await new Promise(r => setTimeout(r, delayMs));
     }
   }
-  throw new Error('Max retries exceeded');
+
+  throw lastError;
 }
 
 function withTimeout<T>(
@@ -175,6 +184,8 @@ export const llmClient = {
     const text = await retryWithBackoff(
       () =>
         withTimeout(async (signal) => {
+          void signal;
+
           const response = await ollamaClient.chat({
             model: 'tinyllama',
             messages: [
@@ -208,6 +219,7 @@ export const llmClient = {
   getCacheStats() {
     return {
       size: cache.size,
+      maxSize: CACHE_MAX_SIZE,
       entries: Array.from(cache.entries()).map(([key, value]) => ({
         key: key.substring(0, 20) + '...',
         age: Date.now() - value.createdAt,
