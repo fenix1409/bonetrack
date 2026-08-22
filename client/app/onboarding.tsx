@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/Button';
 import Colors from '@/constants/Colors';
-import { useBoneStore } from '@/store/useBoneStore';
+import { useCompleteOnboarding, useIsFirstLaunch } from '@/store/useBoneStore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -46,7 +46,8 @@ const SLIDES = [
 
 export default function OnboardingScreen() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { completeOnboarding, isFirstLaunch } = useBoneStore();
+  const completeOnboarding = useCompleteOnboarding();
+  const isFirstLaunch = useIsFirstLaunch();
   const router = useRouter();
   const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const c = Colors[colorScheme];

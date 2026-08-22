@@ -1,12 +1,23 @@
 import type { Request, Response } from 'express';
 import { z } from 'zod';
 import { healthAdviceService } from '../services/healthAdvice.service';
+import { LlmResponseError } from '../llm/errors';
+import {
+   BMI_MAX,
+   BMI_MIN,
+   FOOD_SCORE_MAX,
+   FOOD_SCORE_MIN,
+   STEPS_MAX,
+   STEPS_MIN,
+   STZI_MAX,
+   STZI_MIN,
+} from '../llm/scoreRanges';
 
 const healthAdviceRequestSchema = z.object({
-   steps: z.number().min(0).max(100_000),
-   foodScore: z.number().min(-3).max(3),
-   bmi: z.number().min(10).max(80),
-   stzi: z.number().min(0).max(2),
+   steps: z.number().min(STEPS_MIN).max(STEPS_MAX),
+   foodScore: z.number().min(FOOD_SCORE_MIN).max(FOOD_SCORE_MAX),
+   bmi: z.number().min(BMI_MIN).max(BMI_MAX),
+   stzi: z.number().min(STZI_MIN).max(STZI_MAX),
 });
 
 const isTimeoutError = (error: unknown) => {
@@ -39,18 +50,16 @@ export const healthAdviceController = {
          const advice = await healthAdviceService.generate(parseResult.data);
          res.json(advice);
       } catch (error) {
+         if (error instanceof LlmResponseError) {
+            console.error('Health advice error: unusable AI response:', error.rawPreview);
+            res.status(502).json({ error: 'AI жавоби новажа.' });
+            return;
+         }
+
          console.error('Health advice error:', error);
 
          if (isTimeoutError(error)) {
             res.status(504).json({ error: 'AI сўрови вақти кончади.' });
-            return;
-         }
-
-         if (
-            error instanceof Error &&
-            error.message === 'AI response did not match the expected schema.'
-         ) {
-            res.status(502).json({ error: 'AI жавоби новажа.' });
             return;
          }
 

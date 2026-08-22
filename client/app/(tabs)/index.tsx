@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import Colors from '@/constants/Colors';
 import { Recommendation, getRecommendations, getStatusColors, stepsToKm } from '@/utils/calculations';
-import { useBoneStore } from '@/store/useBoneStore';
+import { useHistory, useProfile } from '@/store/useBoneStore';
 import { DetailRow } from '@/components/dashboard/DetailRow';
 import { ProgressSection } from '@/components/dashboard/ProgressSection';
 import { RecommendationContainer } from '@/components/dashboard/RecommendationContainer';
@@ -21,7 +21,8 @@ export default function DashboardScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
-  const { history, profile } = useBoneStore();
+  const history = useHistory();
+  const profile = useProfile();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = React.useCallback(() => {

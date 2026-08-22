@@ -1,6 +1,14 @@
 import type { Request, Response } from 'express';
 import { chatService } from '../services/chat.service';
 import z from 'zod';
+import {
+   FOOD_SCORE_MAX,
+   FOOD_SCORE_MIN,
+   STEPS_MAX,
+   STEPS_MIN,
+   STZI_MAX,
+   STZI_MIN,
+} from '../llm/scoreRanges';
 
 const isTimeoutError = (error: unknown) => {
    if (!(error instanceof Error)) return false;
@@ -24,10 +32,10 @@ const chatSchema = z.object({
       .max(500, 'Prompt is too long (max 500 characters).'),
    conversationId: z.string().uuid(),
    healthContext: z.object({
-      steps: z.number().min(0).max(100_000).default(0),
-      foodScore: z.number().min(-3).max(10).default(0),
+      steps: z.number().min(STEPS_MIN).max(STEPS_MAX).default(0),
+      foodScore: z.number().min(FOOD_SCORE_MIN).max(FOOD_SCORE_MAX).default(0),
       bmi: z.number().min(0).max(100).default(0),
-      stzi: z.number().min(0).max(5).default(0),
+      stzi: z.number().min(STZI_MIN).max(STZI_MAX).default(0),
    }).optional(),
 });
 

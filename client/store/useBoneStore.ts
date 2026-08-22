@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import type { UserProfile, DailyLog, WalkingCondition } from '../types/bone';
 import { buildDailyLog } from '../utils/stzi';
 import { sortLogsByDateDesc } from '../utils/statistics';
@@ -25,6 +26,75 @@ const getTodayDate = (): string => {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 };
 
+/**
+ * `profile` holds health data — age, height, weight, gender, smoking status —
+ * so it is kept in Keystore/Keychain-backed storage rather than AsyncStorage,
+ * which is plaintext and readable from a device backup or a rooted device.
+ *
+ * `history` stays in AsyncStorage: SecureStore has a hard 2048-byte value limit
+ * that a growing log array would blow through, and the daily logs are far less
+ * sensitive than the profile.
+ */
+const SECURE_PROFILE_KEY = 'bonetrack_profile_v1';
+
+const isSecureStoreUsable = Platform.OS === 'ios' || Platform.OS === 'android';
+
+/**
+ * Splits the persisted payload: `profile` goes to SecureStore, everything else
+ * to AsyncStorage. Both are read back and recombined on hydration.
+ */
+const createNativeStorage = (): StateStorage => ({
+  getItem: async (name) => {
+    const [bulk, secureProfile] = await Promise.all([
+      AsyncStorage.getItem(name),
+      SecureStore.getItemAsync(SECURE_PROFILE_KEY).catch(() => null),
+    ]);
+
+    if (!bulk) return null;
+
+    try {
+      const parsed = JSON.parse(bulk);
+      if (secureProfile) {
+        parsed.state = { ...parsed.state, profile: JSON.parse(secureProfile) };
+      }
+      return JSON.stringify(parsed);
+    } catch {
+      // Corrupt payload: treat as no stored state rather than crashing on boot.
+      return null;
+    }
+  },
+
+  setItem: async (name, value) => {
+    let profile: UserProfile | null = null;
+    let bulk = value;
+
+    try {
+      const parsed = JSON.parse(value);
+      profile = parsed.state?.profile ?? null;
+      // Strip the profile out of the AsyncStorage copy so it exists in exactly
+      // one place — leaving it in both would defeat the encryption entirely.
+      parsed.state = { ...parsed.state, profile: null };
+      bulk = JSON.stringify(parsed);
+    } catch {
+      // Fall through and store the payload as-is.
+    }
+
+    await Promise.all([
+      AsyncStorage.setItem(name, bulk),
+      profile
+        ? SecureStore.setItemAsync(SECURE_PROFILE_KEY, JSON.stringify(profile))
+        : SecureStore.deleteItemAsync(SECURE_PROFILE_KEY).catch(() => undefined),
+    ]);
+  },
+
+  removeItem: async (name) => {
+    await Promise.all([
+      AsyncStorage.removeItem(name),
+      SecureStore.deleteItemAsync(SECURE_PROFILE_KEY).catch(() => undefined),
+    ]);
+  },
+});
+
 const getStorage = () => {
   if (Platform.OS === 'web') {
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
@@ -40,7 +110,10 @@ const getStorage = () => {
       removeItem: () => { },
     }));
   }
-  return createJSONStorage(() => AsyncStorage);
+
+  if (!isSecureStoreUsable) return createJSONStorage(() => AsyncStorage);
+
+  return createJSONStorage(createNativeStorage);
 };
 
 export const useBoneStore = create<BoneState>()(
@@ -161,3 +234,27 @@ export const useBoneStore = create<BoneState>()(
     }
   )
 );
+
+/*
+ * Selector hooks.
+ *
+ * Calling `useBoneStore()` with no selector subscribes the component to every
+ * field, so a step sync writing `history` re-renders everything that only reads
+ * `profile` — including the root layout, and with it the whole navigation tree.
+ * Each hook below subscribes to exactly one slice.
+ *
+ * Actions are stable references created once, so components that select only
+ * actions never re-render on state changes at all.
+ */
+
+export const useProfile = () => useBoneStore((s) => s.profile);
+export const useHistory = () => useBoneStore((s) => s.history);
+export const useIsFirstLaunch = () => useBoneStore((s) => s.isFirstLaunch);
+export const useHasHydrated = () => useBoneStore((s) => s._hasHydrated);
+
+export const useSetProfile = () => useBoneStore((s) => s.setProfile);
+export const useCompleteOnboarding = () => useBoneStore((s) => s.completeOnboarding);
+export const useAddDailyLog = () => useBoneStore((s) => s.addDailyLog);
+export const useUpdateStepsOnly = () => useBoneStore((s) => s.updateStepsOnly);
+export const useRecalculateTodayLog = () => useBoneStore((s) => s.recalculateTodayLog);
+export const useResetStore = () => useBoneStore((s) => s.resetStore);

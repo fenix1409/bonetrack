@@ -1,16 +1,26 @@
 import OpenAI from 'openai';
-import { Ollama } from 'ollama';
-import summarizePrompt from '../llm/prompts/summarize-reviews.txt';
+import type { ChatTurn } from '../repositories/conversation.repository';
 
 type GenerateTextOptions = {
   model?: string;
   prompt: string;
   instructions?: string;
+  /** Prior turns, oldest first. Sent before `prompt` so the model has context. */
+  history?: ChatTurn[];
   temperature?: number;
   maxTokens?: number;
   timeoutMs?: number;
-  maxRetries?: number;
+  /** Total number of attempts, not additional retries. Minimum 1. */
+  maxAttempts?: number;
   cacheKey?: string;
+  /** Ask the model for a JSON object (OpenAI `response_format`). */
+  jsonMode?: boolean;
+  /**
+   * Called with the raw completion before it is cached or returned. Returning
+   * false discards the completion, triggers another attempt, and prevents an
+   * unusable response from being cached for the whole TTL.
+   */
+  validate?: (text: string) => boolean;
 };
 
 type GenerateTextResult = {
@@ -24,8 +34,18 @@ const CACHE_MAX_SIZE = 500;
 
 const cache = new Map<string, { text: string; createdAt: number }>();
 
-function getCacheKey(prompt: string, instructions?: string): string {
-  const combined = `${prompt}|${instructions || ''}`;
+function getCacheKey(
+  prompt: string,
+  instructions?: string,
+  history?: ChatTurn[]
+): string {
+  // History must be part of the key: the same question asked at two different
+  // points in a conversation is a different request and deserves its own entry.
+  const historyKey = (history ?? [])
+    .map((turn) => `${turn.role}:${turn.content}`)
+    .join('|');
+
+  const combined = `${prompt}|${instructions || ''}|${historyKey}`;
   return Buffer.from(combined).toString('base64');
 }
 
@@ -70,27 +90,25 @@ const getOpenAIClient = (() => {
   };
 })();
 
-const ollamaClient = new Ollama({
-  host: process.env.OLLAMA_HOST || 'http://localhost:11434',
-});
-
+/** Runs `fn` up to `maxAttempts` times (so `maxAttempts: 1` means no retry). */
 async function retryWithBackoff<T>(
   fn: () => Promise<T>,
-  maxRetries: number = 3,
+  maxAttempts: number = 3,
   baseDelayMs: number = 1000
 ): Promise<T> {
+  const attempts = Math.max(1, maxAttempts);
   let lastError: unknown;
 
-  for (let i = 0; i < maxRetries; i++) {
+  for (let i = 0; i < attempts; i++) {
     try {
       return await fn();
     } catch (err) {
       lastError = err;
-      const isLastRetry = i === maxRetries - 1;
-      if (isLastRetry) break;
+      const isLastAttempt = i === attempts - 1;
+      if (isLastAttempt) break;
 
       const delayMs = baseDelayMs * Math.pow(2, i);
-      console.warn(`[LLM] Retry ${i + 1}/${maxRetries} after ${delayMs}ms`, err);
+      console.warn(`[LLM] Attempt ${i + 1}/${attempts} failed, retrying in ${delayMs}ms`, err);
       await new Promise(r => setTimeout(r, delayMs));
     }
   }
@@ -120,13 +138,16 @@ export const llmClient = {
     model = 'gpt-4.1-mini',
     prompt,
     instructions,
+    history,
     temperature = 0.2,
     maxTokens = 500,
     timeoutMs = 30_000,
-    maxRetries = 1,
+    maxAttempts = 1,
     cacheKey: userCacheKey,
+    jsonMode = false,
+    validate,
   }: GenerateTextOptions): Promise<GenerateTextResult> {
-    const cacheKey = userCacheKey || getCacheKey(prompt, instructions);
+    const cacheKey = userCacheKey || getCacheKey(prompt, instructions, history);
     const cached = getFromCache(cacheKey);
     if (cached) {
       return {
@@ -146,11 +167,16 @@ export const llmClient = {
                 ...(instructions
                   ? [{ role: 'system' as const, content: instructions }]
                   : []),
+                ...(history ?? []).map((turn) => ({
+                  role: turn.role,
+                  content: turn.content,
+                })),
                 { role: 'user' as const, content: prompt },
               ],
               temperature,
               max_tokens: maxTokens,
               stream: false,
+              ...(jsonMode ? { response_format: { type: 'json_object' as const } } : {}),
             },
             { signal, timeout: timeoutMs }
           );
@@ -161,9 +187,15 @@ export const llmClient = {
             throw new Error('Empty response from OpenAI');
           }
 
+          // Validate before the result escapes the retry loop, so an unusable
+          // completion is resampled instead of being cached for the full TTL.
+          if (validate && !validate(content)) {
+            throw new Error('OpenAI response failed caller validation');
+          }
+
           return content;
         }, timeoutMs),
-      maxRetries,
+      maxAttempts,
       1000
     );
 
@@ -174,46 +206,6 @@ export const llmClient = {
       text,
       cached: false,
     };
-  },
-
-  async summarizeReviews(reviews: string): Promise<string> {
-    const cacheKey = getCacheKey('summarize', reviews.substring(0, 100));
-    const cached = getFromCache(cacheKey);
-    if (cached) return cached;
-
-    const text = await retryWithBackoff(
-      () =>
-        withTimeout(async (signal) => {
-          void signal;
-
-          const response = await ollamaClient.chat({
-            model: 'tinyllama',
-            messages: [
-              { role: 'system', content: summarizePrompt },
-              { role: 'user', content: reviews },
-            ],
-            options: {
-              num_predict: 300,
-              temperature: 0.3,
-            },
-            stream: false,
-          });
-
-          const content = response.message?.content?.trim();
-
-          if (!content) {
-            throw new Error('Empty response from Ollama');
-          }
-
-          return content;
-        }, 30_000),
-      2,
-      2000
-    );
-
-    setInCache(cacheKey, text);
-
-    return text;
   },
 
   getCacheStats() {

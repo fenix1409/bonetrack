@@ -5,7 +5,7 @@ import { StepsInput } from '@/components/input/StepsInput';
 import { WalkingConditionPicker } from '@/components/input/WalkingConditionPicker';
 import { FoodSelector } from '@/components/input/FoodSelector';
 import Colors from '@/constants/Colors';
-import { useBoneStore } from '@/store/useBoneStore';
+import { useHistory, useProfile } from '@/store/useBoneStore';
 import { useInputLogic } from '@/hooks/useInputLogic';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
@@ -17,7 +17,8 @@ export default function InputScreen() {
   const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const theme = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const { profile, history } = useBoneStore();
+  const profile = useProfile();
+  const history = useHistory();
   const router = useRouter();
 
   const { handleSubmit, onSubmit, selectedFoods, toggleFood, condition, handleConditionChange, showSuccess, setShowSuccess, isSubmitting, scrollRef, sectionYRef, healthConnect, currentSteps } = useInputLogic(profile, history);

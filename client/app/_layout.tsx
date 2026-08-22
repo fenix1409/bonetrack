@@ -1,7 +1,7 @@
 import { Loading } from '@/components/ui/Loading';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { useBoneStore } from "@/store/useBoneStore";
-import { getApiBaseUrl } from '@/utils/api';
+import { useHasHydrated, useIsFirstLaunch, useProfile } from "@/store/useBoneStore";
+import { useServerKeepAlive } from '@/hooks/useServerKeepAlive';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -14,35 +14,15 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const { isFirstLaunch, profile, _hasHydrated } = useBoneStore();
+  const isFirstLaunch = useIsFirstLaunch();
+  const profile = useProfile();
+  const _hasHydrated = useHasHydrated();
 
   const segments = useSegments();
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
 
-  useEffect(() => {
-    const pingServer = () => {
-      const apiBaseUrl = getApiBaseUrl();
-      if (!apiBaseUrl) return;
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-      fetch(`${apiBaseUrl}/health`, {
-        method: 'GET',
-        signal: controller.signal,
-      })
-        .catch(() => {
-          console.log('[KeepAlive] Ping failed (expected on offline)');
-        })
-        .finally(() => clearTimeout(timeoutId));
-    };
-
-    pingServer();
-    const keepAliveInterval = setInterval(pingServer, 10 * 60 * 1000);
-
-    return () => clearInterval(keepAliveInterval);
-  }, []);
+  useServerKeepAlive();
 
   useEffect(() => {
     if (_hasHydrated) {

@@ -4,7 +4,7 @@ import Colors from '@/constants/Colors';
 import { TIPS, Tip } from '@/constants/data';
 import { TIPS_BY_CATEGORY, LIFESTYLE_HAZARD_TIP } from '@/constants/tipStyles';
 import { useAIAdvice } from '@/hooks/useAIAdvice';
-import { useBoneStore } from '@/store/useBoneStore';
+import { useHistory, useProfile } from '@/store/useBoneStore';
 import { calculateBMI } from '@/utils/calculations';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -20,7 +20,8 @@ export default function TipsScreen() {
   const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const c = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const { profile, history } = useBoneStore();
+  const profile = useProfile();
+  const history = useHistory();
   const { advice, loading: aiLoading, error: aiError, loadAdvice } = useAIAdvice();
   const [refreshing, setRefreshing] = useState(false);
 

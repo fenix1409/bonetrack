@@ -1,7 +1,18 @@
 import { useState, useRef, useCallback } from 'react';
 import * as Haptics from 'expo-haptics';
-import { useBoneStore } from '@/store/useBoneStore';
+import { useHistory, useProfile } from '@/store/useBoneStore';
 import { calculateBMI } from '@/utils/calculations';
+import {
+  BMI_MAX,
+  BMI_MIN,
+  FOOD_SCORE_MAX,
+  FOOD_SCORE_MIN,
+  STEPS_MAX,
+  STEPS_MIN,
+  STZI_MAX,
+  STZI_MIN,
+  clamp,
+} from '@/utils/stzi-system';
 import { getApiBaseUrl, getMissingApiUrlError } from '@/utils/api';
 
 export interface Message {
@@ -30,8 +41,21 @@ const generateUuid = () => {
 
 const TIMEOUT_MS = 40_000;
 
+/**
+ * Module-level so the id survives the screen unmounting (tab switches), which
+ * is what keeps server-side conversation history addressable across the
+ * session. A cold app start intentionally begins a fresh conversation.
+ */
+let sessionConversationId: string | null = null;
+
+const getConversationId = () => {
+  sessionConversationId ??= generateUuid();
+  return sessionConversationId;
+};
+
 export function useChat() {
-  const { profile, history } = useBoneStore();
+  const profile = useProfile();
+  const history = useHistory();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -43,7 +67,7 @@ export function useChat() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const conversationId = useRef(generateUuid());
+  const conversationId = useRef(getConversationId());
   const lastUserText = useRef<string>('');
   const abortRef = useRef<AbortController | null>(null);
 
@@ -60,11 +84,14 @@ export function useChat() {
     const latestLog = history[0];
     const bmi = profile ? calculateBMI(profile.height, profile.weight) : 0;
 
+    // Ranges come from the score generators, never re-typed as literals: the
+    // previous hardcoded [-3, 10] / [0, 5] silently truncated a good diet and
+    // told the model a top-band STZI of 1.8 was mid-scale.
     const normalizedHealthContext = {
-      steps: Math.max(0, Math.min(latestLog?.steps ?? 0, 100_000)),
-      foodScore: Math.max(-3, Math.min(latestLog?.foodScore ?? 0, 10)),
-      bmi: Math.max(0, Math.min(bmi, 100)),
-      stzi: Math.max(0, Math.min(latestLog?.stzi ?? 0, 5)),
+      steps: clamp(latestLog?.steps ?? 0, STEPS_MIN, STEPS_MAX),
+      foodScore: clamp(latestLog?.foodScore ?? 0, FOOD_SCORE_MIN, FOOD_SCORE_MAX),
+      bmi: clamp(bmi, BMI_MIN, BMI_MAX),
+      stzi: clamp(latestLog?.stzi ?? 0, STZI_MIN, STZI_MAX),
     };
 
     const apiBaseUrl = getApiBaseUrl();

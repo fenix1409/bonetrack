@@ -8,7 +8,27 @@ const round2 = (num: number): number => Math.round(num * 100) / 100;
 /**
  * Clamps a number between min and max.
  */
-const clamp = (num: number, min: number, max: number): number => Math.min(Math.max(num, min), max);
+export const clamp = (num: number, min: number, max: number): number => Math.min(Math.max(num, min), max);
+
+/*
+ * Canonical score ranges — the single source of truth for the whole app.
+ *
+ * Mirrored in `server/llm/scoreRanges.ts` (the packages are independent, with
+ * no shared workspace). Anything that needs to bound a score imports from here
+ * rather than re-typing the numbers, which is how the client previously ended
+ * up clamping foodScore to ±3 against a real range of −7…+11.
+ */
+export const FOOD_SCORE_MIN = -7;
+export const FOOD_SCORE_MAX = 11;
+
+export const STZI_MIN = 0;
+export const STZI_MAX = 2;
+
+export const BMI_MIN = 10;
+export const BMI_MAX = 80;
+
+export const STEPS_MIN = 0;
+export const STEPS_MAX = 100_000;
 
 /**
  * 1. Calculate BMI
@@ -76,7 +96,7 @@ export const getFoodScore = (selectedFoods: NutritionChoice[]): number => {
   });
 
   // ✅ Clamp to valid range (-7 to +11)
-  const clamped = clamp(score, -7, 11);
+  const clamped = clamp(score, FOOD_SCORE_MIN, FOOD_SCORE_MAX);
   return round2(clamped);
 };
 

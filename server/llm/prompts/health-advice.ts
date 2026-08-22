@@ -1,120 +1,47 @@
-import fs from 'fs/promises';
-import path from 'path';
 import type { HealthAdviceInput } from '../../services/healthAdvice.service';
+import { FOOD_SCORE_MAX, FOOD_SCORE_MIN, STZI_MAX, STZI_MIN, resolveStatus } from '../scoreRanges';
 
-let boneTrackInfo: string | null = null;
-
-async function getBoneTrackInfo(): Promise<string> {
-  if (boneTrackInfo) return boneTrackInfo;
-  boneTrackInfo = await fs.readFile(
-    path.join(__dirname, 'BoneTrack.md'),
-    'utf-8'
-  );
-  return boneTrackInfo;
-}
-
-export const buildHealthAdvicePrompt = async (data: HealthAdviceInput): Promise<string> => {
-  const info = await getBoneTrackInfo();
-
-  const status =
-    data.stzi < 1 ? 'low' : data.stzi <= 1.6 ? 'medium' : 'good';
-
-  const stepTarget = data.steps < 5000
-    ? Math.min(data.steps + 1000, 5000)
-    : null;
+/** Build the constrained prompt used for the structured bone-health response. */
+export const buildHealthAdvicePrompt = (data: HealthAdviceInput): string => {
+  const status = resolveStatus(data.stzi);
 
   return `
-${info}
+Сиз суяк саломатлиги бўйича маслаҳатчи AIсиз. Кириш маълумотлари:
+- Қадамлар: ${data.steps}
+- Овқат баҳоси: ${data.foodScore} (${FOOD_SCORE_MIN} дан +${FOOD_SCORE_MAX} гача)
+- BMI: ${data.bmi}
+- STZI: ${data.stzi} (${STZI_MIN} дан ${STZI_MAX} гача)
+- Ҳисобланган ҳолат: ${status}
 
-You are an AI assistant inside a lifestyle tracking app.
-
-INPUT:
-- steps: ${data.steps}
-- foodScore: ${data.foodScore}
-- bmi: ${data.bmi}
-- stzi: ${data.stzi}
-- resolvedStatus: ${status}
-${stepTarget !== null ? `- stepTarget: ${stepTarget} (suggest THIS exact number, not ${data.steps}, not 5000)` : '- stepTarget: null (steps already at goal)'}
-
-TASK:
-Analyze the user lifestyle score and generate SHORT practical feedback.
-
---------------------------------
-OUTPUT (STRICT JSON ONLY):
+Фақат қуйидаги JSON объектни қайтаринг, бошқа матн ёки markdown қўшманг:
 {
   "status": "${status}",
-  "summary": "string",
-  "issues": ["string"],
-  "actions": ["string"]
+  "summary": "1–2 жумла, 100 белгидан кам",
+  "issues": ["муаммо"],
+  "actions": ["аниқ ва ўлчанадиган амал"]
 }
---------------------------------
 
-STATUS RULE (already resolved, use resolvedStatus):
-- stzi < 1 → low
-- 1 ≤ stzi ≤ 1.6 → medium
-- stzi > 1.6 → good
+Баҳолаш чегаралари:
+- STZI: 1.0 дан паст — low; 1.0 дан 1.59 гача — medium; 1.6 ва ундан юқори — good.
+- Қадамлар: 500 дан кам — жуда паст; 500–2499 — паст; 2500–4499 — ўртача; 4500–5499 — яхши; 5500 ва ундан юқори — оптимал.
+- BMI: 18.5 дан 25 гача (25 киради) — меъёр; 25 дан юқори 30 гача (30 киради) — ортиқча вазн; 18.5 дан паст ёки 30 дан юқори — хавф.
+- Овқат баҳоси: манфий баҳо зарарли овқатлар устунлигини билдиради; 0 га яқин баҳо — ўртача; юқори мусбат баҳо — соғлом танлов. ${FOOD_SCORE_MAX} — энг юқори натижа.
 
-STZI threshold: 1.6 is "medium". Only stzi strictly greater than 1.6 is "good".
+Қоидалар:
+- status майдони айнан "${status}" бўлсин, уни ўзгартирманг.
+- Агар ҳолат "good" бўлса, issues бўш массив бўлсин: [].
+- Акс ҳолда issues аниқ муаммолардан иборат, кўпи билан 3 та.
+- actions амалий ва ўлчанадиган, кўпи билан 4 та. "good" ҳолатда фақат мавжуд одатларни сақлашни айтинг.
 
-ISSUE RULES:
-- "good" status → issues: [] (empty array, no issues)
-- "medium" or "low" → Choose MAXIMUM 2 issues
+ҚАТЪИЙ ТАҚИҚЛАНГАН:
+- Тиббий ташхис қўйиш ёки касаллик номларини айтиш (масалан остеопороз).
+- Даволаш, дори ёки қўшимча тавсия қилиш (масалан кальций, витамин D, балиқ ёғи).
+- Дозалар, миқдорлар ёки препарат номларини кўрсатиш.
+- Шифокорга бормаслик ёки даволанишни алмаштириш маъносидаги гаплар.
+Ўрнига фақат турмуш тарзи бўйича маслаҳат беринг: ҳаракат, овқатланиш танлови, вазн, кундалик одатлар.
 
-Allowed issues:
-- "Кунлик қадамлар кам" (only if steps < 5000)
-- "Овқатланиш баҳолаши паст" (only if foodScore < 5)
-- "BMI меъёрдан ташқари" (only if bmi < 18.5 or bmi > 25)
-
-DO NOT generate any other issue.
-
-ACTION RULES BY STATUS:
-
-If status === "good":
-  - actions: EXACTLY 1 action
-  - ONLY allowed: "Ҳозирги турмуш тарзингизни сақлаб қолинг"
-  - DO NOT suggest any improvements
-
-If status === "medium":
-  - actions: MAXIMUM 2 actions
-  - focus ONLY on the weakest metric
-
-If status === "low":
-  - actions: MAXIMUM 3 actions
-  - address the most critical issues only
-
-ACTION RULES FOR STEPS (medium/low only):
-${stepTarget !== null
-      ? `- steps < 5000: use EXACTLY "Кунига ${stepTarget} қадам юришга ҳаракат қилинг"
-  - DO NOT use any other number — not ${data.steps}, not 5000, not any other value
-  - stepTarget is already calculated: ${stepTarget}`
-      : '- steps >= 5000: DO NOT suggest increasing steps'}
-
-ACTION RULES FOR FOOD (medium/low only):
-- If foodScore < 5: "Ҳар куни 2 порция сабзавот истеъмол қилинг"
-- If foodScore < 5: "Ширин ичимликларни камайтиринг"
-
-STRICTLY FORBIDDEN in actions:
-- Any mention of: суяк, суяк соғлиги, мустаҳкамлаш, машқ, жисмоний машқ,
-  даволаш, касаллик, тиббий ташхис, витамин тавсияси, кальций, остеопороз
-- Medical recommendations
-- Exercise programs
-- Motivational text or explanations
-- Suggesting more steps/food when status is "good"
-
-LANGUAGE RULES:
-- Uzbek Cyrillic ONLY
-- No Latin letters
-- No emojis
-
-STYLE:
-- concise
-- mobile-app friendly
-- natural Uzbek wording
-
-CRITICAL:
-- Return VALID JSON only
-- No markdown
-- No extra text
-- "status" field MUST equal resolvedStatus: "${status}"
+Услуб:
+- Тил фақат ўзбек кириллицаси бўлсин, эмодзи ишлатманг. Лотин ҳарфларидан фақат "BMI" қисқартмаси мустасно.
+- Қисқа, қўллаб-қувватловчи ва мобил илова учун мос бўлсин.
 `;
 };

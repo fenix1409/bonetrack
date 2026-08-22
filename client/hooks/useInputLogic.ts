@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSTZI } from '@/hooks/useSTZI';
 import { useHealthConnect } from '@/hooks/useHealthConnect';
-import { useBoneStore } from '@/store/useBoneStore';
+import { useAddDailyLog, useUpdateStepsOnly } from '@/store/useBoneStore';
 import { WalkingCondition, UserProfile } from '@/types/bone';
 import { ScrollView } from 'react-native';
 import { getFrequencyFromSteps } from '@/utils/calculations';
@@ -21,7 +21,8 @@ const DEFAULT_WALKING_CONDITION: WalkingCondition = {
 
 export function useInputLogic(profile: UserProfile | null, history: any[]) {
   const [showSuccess, setShowSuccess] = useState(false);
-  const { addDailyLog, updateStepsOnly } = useBoneStore();
+  const addDailyLog = useAddDailyLog();
+  const updateStepsOnly = useUpdateStepsOnly();
   const { calculate } = useSTZI(profile);
   const healthConnect = useHealthConnect(Boolean(profile));
 

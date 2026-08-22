@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, ScrollView, useColorScheme, StatusBar, Switch }
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useForm, Controller } from 'react-hook-form';
-import { useBoneStore } from '@/store/useBoneStore';
+import { useProfile, useRecalculateTodayLog, useSetProfile } from '@/store/useBoneStore';
 import { UserProfile } from '@/types/bone';
 import { getBMIScore, calculateBMI, validateProfile } from '@/utils/calculations';
 import Colors from '@/constants/Colors';
@@ -26,7 +26,9 @@ export default function ProfileScreen() {
     const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
     const c = Colors[colorScheme];
     const insets = useSafeAreaInsets();
-    const { profile, setProfile, recalculateTodayLog } = useBoneStore();
+    const profile = useProfile();
+    const setProfile = useSetProfile();
+    const recalculateTodayLog = useRecalculateTodayLog();
     const [showSuccess, setShowSuccess] = useState(false);
 
     const { control, handleSubmit, watch, formState: { errors } } = useForm<UserProfile>({

@@ -2,7 +2,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView, useColorScheme, StatusBar, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useBoneStore } from '@/store/useBoneStore';
+import { useHistory } from '@/store/useBoneStore';
 import Colors from '@/constants/Colors';
 import { Card } from '@/components/ui/Card';
 import { LogCard } from '@/components/stats/LogCard';
@@ -15,7 +15,7 @@ export default function StatsScreen() {
   const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const c = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const { history } = useBoneStore();
+  const history = useHistory();
   const [refreshing, setRefreshing] = React.useState(false);
   const { averageSTZI, recentLogs, chartPoints, hasHistory } = useStatistics(history);
 

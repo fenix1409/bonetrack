@@ -40,17 +40,31 @@ export const chatService = {
       conversationId: string,
       healthContext?: HealthContext
    ): Promise<ChatResponse> {
+      // Read history before appending the new turn, so the model sees the
+      // conversation as it stood when the question was asked.
+      const history = conversationRepository.getTurns(conversationId);
+
       const response = await llmClient.generateText({
          model: 'gpt-4.1-mini',
          instructions: buildInstructions(healthContext),
          prompt,
+         history,
          temperature: 0.05,
          maxTokens: 140,
          timeoutMs: 25_000,
-         maxRetries: 1,
+         maxAttempts: 1,
       });
 
-      conversationRepository.setLastResponseId(conversationId, response.id);
+      // Only recorded once the call succeeded — a failed request must not
+      // leave a dangling user turn that corrupts the next reply's context.
+      conversationRepository.appendTurn(conversationId, {
+         role: 'user',
+         content: prompt,
+      });
+      conversationRepository.appendTurn(conversationId, {
+         role: 'assistant',
+         content: response.text,
+      });
 
       return {
          id: response.id,

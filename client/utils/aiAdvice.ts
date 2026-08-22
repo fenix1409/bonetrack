@@ -1,4 +1,15 @@
 import { getApiBaseUrl, getMissingApiUrlError } from './api';
+import {
+  BMI_MAX,
+  BMI_MIN,
+  FOOD_SCORE_MAX,
+  FOOD_SCORE_MIN,
+  STEPS_MAX,
+  STEPS_MIN,
+  STZI_MAX,
+  STZI_MIN,
+  clamp,
+} from './stzi-system';
 
 export type AIAdviceInput = {
   steps: number;
@@ -70,10 +81,10 @@ export async function getAIAdvice(
   ]);
 
   const normalizedData: AIAdviceInput = {
-    steps: Math.max(0, Math.min(100_000, Math.floor(data.steps))),
-    foodScore: Math.max(-3, Math.min(3, data.foodScore)),
-    bmi: Math.max(10, Math.min(80, data.bmi)),
-    stzi: Math.max(0, Math.min(2, data.stzi)),
+    steps: clamp(Math.floor(data.steps), STEPS_MIN, STEPS_MAX),
+    foodScore: clamp(data.foodScore, FOOD_SCORE_MIN, FOOD_SCORE_MAX),
+    bmi: clamp(data.bmi, BMI_MIN, BMI_MAX),
+    stzi: clamp(data.stzi, STZI_MIN, STZI_MAX),
   };
 
   try {
