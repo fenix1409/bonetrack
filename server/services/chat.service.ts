@@ -3,6 +3,7 @@ import path from 'path';
 import { conversationRepository } from '../repositories/conversation.repository';
 import template from '../llm/prompts/chatbot.txt';
 import { llmClient } from '../llm/client';
+import type { HealthContext } from '../llm/healthContext';
 
 const boneTrackInfo = fs.readFileSync(
    path.join(__dirname, '..', 'llm', 'prompts', 'BoneTrack.md'),
@@ -14,22 +15,27 @@ type ChatResponse = {
    message: string;
 };
 
-type HealthContext = {
-   steps: number;
-   foodScore: number;
-   bmi: number;
-   stzi: number;
-};
+/** Placeholder value when the client has no complete profile to send. */
+const NO_DATA = 'маълумот йўқ';
 
 const buildInstructions = (context?: HealthContext) => {
-   const { steps = 0, foodScore = 0, bmi = 0, stzi = 0 } = context || {};
+   /*
+    * Absent context fills the template with "no data", not with zeroes. The
+    * previous `= 0` defaults meant a user who had not filled in a profile was
+    * described to the model as BMI 0 / STZI 0 — a bottom-of-scale reading it
+    * would then give real weight and bone-density advice about. The client now
+    * omits `healthContext` rather than sending fabricated values, and this is
+    * the other half of that: the model is told the data is missing.
+    */
+   const format = (value: number | undefined) =>
+      typeof value === 'number' ? String(value) : NO_DATA;
 
    const instructions = template
       .replace('{{boneTrackInfo}}', boneTrackInfo)
-      .replace('{{steps}}', String(steps))
-      .replace('{{foodScore}}', String(foodScore))
-      .replace('{{bmi}}', String(bmi))
-      .replace('{{stzi}}', String(stzi));
+      .replace('{{steps}}', format(context?.steps))
+      .replace('{{foodScore}}', format(context?.foodScore))
+      .replace('{{bmi}}', format(context?.bmi))
+      .replace('{{stzi}}', format(context?.stzi));
 
    return instructions;
 };

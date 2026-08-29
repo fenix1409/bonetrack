@@ -5,7 +5,7 @@ import { TIPS, Tip } from '@/constants/data';
 import { TIPS_BY_CATEGORY, LIFESTYLE_HAZARD_TIP } from '@/constants/tipStyles';
 import { useAIAdvice } from '@/hooks/useAIAdvice';
 import { useHistory, useProfile } from '@/store/useBoneStore';
-import { calculateBMI } from '@/utils/calculations';
+import { buildHealthContext, resolveBmi } from '@/utils/healthContext';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -42,31 +42,13 @@ export default function TipsScreen() {
   const entranceTranslate = useMemo(() => aiEntrance.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }), [aiEntrance]);
 
   const latestLog = useMemo(() => history[0], [history]);
-  const bmi = useMemo(() => {
-    if (!profile) return null;
+  const bmi = useMemo(() => resolveBmi(profile), [profile]);
 
-    try {
-      const result = calculateBMI(profile.height, profile.weight);
-      return Number.isFinite(result) ? result : null;
-    } catch {
-      return null;
-    }
-  }, [profile]);
-
-  const todayDate = useMemo(() => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-  }, []);
-
-  const todayLog = useMemo(() => {
-    if (!latestLog || latestLog.date !== todayDate) return null;
-    return latestLog;
-  }, [latestLog, todayDate]);
-
-  const aiInput = useMemo(() => {
-    if (!profile || !todayLog || bmi == null) return null;
-    return { steps: todayLog.steps ?? 0, foodScore: todayLog.foodScore ?? 0, bmi, stzi: todayLog.stzi ?? 0 };
-  }, [bmi, todayLog, profile]);
+  // Same builder the chatbot uses, so both features apply the same bounds and
+  // the same "today's log only" rule. Null renders AISection's empty state
+  // ("Аввал профил ва кунлик маълумотларни киритинг") instead of sending a
+  // payload the server would reject.
+  const aiInput = useMemo(() => buildHealthContext({ profile, history }), [profile, history]);
 
   useEffect(() => {
     if (aiInput) loadAdvice(aiInput);

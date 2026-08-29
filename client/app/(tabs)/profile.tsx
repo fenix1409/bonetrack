@@ -6,6 +6,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useProfile, useRecalculateTodayLog, useSetProfile } from '@/store/useBoneStore';
 import { UserProfile } from '@/types/bone';
 import { getBMIScore, calculateBMI, validateProfile } from '@/utils/calculations';
+import { AGE_MAX, AGE_MIN, HEIGHT_MAX, HEIGHT_MIN, WEIGHT_MAX, WEIGHT_MIN } from '@/utils/stzi-system';
 import Colors from '@/constants/Colors';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -17,9 +18,9 @@ import { BMIInsight } from '@/components/profile/BMIInsight';
 type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 const FIELDS: { key: keyof Omit<UserProfile, 'gender'>; label: string; placeholder: string; unit: string; icon: IconName; min: number; max: number }[] = [
-    { key: 'age', label: 'Ёш', unit: 'йил', placeholder: '25', icon: 'calendar-range', min: 1, max: 120 },
-    { key: 'height', label: 'Бўй', unit: 'см', placeholder: '175', icon: 'ruler', min: 50, max: 250 },
-    { key: 'weight', label: 'Вазн', unit: 'кг', placeholder: '70', icon: 'scale-bathroom', min: 10, max: 300 },
+    { key: 'age', label: 'Ёш', unit: 'йил', placeholder: '25', icon: 'calendar-range', min: AGE_MIN, max: AGE_MAX },
+    { key: 'height', label: 'Бўй', unit: 'см', placeholder: '175', icon: 'ruler', min: HEIGHT_MIN, max: HEIGHT_MAX },
+    { key: 'weight', label: 'Вазн', unit: 'кг', placeholder: '70', icon: 'scale-bathroom', min: WEIGHT_MIN, max: WEIGHT_MAX },
 ];
 
 export default function ProfileScreen() {

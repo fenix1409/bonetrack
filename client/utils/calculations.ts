@@ -10,13 +10,17 @@ import {
   calculateMonthlyAverageSTZI,
   getRecommendations as _getRecommendations,
   validateProfile as _validateProfile,
+  getSTZIStatus as _getSTZIStatus,
+  STZI_MAX,
+  STZI_MIN,
   Recommendation,
   RecommendationType
 } from './stzi-system';
 
+/** Derived, not re-declared: this was a fourth copy of the canonical STZI range. */
 export const STZI_LIMITS = {
-  MIN: 0.0,
-  MAX: 2.0,
+  MIN: STZI_MIN,
+  MAX: STZI_MAX,
 } as const;
 
 export const FOOD_ITEMS: Record<string, NutritionChoice> = {
@@ -107,23 +111,32 @@ export const calculateSTZI = (params: {
 
 export const calculateMonthlySTZI = calculateMonthlyAverageSTZI;
 
+/*
+ * The three helpers below all branch on the STZI status bands. They used to
+ * re-type `>= 1.6` / `>= 1.0` locally — three more copies of a boundary that
+ * also lives in `getSTZIStatus` and, on the server, in `resolveStatus`. The
+ * server sends the advice card its own `status`, so a threshold changed in one
+ * copy and not the others would colour the dashboard "Аъло" while the AI card
+ * argued the user was "low".
+ */
 export const getSTZIText = (stzi: number): string => {
-  if (stzi >= 1.6) return 'Аъло';
-  if (stzi >= 1.0) return 'Ўрта (ОВКАТЛАНИШ РАЦИОНИ ВА ҚАДАМЛАР КЎПАЙТИРИШ)';
+  const status = _getSTZIStatus(stzi);
+  if (status === 'good') return 'Аъло';
+  if (status === 'medium') return 'Ўрта (ОВКАТЛАНИШ РАЦИОНИ ВА ҚАДАМЛАР КЎПАЙТИРИШ)';
   return 'Паст (хавф бор ДАВОЛОВЧИ ШИФОКОРГА МУРОЖОАТ ҚИЛИШ)';
 };
 
 export const getSTZIExplanation = (stzi: number | null | undefined): string => {
-  const val = stzi ?? 0;
-  if (val >= 1.6) return 'Сизнинг суяк зичлиги индексингиз жуда яхши. Шу тарзда давом эттиринг 👍';
-  if (val >= 1.0) return 'Рационни яхшилаш ва қадамлар сонини ошириш (5000+) тавсия этилади.';
+  const status = _getSTZIStatus(stzi ?? 0);
+  if (status === 'good') return 'Сизнинг суяк зичлиги индексингиз жуда яхши. Шу тарзда давом эттиринг 👍';
+  if (status === 'medium') return 'Рационни яхшилаш ва қадамлар сонини ошириш (5000+) тавсия этилади.';
   return 'Диққат! Сизда суяк заифлашиши хавфи мавжуд. Шифокор билан маслаҳатлашинг.';
 };
 
 export const getStatusColors = (stzi: number | null | undefined, colors: StatusColors) => {
-  const val = stzi ?? 0;
-  if (val >= 1.6) return { label: 'Аъло', color: colors.excellent, bg: colors.excellentBg };
-  if (val >= 1.0) return { label: 'Ўртача', color: colors.medium, bg: colors.mediumBg };
+  const status = _getSTZIStatus(stzi ?? 0);
+  if (status === 'good') return { label: 'Аъло', color: colors.excellent, bg: colors.excellentBg };
+  if (status === 'medium') return { label: 'Ўртача', color: colors.medium, bg: colors.mediumBg };
   return { label: 'Паст', color: colors.low, bg: colors.lowBg };
 };
 

@@ -1,18 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import * as Haptics from 'expo-haptics';
 import { useHistory, useProfile } from '@/store/useBoneStore';
-import { calculateBMI } from '@/utils/calculations';
-import {
-  BMI_MAX,
-  BMI_MIN,
-  FOOD_SCORE_MAX,
-  FOOD_SCORE_MIN,
-  STEPS_MAX,
-  STEPS_MIN,
-  STZI_MAX,
-  STZI_MIN,
-  clamp,
-} from '@/utils/stzi-system';
+import { buildHealthContext } from '@/utils/healthContext';
 import { getApiBaseUrl, getMissingApiUrlError } from '@/utils/api';
 
 export interface Message {
@@ -81,18 +70,13 @@ export function useChat() {
     setLoading(true);
     setError(null);
 
-    const latestLog = history[0];
-    const bmi = profile ? calculateBMI(profile.height, profile.weight) : 0;
-
-    // Ranges come from the score generators, never re-typed as literals: the
-    // previous hardcoded [-3, 10] / [0, 5] silently truncated a good diet and
-    // told the model a top-band STZI of 1.8 was mid-scale.
-    const normalizedHealthContext = {
-      steps: clamp(latestLog?.steps ?? 0, STEPS_MIN, STEPS_MAX),
-      foodScore: clamp(latestLog?.foodScore ?? 0, FOOD_SCORE_MIN, FOOD_SCORE_MAX),
-      bmi: clamp(bmi, BMI_MIN, BMI_MAX),
-      stzi: clamp(latestLog?.stzi ?? 0, STZI_MIN, STZI_MAX),
-    };
+    // Null when the profile is incomplete or there is no log for today. The key
+    // is then omitted entirely rather than filled with zeroes: `healthContext`
+    // is optional server-side, so general bone-health questions still work, and
+    // the model is never handed a fabricated BMI for a user who has not filled
+    // in a profile. Bounds and the today-only rule live in `buildHealthContext`,
+    // shared with the advice card so the two features cannot disagree.
+    const healthContext = buildHealthContext({ profile, history });
 
     const apiBaseUrl = getApiBaseUrl();
 
@@ -110,7 +94,7 @@ export function useChat() {
         body: JSON.stringify({
           prompt: text,
           conversationId: conversationId.current,
-          healthContext: normalizedHealthContext,
+          ...(healthContext ? { healthContext } : {}),
         }),
         signal: controller.signal,
       });

@@ -3,13 +3,10 @@ import { buildHealthAdvicePrompt } from '../llm/prompts/health-advice';
 import { llmClient } from '../llm/client';
 import { LlmResponseError } from '../llm/errors';
 import { resolveStatus } from '../llm/scoreRanges';
+import type { HealthContext } from '../llm/healthContext';
 
-export type HealthAdviceInput = {
-  steps: number;
-  foodScore: number;
-  bmi: number;
-  stzi: number;
-};
+/** Derived from the shared schema, so the type cannot drift from what is validated. */
+export type HealthAdviceInput = HealthContext;
 
 const MAX_SUMMARY_LENGTH = 100;
 const MAX_ISSUES = 3;

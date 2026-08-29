@@ -6,7 +6,8 @@
    "scripts": {
       "start": "bun run index.ts",
       "dev": "bun --watch run index.ts",
-      "server": "bun --watch run index.ts"
+      "server": "bun --watch run index.ts",
+      "check:contract": "bun run scripts/checkContract.ts"
    },
    "devDependencies": {
       "@types/bun": "latest",

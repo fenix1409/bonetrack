@@ -79,12 +79,22 @@ const createNativeStorage = (): StateStorage => ({
       // Fall through and store the payload as-is.
     }
 
-    await Promise.all([
-      AsyncStorage.setItem(name, bulk),
-      profile
-        ? SecureStore.setItemAsync(SECURE_PROFILE_KEY, JSON.stringify(profile))
-        : SecureStore.deleteItemAsync(SECURE_PROFILE_KEY).catch(() => undefined),
-    ]);
+    /*
+     * The secure write goes first, on its own await. Running both in a
+     * `Promise.all` meant a Keystore/Keychain failure rejected *after*
+     * AsyncStorage had already stored the profile-stripped payload — the
+     * profile then existed in neither store and was gone for good, which reads
+     * downstream as an empty profile rather than an error. Ordering them this
+     * way leaves both stores on their previous consistent values if the secure
+     * write fails, and never falls back to writing health data in plaintext.
+     */
+    if (profile) {
+      await SecureStore.setItemAsync(SECURE_PROFILE_KEY, JSON.stringify(profile));
+    } else {
+      await SecureStore.deleteItemAsync(SECURE_PROFILE_KEY).catch(() => undefined);
+    }
+
+    await AsyncStorage.setItem(name, bulk);
   },
 
   removeItem: async (name) => {

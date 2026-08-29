@@ -1,24 +1,10 @@
 import type { Request, Response } from 'express';
-import { z } from 'zod';
 import { healthAdviceService } from '../services/healthAdvice.service';
 import { LlmResponseError } from '../llm/errors';
-import {
-   BMI_MAX,
-   BMI_MIN,
-   FOOD_SCORE_MAX,
-   FOOD_SCORE_MIN,
-   STEPS_MAX,
-   STEPS_MIN,
-   STZI_MAX,
-   STZI_MIN,
-} from '../llm/scoreRanges';
+import { healthContextSchema } from '../llm/healthContext';
 
-const healthAdviceRequestSchema = z.object({
-   steps: z.number().min(STEPS_MIN).max(STEPS_MAX),
-   foodScore: z.number().min(FOOD_SCORE_MIN).max(FOOD_SCORE_MAX),
-   bmi: z.number().min(BMI_MIN).max(BMI_MAX),
-   stzi: z.number().min(STZI_MIN).max(STZI_MAX),
-});
+/** Same contract the chatbot validates `healthContext` against. */
+const healthAdviceRequestSchema = healthContextSchema;
 
 const isTimeoutError = (error: unknown) => {
    if (!(error instanceof Error)) return false;

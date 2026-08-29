@@ -7,8 +7,15 @@ const round2 = (num: number): number => Math.round(num * 100) / 100;
 
 /**
  * Clamps a number between min and max.
+ *
+ * Non-finite input collapses to `min` instead of propagating. `Math.min(Math.max(NaN, …))`
+ * is NaN, `JSON.stringify` writes that as `null`, and the server's Zod schema
+ * rejects `null` with a 400 — so a single undefined profile field used to take
+ * down both AI features. This only guarantees the return type; callers that must
+ * not invent a value check the input first (see `buildHealthContext`).
  */
-export const clamp = (num: number, min: number, max: number): number => Math.min(Math.max(num, min), max);
+export const clamp = (num: number, min: number, max: number): number =>
+  Number.isFinite(num) ? Math.min(Math.max(num, min), max) : min;
 
 /*
  * Canonical score ranges — the single source of truth for the whole app.
@@ -30,27 +37,45 @@ export const BMI_MAX = 80;
 export const STEPS_MIN = 0;
 export const STEPS_MAX = 100_000;
 
+/*
+ * Profile input bounds. These are not sent to the server, but they were
+ * re-typed as literals in `validateProfile`, `getAgeCoefficient` and the
+ * `FIELDS` table in `app/(tabs)/profile.tsx` — three copies that could drift
+ * apart the same way the score ranges did.
+ */
+export const AGE_MIN = 1;
+export const AGE_MAX = 120;
+
+export const HEIGHT_MIN = 50;
+export const HEIGHT_MAX = 250;
+
+export const WEIGHT_MIN = 10;
+export const WEIGHT_MAX = 300;
+
 /**
  * 1. Calculate BMI
  * Returns actual BMI clamped to 10-80.
  */
 export const calculateBMI = (heightCm: number, weightKg: number): number => {
-  if (heightCm <= 0 || weightKg <= 0) return 10;
+  // `undefined <= 0` is false, so a profile missing a field fell straight past
+  // the range guard and returned NaN. Check finiteness before comparing.
+  if (!Number.isFinite(heightCm) || !Number.isFinite(weightKg)) return BMI_MIN;
+  if (heightCm <= 0 || weightKg <= 0) return BMI_MIN;
   const heightM = heightCm / 100;
-  if (heightM === 0) return 10; // ✅ Division by zero protection
+  if (heightM === 0) return BMI_MIN; // ✅ Division by zero protection
   const bmi = weightKg / (heightM * heightM);
-  return clamp(round2(bmi), 10, 80);
+  return clamp(round2(bmi), BMI_MIN, BMI_MAX);
 };
 
 export const validateProfile = (data: { age?: number; height?: number; weight?: number; gender?: string }): string | null => {
-  if (data.age == null || !Number.isFinite(data.age) || data.age < 1 || data.age > 120) {
-    return 'Ёш 1 dan 120 гача бўлиши керак';
+  if (data.age == null || !Number.isFinite(data.age) || data.age < AGE_MIN || data.age > AGE_MAX) {
+    return `Ёш ${AGE_MIN} dan ${AGE_MAX} гача бўлиши керак`;
   }
-  if (data.height == null || !Number.isFinite(data.height) || data.height < 50 || data.height > 250) {
-    return 'Бўй 50-250 см оралиғида бўлиши керак';
+  if (data.height == null || !Number.isFinite(data.height) || data.height < HEIGHT_MIN || data.height > HEIGHT_MAX) {
+    return `Бўй ${HEIGHT_MIN}-${HEIGHT_MAX} см оралиғида бўлиши керак`;
   }
-  if (data.weight == null || !Number.isFinite(data.weight) || data.weight < 10 || data.weight > 300) {
-    return 'Вазн 10-300 кг оралиғида бўлиши керак';
+  if (data.weight == null || !Number.isFinite(data.weight) || data.weight < WEIGHT_MIN || data.weight > WEIGHT_MAX) {
+    return `Вазн ${WEIGHT_MIN}-${WEIGHT_MAX} кг оралиғида бўлиши керак`;
   }
   if (!data.gender) {
     return 'Жинсингизни танланг';
@@ -68,7 +93,7 @@ export const validateProfile = (data: { age?: number; height?: number; weight?: 
  * <18.5 ёки >30 → 0 балл
  */
 export const getBMIScore = (bmi: number): number => {
-  const b = clamp(bmi, 10, 80);
+  const b = clamp(bmi, BMI_MIN, BMI_MAX);
   if (b >= 18.5 && b <= 25) return 2;
   if (b > 25 && b <= 30) return 1;
   return 0;
@@ -112,7 +137,7 @@ export const getFoodScore = (selectedFoods: NutritionChoice[]): number => {
  * ≥5500 = 4
  */
 export const getStepScore = (steps: number): number => {
-  const s = Math.max(0, steps);
+  const s = clamp(steps, STEPS_MIN, STEPS_MAX);
   if (s >= 5500) return 4;
   if (s >= 4500) return 3;
   if (s >= 3500) return 2.5;
@@ -175,7 +200,7 @@ export const getEnvironmentScore = (condition: WalkingCondition | null | undefin
  * <20 → 0.5 (default)
  */
 export const getAgeCoefficient = (age: number): number => {
-  const a = clamp(age, 1, 120);
+  const a = clamp(age, AGE_MIN, AGE_MAX);
   if (a >= 20 && a <= 35) return 1.0;
   if (a >= 36 && a <= 50) return 0.75;
   if (a >= 51 && a <= 60) return 0.5;
@@ -200,7 +225,7 @@ export const calculateSTZI = (params: {
   const sum = bmiScore + foodScore + stepScore + environmentScore;
   const stzi = (Math.max(0, sum) * ageCoeff) / 10;
 
-  return clamp(round2(stzi), 0, 2);
+  return clamp(round2(stzi), STZI_MIN, STZI_MAX);
 };
 
 export type RecommendationType = 'critical' | 'warning' | 'improve';
